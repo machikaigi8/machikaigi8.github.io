@@ -22,10 +22,10 @@
             display: grid;
 
             grid-template-columns: 45% 55%;
-            grid-template-rows: 128px auto;
+            grid-template-rows: 150px auto;
 
             grid-template-areas:
-                "title photo"
+                "heading photo"
                 "message photo";
 
             min-height: 635px;
@@ -40,7 +40,7 @@
             left: 0;
 
             width: 100%;
-            height: 128px;
+            height: 150px;
 
             background-color: rgba(255, 220, 100, 0.80);
 
@@ -48,31 +48,40 @@
         }
 
 
-        /* タイトル */
-        .title {
-            grid-area: title;
+        /* タイトル全体 */
+        .heading {
+            grid-area: heading;
 
             position: relative;
             z-index: 3;
 
+            padding: 24px 34px;
+        }
+
+
+        /* メインタイトル */
+        .title {
             margin: 0;
-            padding: 34px;
 
             font-size: 54px;
             font-family: "HGP創英ﾌﾟﾚｾﾞﾝｽEB", sans-serif;
             color: #001E00;
-
         }
 
+
+        /* サブタイトル */
         .subtitle {
-            margin: 10px 0 0 38px;
+            margin: 10px 0 0 0;
+
             font-size: 15px;
             color: #003700;
-            font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
-            
-            position: relative;
-            z-index: 3;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                serif;
         }
+
 
         /* 説明文 */
         .message {
@@ -109,10 +118,10 @@
                 display: grid;
 
                 grid-template-columns: 100%;
-                grid-template-rows: auto auto auto;
+                grid-template-rows: 120px auto auto;
 
                 grid-template-areas:
-                    "title"
+                    "heading"
                     "photo"
                     "message";
 
@@ -121,16 +130,26 @@
 
 
             .yellow-line {
-                height: 105px;
+                height: 120px;
+            }
+
+
+            .heading {
+                padding: 24px;
             }
 
 
             .title {
-                padding: 30px 24px;
-
                 font-size: 30px;
 
                 white-space: nowrap;
+            }
+
+
+            .subtitle {
+                margin-top: 10px;
+
+                font-size: 13px;
             }
 
 
@@ -162,19 +181,25 @@
         <div class="yellow-line"></div>
 
 
-        <h1 class="title">
-        みんなのまち会議
-        </h1>
-        
-        <p class="subtitle">
-        若者と、はちおうじの街を考える会議
-        </p>
+        <div class="heading">
+
+            <h1 class="title">
+                みんなのまち会議
+            </h1>
+
+            <p class="subtitle">
+                若者と、はちおうじの街を考える会議
+            </p>
+
+        </div>
 
 
         <div class="photo">
 
-            <img src="main-photo.jpg"
-                 alt="みんなのまち会議の様子">
+            <img
+                src="main-photo.jpg"
+                alt="みんなのまち会議の様子"
+            >
 
         </div>
 
