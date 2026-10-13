@@ -3,9 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- 制作中なので検索結果に表示させない -->
     <meta name="robots" content="noindex, nofollow">
@@ -24,10 +22,10 @@
             display: grid;
 
             grid-template-columns: 45% 55%;
-            grid-template-rows: 150px auto;
+            grid-template-rows: 128px auto;
 
             grid-template-areas:
-                "heading photo"
+                "title photo"
                 "message photo";
 
             min-height: 635px;
@@ -42,67 +40,33 @@
             left: 0;
 
             width: 100%;
-            height: 110px;
+            height: 128px;
 
-            background-color: rgba(255, 220, 100, 0.80);
+            background-color: rgba(255, 220, 100, 0.25);
 
             z-index: 2;
         }
 
 
-        /* タイトル部分全体 */
-        .heading {
-            grid-area: heading;
+        /* タイトル */
+        .title {
+            grid-area: title;
 
             position: relative;
             z-index: 3;
 
-            padding: 18px 27px;
-
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-
-        /* みんなのまち会議 */
-        .title {
             margin: 0;
+            padding: 33px;
 
-            font-size: 50px;
-            line-height: 1;
-
-            font-family:
-                "HGP創英ﾌﾟﾚｾﾞﾝｽEB",
-                sans-serif;
-
-            color: #001E00;
+            font-size: 36px;
         }
 
 
-        /* 若者と、はちおうじの街を考える会議 */
-        .subtitle {
-            margin: 10px 0 0 0;
-
-            font-size: 15px;
-
-            color: #003700;
-
-            font-family:
-                "Yu Mincho",
-                "Hiragino Mincho ProN",
-                "Hiragino Mincho Pro",
-                serif;
-        }
-
-
-        /* リリース文 */
+        /* 説明文 */
         .message {
             grid-area: message;
 
-            margin: 0;
-
-            padding: 45px 38px;
+            padding: 25px 38px;
 
             font-size: 18px;
         }
@@ -113,7 +77,6 @@
             grid-area: photo;
         }
 
-
         .photo img {
             width: 100%;
             height: 635px;
@@ -122,7 +85,6 @@
 
             display: block;
         }
-
 
 
         /* =========================
@@ -135,10 +97,10 @@
                 display: grid;
 
                 grid-template-columns: 100%;
-                grid-template-rows: 125px auto auto;
+                grid-template-rows: auto auto auto;
 
                 grid-template-areas:
-                    "heading"
+                    "title"
                     "photo"
                     "message";
 
@@ -146,33 +108,20 @@
             }
 
 
-            /* 黄色帯 */
             .yellow-line {
-                height: 125px;
-            }
-
-
-            /* タイトル部分 */
-            .heading {
-                padding: 20px 24px;
+                height: 105px;
             }
 
 
             .title {
-                font-size: 32px;
+                padding: 30px 24px;
+
+                font-size: 30px;
 
                 white-space: nowrap;
             }
 
 
-            .subtitle {
-                margin-top: 10px;
-
-                font-size: 13px;
-            }
-
-
-            /* 写真 */
             .photo img {
                 width: 100%;
                 height: 350px;
@@ -181,7 +130,6 @@
             }
 
 
-            /* リリース文 */
             .message {
                 padding: 28px 24px;
 
@@ -199,36 +147,22 @@
 
     <main class="main">
 
-        <!-- 黄色の帯 -->
         <div class="yellow-line"></div>
 
 
-        <!-- タイトル -->
-        <div class="heading">
-
-            <h1 class="title">
-                みんなのまち会議
-            </h1>
-
-            <p class="subtitle">
-                若者と、はちおうじの街を考える会議
-            </p>
-
-        </div>
+        <h1 class="title">
+            みんなのまち会議
+        </h1>
 
 
-        <!-- 写真 -->
         <div class="photo">
 
-            <img
-                src="main-photo.jpg"
-                alt="みんなのまち会議の様子"
-            >
+            <img src="main-photo.jpg"
+                 alt="みんなのまち会議の様子">
 
         </div>
 
 
-        <!-- リリース文 -->
         <p class="message">
             リリースまで少々お待ちください。
         </p>
