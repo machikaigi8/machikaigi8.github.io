@@ -4,25 +4,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 制作中なので検索結果に表示させない -->
     <meta name="robots" content="noindex, nofollow">
+
     <title>みんなのまち会議</title>
 
     <style>
+
         body {
             margin: 0;
         }
 
         .main {
-            display: flex;
-            min-height: 635px;
-
-            /* 黄色帯を重ねるための基準 */
             position: relative;
+
+            display: grid;
+
+            grid-template-columns: 45% 55%;
+            grid-template-rows: 128px auto;
+
+            grid-template-areas:
+                "title photo"
+                "message photo";
+
+            min-height: 635px;
         }
+
 
         /* 黄色の帯 */
         .yellow-line {
             position: absolute;
+
             top: 0;
             left: 0;
 
@@ -34,65 +47,127 @@
             z-index: 2;
         }
 
-        .left {
-            width: 45%;
+
+        /* タイトル */
+        .title {
+            grid-area: title;
+
             position: relative;
             z-index: 3;
-        }
 
-        .right {
-            width: 55%;
-        }
-
-        h1 {
-            text-align: left;
             margin: 0;
             padding: 38px;
 
-            /* h1自体には背景を付けない */
-            background-color: transparent;
-
-            position: relative;
-            z-index: 3;
+            font-size: 36px;
         }
 
-        p {
+
+        /* 説明文 */
+        .message {
+            grid-area: message;
+
             padding: 25px 38px;
+
+            font-size: 18px;
         }
 
-        .right img {
+
+        /* 写真 */
+        .photo {
+            grid-area: photo;
+        }
+
+        .photo img {
             width: 100%;
             height: 635px;
+
             object-fit: cover;
+
             display: block;
+        }
+
+
+        /* =========================
+           スマホ用
+           ========================= */
+
+        @media (max-width: 768px) {
+
+            .main {
+                display: grid;
+
+                grid-template-columns: 100%;
+                grid-template-rows: auto auto auto;
+
+                grid-template-areas:
+                    "title"
+                    "photo"
+                    "message";
+
+                min-height: auto;
+            }
+
+
+            .yellow-line {
+                height: 105px;
+            }
+
+
+            .title {
+                padding: 30px 24px;
+
+                font-size: 30px;
+
+                white-space: nowrap;
+            }
+
+
+            .photo img {
+                width: 100%;
+                height: 350px;
+
+                object-fit: cover;
+            }
+
+
+            .message {
+                padding: 28px 24px;
+
+                font-size: 16px;
+            }
+
         }
 
     </style>
 
 </head>
 
+
 <body>
 
-    <div class="main">
+    <main class="main">
 
-        <!-- 画面全体を横切る黄色の帯 -->
         <div class="yellow-line"></div>
 
-        <div class="left">
 
-            <h1>みんなのまち会議</h1>
+        <h1 class="title">
+            みんなのまち会議
+        </h1>
 
-            <p>リリースまで少々お待ちください。</p>
+
+        <div class="photo">
+
+            <img src="main-photo.jpg"
+                 alt="みんなのまち会議の様子">
 
         </div>
 
-        <div class="right">
 
-            <img src="main-photo.jpg" alt="みんなのまち会議">
+        <p class="message">
+            リリースまで少々お待ちください。
+        </p>
 
-        </div>
-
-    </div>
+    </main>
 
 </body>
 
