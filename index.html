@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <!-- 制作中なので検索結果に表示させない -->
     <meta name="robots" content="noindex, nofollow">
@@ -48,46 +50,59 @@
         }
 
 
-        /* タイトル全体 */
+        /* タイトル部分全体 */
         .heading {
             grid-area: heading;
 
             position: relative;
             z-index: 3;
 
-            padding: 24px 34px;
+            padding: 20px 34px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
 
-        /* メインタイトル */
+        /* みんなのまち会議 */
         .title {
             margin: 0;
 
             font-size: 54px;
-            font-family: "HGP創英ﾌﾟﾚｾﾞﾝｽEB", sans-serif;
+            line-height: 1;
+
+            font-family:
+                "HGP創英ﾌﾟﾚｾﾞﾝｽEB",
+                sans-serif;
+
             color: #001E00;
         }
 
 
-        /* サブタイトル */
+        /* 若者と、はちおうじの街を考える会議 */
         .subtitle {
             margin: 10px 0 0 0;
 
             font-size: 15px;
+
             color: #003700;
 
             font-family:
                 "Yu Mincho",
                 "Hiragino Mincho ProN",
+                "Hiragino Mincho Pro",
                 serif;
         }
 
 
-        /* 説明文 */
+        /* リリース文 */
         .message {
             grid-area: message;
 
-            padding: 25px 38px;
+            margin: 0;
+
+            padding: 45px 38px;
 
             font-size: 18px;
         }
@@ -98,6 +113,7 @@
             grid-area: photo;
         }
 
+
         .photo img {
             width: 100%;
             height: 635px;
@@ -106,6 +122,7 @@
 
             display: block;
         }
+
 
 
         /* =========================
@@ -118,7 +135,7 @@
                 display: grid;
 
                 grid-template-columns: 100%;
-                grid-template-rows: 120px auto auto;
+                grid-template-rows: 125px auto auto;
 
                 grid-template-areas:
                     "heading"
@@ -129,18 +146,20 @@
             }
 
 
+            /* 黄色帯 */
             .yellow-line {
-                height: 120px;
+                height: 125px;
             }
 
 
+            /* タイトル部分 */
             .heading {
-                padding: 24px;
+                padding: 20px 24px;
             }
 
 
             .title {
-                font-size: 30px;
+                font-size: 32px;
 
                 white-space: nowrap;
             }
@@ -153,6 +172,7 @@
             }
 
 
+            /* 写真 */
             .photo img {
                 width: 100%;
                 height: 350px;
@@ -161,6 +181,7 @@
             }
 
 
+            /* リリース文 */
             .message {
                 padding: 28px 24px;
 
@@ -178,9 +199,11 @@
 
     <main class="main">
 
+        <!-- 黄色の帯 -->
         <div class="yellow-line"></div>
 
 
+        <!-- タイトル -->
         <div class="heading">
 
             <h1 class="title">
@@ -194,6 +217,7 @@
         </div>
 
 
+        <!-- 写真 -->
         <div class="photo">
 
             <img
@@ -204,6 +228,7 @@
         </div>
 
 
+        <!-- リリース文 -->
         <p class="message">
             リリースまで少々お待ちください。
         </p>
