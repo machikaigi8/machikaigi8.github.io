@@ -18,17 +18,13 @@
             margin: 0;
         }
 
+
+        /* ページ全体 */
         .main {
             position: relative;
 
             display: grid;
-
             grid-template-columns: 45% 55%;
-            grid-template-rows: 150px auto;
-
-            grid-template-areas:
-                "heading photo"
-                "message photo";
 
             min-height: 635px;
         }
@@ -42,7 +38,7 @@
             left: 0;
 
             width: 100%;
-            height: 128px;
+            height: 150px;
 
             background-color: rgba(255, 220, 100, 0.80);
 
@@ -50,18 +46,34 @@
         }
 
 
-        /* タイトル部分全体 */
-        .heading {
-            grid-area: heading;
+        /* =========================
+           ヘッダー
+           ========================= */
 
-            position: relative;
-            z-index: 3;
+        .header {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 150px;
+
+            box-sizing: border-box;
 
             padding: 20px 34px;
 
+            z-index: 3;
+
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        /* タイトル側 */
+        .brand {
+            flex-shrink: 0;
         }
 
 
@@ -96,21 +108,64 @@
         }
 
 
-        /* リリース文 */
+        /* =========================
+           ナビゲーション
+           ========================= */
+
+        .nav-menu {
+            display: flex;
+
+            gap: 30px;
+
+            align-items: center;
+        }
+
+
+        .nav-menu a {
+            color: #003700;
+
+            text-decoration: none;
+
+            font-size: 16px;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                serif;
+
+            white-space: nowrap;
+
+            transition: opacity 0.2s;
+        }
+
+
+        /* マウスを乗せた時 */
+        .nav-menu a:hover {
+            opacity: 0.55;
+        }
+
+
+        /* =========================
+           リリース文
+           ========================= */
+
         .message {
-            grid-area: message;
+            grid-column: 1;
 
             margin: 0;
 
-            padding: 45px 38px;
+            padding: 195px 38px 25px 38px;
 
             font-size: 18px;
         }
 
 
-        /* 写真 */
+        /* =========================
+           写真
+           ========================= */
+
         .photo {
-            grid-area: photo;
+            grid-column: 2;
         }
 
 
@@ -132,15 +187,7 @@
         @media (max-width: 768px) {
 
             .main {
-                display: grid;
-
-                grid-template-columns: 100%;
-                grid-template-rows: 125px auto auto;
-
-                grid-template-areas:
-                    "heading"
-                    "photo"
-                    "message";
+                display: block;
 
                 min-height: auto;
             }
@@ -148,16 +195,23 @@
 
             /* 黄色帯 */
             .yellow-line {
-                height: 125px;
+                height: 170px;
             }
 
 
-            /* タイトル部分 */
-            .heading {
+            /* ヘッダー */
+            .header {
+                position: relative;
+
+                height: 170px;
+
                 padding: 20px 24px;
+
+                display: block;
             }
 
 
+            /* タイトル */
             .title {
                 font-size: 32px;
 
@@ -165,10 +219,28 @@
             }
 
 
+            /* サブタイトル */
             .subtitle {
                 margin-top: 10px;
 
                 font-size: 13px;
+            }
+
+
+            /* スマホのメニュー */
+            .nav-menu {
+                margin-top: 18px;
+
+                display: flex;
+
+                gap: 14px;
+
+                flex-wrap: wrap;
+            }
+
+
+            .nav-menu a {
+                font-size: 12px;
             }
 
 
@@ -183,6 +255,8 @@
 
             /* リリース文 */
             .message {
+                margin: 0;
+
                 padding: 28px 24px;
 
                 font-size: 16px;
@@ -199,22 +273,48 @@
 
     <main class="main">
 
+
         <!-- 黄色の帯 -->
         <div class="yellow-line"></div>
 
 
-        <!-- タイトル -->
-        <div class="heading">
+        <!-- ヘッダー -->
+        <header class="header">
 
-            <h1 class="title">
-                みんなのまち会議
-            </h1>
 
-            <p class="subtitle">
-                若者と、はちおうじの街を考える会議
-            </p>
+            <!-- タイトル -->
+            <div class="brand">
 
-        </div>
+                <h1 class="title">
+                    みんなのまち会議
+                </h1>
+
+                <p class="subtitle">
+                    若者と、はちおうじの街を考える会議
+                </p>
+
+            </div>
+
+
+            <!-- メニュー -->
+            <nav class="nav-menu">
+
+                <a href="news.html">
+                    ∨ ニュース
+                </a>
+
+                <a href="about.html">
+                    ∨ まち会議とは
+                </a>
+
+                <a href="organization.html">
+                    ∨ 団体概要
+                </a>
+
+            </nav>
+
+
+        </header>
 
 
         <!-- 写真 -->
@@ -232,6 +332,7 @@
         <p class="message">
             リリースまで少々お待ちください。
         </p>
+
 
     </main>
 
