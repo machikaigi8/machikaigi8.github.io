@@ -121,9 +121,6 @@
 
             min-height: 635px;
 
-            /*
-               写真をヘッダーの後ろまで伸ばす
-            */
             margin-top: -90px;
         }
 
@@ -146,8 +143,6 @@
             z-index: 2;
 
             pointer-events: none;
-
-            transition: opacity 0.15s;
         }
 
 
@@ -171,21 +166,6 @@
                 "Hiragino Mincho ProN",
                 "Hiragino Mincho Pro",
                 serif;
-
-            transition: opacity 0.15s;
-        }
-
-
-        /*
-           上の空白が消えて、
-           ヘッダーが上端に到達したら
-           サブタイトルと下側の黄色帯を消す
-        */
-
-        body.scrolled .subtitle,
-        body.scrolled .subtitle-line {
-            opacity: 0;
-            visibility: hidden;
         }
 
 
@@ -315,11 +295,11 @@
 <body>
 
 
-    <!-- 最初だけ見える空白 -->
+    <!-- 最初だけ見える上のスペース -->
     <div class="top-space"></div>
 
 
-    <!-- スクロールすると上端で固定 -->
+    <!-- 上端に来たら固定 -->
     <header class="header">
 
 
@@ -352,11 +332,11 @@
     <main class="main">
 
 
-        <!-- サブタイトル用黄色帯 -->
+        <!-- サブタイトルの黄色帯 -->
         <div class="subtitle-line"></div>
 
 
-        <!-- スクロールすると消える -->
+        <!-- スクロールに合わせて徐々に消える -->
         <p class="subtitle">
             若者と、はちおうじの街を考える会議
         </p>
@@ -382,42 +362,76 @@
     </main>
 
 
+
     <script>
 
-        /*
-           上の色付き空白が画面外へ出たら
-           サブタイトルを消す
-        */
+        const topSpace =
+            document.querySelector(".top-space");
 
-        function updateHeader() {
+        const subtitle =
+            document.querySelector(".subtitle");
 
-            const topSpace =
-                document.querySelector(".top-space");
+        const subtitleLine =
+            document.querySelector(".subtitle-line");
 
-            const limit =
+
+        function updateScroll() {
+
+            /*
+              上の空白の高さ
+              PCなら30px、スマホなら20px
+            */
+            const fadeDistance =
                 topSpace.offsetHeight;
 
 
-            if (window.scrollY >= limit) {
+            /*
+              0 ～ 1 の値に変換
 
-                document.body.classList.add("scrolled");
+              スクロール0px
+              → progress = 0
 
-            } else {
+              空白分スクロール
+              → progress = 1
+            */
+            const progress =
+                Math.min(
+                    window.scrollY / fadeDistance,
+                    1
+                );
 
-                document.body.classList.remove("scrolled");
 
-            }
+            /*
+              スクロールするほど透明になる
+            */
+            const opacity =
+                1 - progress;
+
+
+            subtitle.style.opacity =
+                opacity;
+
+
+            subtitleLine.style.opacity =
+                opacity;
+
+
+            /*
+              少し上方向にも移動させる
+            */
+            subtitle.style.transform =
+                `translateY(${-10 * progress}px)`;
 
         }
 
 
         window.addEventListener(
             "scroll",
-            updateHeader
+            updateScroll
         );
 
 
-        updateHeader();
+        updateScroll();
 
     </script>
 
