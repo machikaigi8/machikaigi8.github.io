@@ -20,18 +20,20 @@
 
 
         /* =========================
-           最初だけ見える上の空白
+           最上部のスペース
+           スクロールすると普通に消える
            ========================= */
 
         .top-space {
-            height: 30px;
+            height: 35px;
 
-            background-color: rgba(255, 220, 100, 0.80);
+            background-color:
+                rgba(255, 220, 100, 0.80);
         }
 
 
         /* =========================
-           上端で固定されるヘッダー
+           固定ヘッダー
            ========================= */
 
         .header {
@@ -39,19 +41,38 @@
             top: 0;
 
             width: 100%;
-            height: 90px;
+            height: 78px;
 
             box-sizing: border-box;
 
-            padding: 18px 34px;
+            padding: 18px 34px 0 34px;
 
             display: flex;
-            align-items: center;
+
+            align-items: flex-end;
             justify-content: space-between;
 
-            background-color: rgba(255, 220, 100, 0.80);
+            /*
+               最初は透明。
+               後ろにある黄色帯を見せる。
+            */
+            background-color: transparent;
 
             z-index: 100;
+        }
+
+
+        /*
+           ヘッダーが上端に到達した後だけ
+           黄色を付ける。
+
+           半透明の帯同士が重なって
+           濃く見えないように
+           固定時は同等色の不透明色にする。
+        */
+
+        .header.stuck {
+            background-color: #FFE383;
         }
 
 
@@ -82,6 +103,8 @@
             gap: 30px;
 
             align-items: center;
+
+            padding-bottom: 6px;
         }
 
 
@@ -109,7 +132,7 @@
 
 
         /* =========================
-           メイン部分
+           メイン
            ========================= */
 
         .main {
@@ -121,24 +144,30 @@
 
             min-height: 635px;
 
-            margin-top: -90px;
+
+            /*
+               写真・黄色帯を
+               ヘッダーの後ろまで伸ばす
+            */
+            margin-top: -78px;
         }
 
 
         /* =========================
-           サブタイトル部分の黄色帯
+           最初に見える黄色帯
            ========================= */
 
-        .subtitle-line {
+        .yellow-line {
             position: absolute;
 
-            top: 90px;
+            top: 0;
             left: 0;
 
             width: 100%;
-            height: 38px;
+            height: 128px;
 
-            background-color: rgba(255, 220, 100, 0.80);
+            background-color:
+                rgba(255, 220, 100, 0.80);
 
             z-index: 2;
 
@@ -146,11 +175,18 @@
         }
 
 
-        /* サブタイトル */
+        /* =========================
+           サブタイトル
+           ========================= */
+
         .subtitle {
             position: absolute;
 
-            top: 99px;
+            /*
+               タイトル行の下から
+               約15px空ける
+            */
+            top: 93px;
             left: 34px;
 
             margin: 0;
@@ -211,7 +247,7 @@
         @media (max-width: 768px) {
 
             .top-space {
-                height: 20px;
+                height: 35px;
             }
 
 
@@ -234,6 +270,8 @@
 
                 gap: 14px;
 
+                padding-bottom: 0;
+
                 flex-wrap: wrap;
             }
 
@@ -254,15 +292,13 @@
             }
 
 
-            .subtitle-line {
-                top: 110px;
-
-                height: 45px;
+            .yellow-line {
+                height: 155px;
             }
 
 
             .subtitle {
-                top: 121px;
+                top: 125px;
                 left: 24px;
 
                 font-size: 13px;
@@ -295,11 +331,11 @@
 <body>
 
 
-    <!-- 最初だけ見える上のスペース -->
+    <!-- 最初だけ見える35px -->
     <div class="top-space"></div>
 
 
-    <!-- 上端に来たら固定 -->
+    <!-- 上端に到達すると固定 -->
     <header class="header">
 
 
@@ -332,11 +368,11 @@
     <main class="main">
 
 
-        <!-- サブタイトルの黄色帯 -->
-        <div class="subtitle-line"></div>
+        <!-- 黄色の帯 -->
+        <div class="yellow-line"></div>
 
 
-        <!-- スクロールに合わせて徐々に消える -->
+        <!-- 普通にスクロールして上へ消える -->
         <p class="subtitle">
             若者と、はちおうじの街を考える会議
         </p>
@@ -362,76 +398,45 @@
     </main>
 
 
-
     <script>
+
+        const header =
+            document.querySelector(".header");
 
         const topSpace =
             document.querySelector(".top-space");
 
-        const subtitle =
-            document.querySelector(".subtitle");
 
-        const subtitleLine =
-            document.querySelector(".subtitle-line");
-
-
-        function updateScroll() {
+        function updateHeader() {
 
             /*
-              上の空白の高さ
-              PCなら30px、スマホなら20px
+               最上部35pxが消えたら
+               ヘッダーが固定状態になる
             */
-            const fadeDistance =
-                topSpace.offsetHeight;
 
+            if (
+                window.scrollY >=
+                topSpace.offsetHeight
+            ) {
 
-            /*
-              0 ～ 1 の値に変換
+                header.classList.add("stuck");
 
-              スクロール0px
-              → progress = 0
+            } else {
 
-              空白分スクロール
-              → progress = 1
-            */
-            const progress =
-                Math.min(
-                    window.scrollY / fadeDistance,
-                    1
-                );
+                header.classList.remove("stuck");
 
-
-            /*
-              スクロールするほど透明になる
-            */
-            const opacity =
-                1 - progress;
-
-
-            subtitle.style.opacity =
-                opacity;
-
-
-            subtitleLine.style.opacity =
-                opacity;
-
-
-            /*
-              少し上方向にも移動させる
-            */
-            subtitle.style.transform =
-                `translateY(${-10 * progress}px)`;
+            }
 
         }
 
 
         window.addEventListener(
             "scroll",
-            updateScroll
+            updateHeader
         );
 
 
-        updateScroll();
+        updateHeader();
 
     </script>
 
