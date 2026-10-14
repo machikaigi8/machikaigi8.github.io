@@ -20,19 +20,18 @@
 
 
         /* =========================
-           最上部のスペース
+           最上部の空白
            ========================= */
 
         .top-space {
-            height: 17px;
+            height: 8px;
 
-            background-color:
-                rgba(255, 220, 100, 0.80);
+            background-color: #FFE383;
         }
 
 
         /* =========================
-           固定ヘッダー
+           上端で固定されるヘッダー
            ========================= */
 
         .header {
@@ -40,25 +39,21 @@
             top: 0;
 
             width: 100%;
-            height: 78px;
 
             box-sizing: border-box;
 
-            padding: 18px 34px 0 34px;
+            /*
+               下に12pxの空白
+            */
+            padding: 18px 34px 12px 34px;
 
             display: flex;
-
             align-items: flex-end;
             justify-content: space-between;
 
-            background-color: transparent;
+            background-color: #FFE383;
 
             z-index: 100;
-        }
-
-
-        .header.stuck {
-            background-color: #FFE383;
         }
 
 
@@ -89,8 +84,6 @@
             gap: 30px;
 
             align-items: center;
-
-            padding-bottom: 6px;
         }
 
 
@@ -118,61 +111,28 @@
 
 
         /* =========================
-           メイン
+           サブタイトル部分
            ========================= */
 
-        .main {
-            position: relative;
-
-            display: grid;
-
-            grid-template-columns: 45% 55%;
-
-            min-height: 635px;
-
-            margin-top: -78px;
-        }
-
-
-        /* =========================
-           黄色帯
-           ========================= */
-
-        .yellow-line {
-            position: absolute;
-
-            top: 0;
-            left: 0;
-
+        .subtitle-line {
             width: 100%;
-            height: 128px;
 
-            background-color:
-                rgba(255, 220, 100, 0.80);
+            box-sizing: border-box;
 
-            z-index: 2;
+            /*
+               上側の余白は0px
+            */
+            padding: 0 34px 8px 34px;
 
-            pointer-events: none;
+            background-color: #FFE383;
         }
 
-
-        /* =========================
-           サブタイトル
-           ========================= */
 
         .subtitle {
-            position: absolute;
-
-            /* タイトルの下から12px */
-            top: 90px;
-            left: 34px;
-
-            /* サブタイトル自身の上余白は0 */
             margin: 0;
 
-            z-index: 3;
-
             font-size: 15px;
+            line-height: 1.5;
 
             color: #003700;
 
@@ -185,6 +145,19 @@
 
 
         /* =========================
+           メイン
+           ========================= */
+
+        .main {
+            display: grid;
+
+            grid-template-columns: 45% 55%;
+
+            min-height: 635px;
+        }
+
+
+        /* =========================
            リリース文
            ========================= */
 
@@ -193,7 +166,7 @@
 
             margin: 0;
 
-            padding: 195px 38px 25px 38px;
+            padding: 45px 38px 25px 38px;
 
             font-size: 18px;
         }
@@ -218,7 +191,6 @@
         }
 
 
-
         /* =========================
            スマホ用
            ========================= */
@@ -226,14 +198,12 @@
         @media (max-width: 768px) {
 
             .top-space {
-                height: 17px;
+                height: 8px;
             }
 
 
             .header {
-                height: 110px;
-
-                padding: 16px 24px;
+                padding: 16px 24px 12px 24px;
 
                 display: block;
             }
@@ -249,8 +219,6 @@
 
                 gap: 14px;
 
-                padding-bottom: 0;
-
                 flex-wrap: wrap;
             }
 
@@ -260,31 +228,20 @@
             }
 
 
-            .main {
-                display: block;
-
-                margin-top: -110px;
-
-                min-height: auto;
-
-                padding-top: 155px;
-            }
-
-
-            .yellow-line {
-                height: 155px;
+            .subtitle-line {
+                padding: 0 24px 8px 24px;
             }
 
 
             .subtitle {
-                /* ヘッダー110px + 下余白12px */
-                top: 122px;
-
-                left: 24px;
-
-                margin: 0;
-
                 font-size: 13px;
+            }
+
+
+            .main {
+                display: block;
+
+                min-height: auto;
             }
 
 
@@ -314,13 +271,12 @@
 <body>
 
 
-    <!-- 最初だけ見える17px -->
+    <!-- 最初だけ見える8px -->
     <div class="top-space"></div>
 
 
-    <!-- 上端に到達すると固定 -->
+    <!-- ここだけスクロール後に上端で固定 -->
     <header class="header">
-
 
         <h1 class="title">
             みんなのまち会議
@@ -343,19 +299,24 @@
 
         </nav>
 
-
     </header>
 
+
+    <!-- 普通にスクロールして消える -->
+    <div class="subtitle-line">
+
+        <p class="subtitle">
+            若者と、はちおうじの街を考える会議
+        </p>
+
+    </div>
 
 
     <main class="main">
 
 
-        <div class="yellow-line"></div>
-
-
-        <p class="subtitle">
-            若者と、はちおうじの街を考える会議
+        <p class="message">
+            リリースまで少々お待ちください。
         </p>
 
 
@@ -369,50 +330,7 @@
         </div>
 
 
-        <p class="message">
-            リリースまで少々お待ちください。
-        </p>
-
-
     </main>
-
-
-    <script>
-
-        const header =
-            document.querySelector(".header");
-
-        const topSpace =
-            document.querySelector(".top-space");
-
-
-        function updateHeader() {
-
-            if (
-                window.scrollY >=
-                topSpace.offsetHeight
-            ) {
-
-                header.classList.add("stuck");
-
-            } else {
-
-                header.classList.remove("stuck");
-
-            }
-
-        }
-
-
-        window.addEventListener(
-            "scroll",
-            updateHeader
-        );
-
-
-        updateHeader();
-
-    </script>
 
 
 </body>
