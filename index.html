@@ -26,9 +26,12 @@
         .top-space {
             height: 8px;
 
-            .header {
-            background-color: rgba(255, 220, 100, 0.80);
-            }
+            background-color:
+                rgba(255, 220, 100, 0.80);
+
+            position: relative;
+            z-index: 10;
+        }
 
 
         /* =========================
@@ -44,7 +47,7 @@
             box-sizing: border-box;
 
             /*
-               下に12pxの空白
+               「みんなのまち会議」の下に12px
             */
             padding: 18px 34px 12px 34px;
 
@@ -52,7 +55,8 @@
             align-items: flex-end;
             justify-content: space-between;
 
-            background-color: #FFE383;
+            background-color:
+                rgba(255, 220, 100, 0.80);
 
             z-index: 100;
         }
@@ -120,12 +124,15 @@
 
             box-sizing: border-box;
 
-            /*
-               上側の余白は0px
-            */
+            /* 上側の余白は0px */
             padding: 0 34px 8px 34px;
 
-            background-color: #FFE383;
+            background-color:
+                rgba(255, 220, 100, 0.80);
+
+            position: relative;
+
+            z-index: 10;
         }
 
 
@@ -178,7 +185,17 @@
            ========================= */
 
         .photo {
-            grid-column: 2;
+            /*
+               写真そのものはHP最上部から開始
+            */
+            position: absolute;
+
+            top: 0;
+            right: 0;
+
+            width: 55%;
+
+            z-index: 0;
         }
 
 
@@ -246,6 +263,16 @@
             }
 
 
+            /*
+               スマホでは写真を通常配置に戻す
+            */
+            .photo {
+                position: static;
+
+                width: 100%;
+            }
+
+
             .photo img {
                 width: 100%;
                 height: 350px;
@@ -276,7 +303,7 @@
     <div class="top-space"></div>
 
 
-    <!-- ここだけスクロール後に上端で固定 -->
+    <!-- スクロールすると上端で固定 -->
     <header class="header">
 
         <h1 class="title">
