@@ -19,65 +19,32 @@
         }
 
 
-        /* ページ全体 */
-        .main {
-            position: relative;
-
-            display: grid;
-            grid-template-columns: 45% 55%;
-
-            min-height: 635px;
-        }
-
-
-        /* 黄色の帯 */
-        .yellow-line {
-            position: absolute;
-
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: 128px;
-
-            background-color: rgba(255, 220, 100, 0.80);
-
-            z-index: 2;
-        }
-
-
         /* =========================
-           ヘッダー
+           上端に残るヘッダー
            ========================= */
 
         .header {
-            position: absolute;
-
+            position: sticky;
             top: 0;
-            left: 0;
 
             width: 100%;
-            height: 150px;
+            height: 90px;
 
             box-sizing: border-box;
 
-            padding: 20px 34px;
-
-            z-index: 3;
+            padding: 18px 34px;
 
             display: flex;
             align-items: center;
             justify-content: space-between;
+
+            background-color: rgba(255, 220, 100, 0.80);
+
+            z-index: 100;
         }
 
 
-        /* タイトル側 */
-        .brand {
-            flex-shrink: 0;
-        }
-
-
-        /* みんなのまち会議 */
+        /* タイトル */
         .title {
             margin: 0;
 
@@ -89,22 +56,8 @@
                 sans-serif;
 
             color: #001E00;
-        }
 
-
-        /* 若者と、はちおうじの街を考える会議 */
-        .subtitle {
-            margin: 10px 0 0 0;
-
-            font-size: 15px;
-
-            color: #003700;
-
-            font-family:
-                "Yu Mincho",
-                "Hiragino Mincho ProN",
-                "Hiragino Mincho Pro",
-                serif;
+            white-space: nowrap;
         }
 
 
@@ -139,9 +92,70 @@
         }
 
 
-        /* マウスを乗せた時 */
         .nav-menu a:hover {
             opacity: 0.55;
+        }
+
+
+        /* =========================
+           メイン部分
+           ========================= */
+
+        .main {
+            position: relative;
+
+            display: grid;
+
+            grid-template-columns: 45% 55%;
+
+            min-height: 635px;
+
+            /*
+            ヘッダー分を上に戻して
+            写真をヘッダーの裏まで伸ばす
+            */
+            margin-top: -90px;
+        }
+
+
+        /* 最初だけ見える黄色の帯 */
+        .yellow-line {
+            position: absolute;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 128px;
+
+            background-color: rgba(255, 220, 100, 0.80);
+
+            z-index: 2;
+
+            pointer-events: none;
+        }
+
+
+        /* サブタイトル */
+        .subtitle {
+            position: absolute;
+
+            top: 94px;
+            left: 34px;
+
+            z-index: 3;
+
+            margin: 0;
+
+            font-size: 15px;
+
+            color: #003700;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                "Hiragino Mincho Pro",
+                serif;
         }
 
 
@@ -186,52 +200,22 @@
 
         @media (max-width: 768px) {
 
-            .main {
-                display: block;
-
-                min-height: auto;
-            }
-
-
-            /* 黄色帯 */
-            .yellow-line {
-                height: 170px;
-            }
-
-
-            /* ヘッダー */
             .header {
-                position: relative;
+                height: 110px;
 
-                height: 170px;
-
-                padding: 20px 24px;
+                padding: 16px 24px;
 
                 display: block;
             }
 
 
-            /* タイトル */
             .title {
                 font-size: 32px;
-
-                white-space: nowrap;
             }
 
 
-            /* サブタイトル */
-            .subtitle {
-                margin-top: 10px;
-
-                font-size: 13px;
-            }
-
-
-            /* スマホのメニュー */
             .nav-menu {
-                margin-top: 18px;
-
-                display: flex;
+                margin-top: 14px;
 
                 gap: 14px;
 
@@ -244,7 +228,30 @@
             }
 
 
-            /* 写真 */
+            .main {
+                display: block;
+
+                margin-top: -110px;
+
+                min-height: auto;
+
+                padding-top: 150px;
+            }
+
+
+            .yellow-line {
+                height: 150px;
+            }
+
+
+            .subtitle {
+                top: 115px;
+                left: 24px;
+
+                font-size: 13px;
+            }
+
+
             .photo img {
                 width: 100%;
                 height: 350px;
@@ -253,7 +260,6 @@
             }
 
 
-            /* リリース文 */
             .message {
                 margin: 0;
 
@@ -271,50 +277,48 @@
 
 <body>
 
+
+    <!--
+        スクロールしても上端に残る部分
+    -->
+    <header class="header">
+
+        <h1 class="title">
+            みんなのまち会議
+        </h1>
+
+
+        <nav class="nav-menu">
+
+            <a href="news.html">
+                ニュース
+            </a>
+
+            <a href="about.html">
+                まち会議とは
+            </a>
+
+            <a href="organization.html">
+                団体概要
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
     <main class="main">
 
 
-        <!-- 黄色の帯 -->
+        <!-- 最初だけ表示される黄色部分 -->
         <div class="yellow-line"></div>
 
 
-        <!-- ヘッダー -->
-        <header class="header">
-
-
-            <!-- タイトル -->
-            <div class="brand">
-
-                <h1 class="title">
-                    みんなのまち会議
-                </h1>
-
-                <p class="subtitle">
-                    若者と、はちおうじの街を考える会議
-                </p>
-
-            </div>
-
-
-            <!-- メニュー -->
-            <nav class="nav-menu">
-
-                <a href="news.html">
-                    ニュース
-                </a>
-
-                <a href="about.html">
-                    まち会議とは
-                </a>
-
-                <a href="organization.html">
-                    団体概要
-                </a>
-
-            </nav>
-
-
-        </header>
+        <!-- スクロールすると消える -->
+        <p class="subtitle">
+            若者と、はちおうじの街を考える会議
+        </p>
 
 
         <!-- 写真 -->
