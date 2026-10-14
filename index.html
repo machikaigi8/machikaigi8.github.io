@@ -20,11 +20,23 @@
 
 
         /* =========================
-           上端に残るヘッダー
+           最初だけ見える上の空白
+           ========================= */
+
+        .top-space {
+            height: 30px;
+
+            background-color: #ffffff;
+        }
+
+
+        /* =========================
+           スクロールすると上端で止まる部分
            ========================= */
 
         .header {
             position: sticky;
+
             top: 0;
 
             width: 100%;
@@ -44,7 +56,7 @@
         }
 
 
-        /* タイトル */
+        /* みんなのまち会議 */
         .title {
             margin: 0;
 
@@ -98,7 +110,7 @@
 
 
         /* =========================
-           メイン部分
+           メイン
            ========================= */
 
         .main {
@@ -111,22 +123,24 @@
             min-height: 635px;
 
             /*
-            ヘッダー分を上に戻して
-            写真をヘッダーの裏まで伸ばす
+               写真をヘッダーの裏まで伸ばす
             */
             margin-top: -90px;
         }
 
 
-        /* 最初だけ見える黄色の帯 */
-        .yellow-line {
+        /* =========================
+           サブタイトル部分の黄色帯
+           ========================= */
+
+        .subtitle-line {
             position: absolute;
 
-            top: 0;
+            top: 90px;
             left: 0;
 
             width: 100%;
-            height: 128px;
+            height: 38px;
 
             background-color: rgba(255, 220, 100, 0.80);
 
@@ -140,12 +154,12 @@
         .subtitle {
             position: absolute;
 
-            top: 94px;
+            top: 99px;
             left: 34px;
 
-            z-index: 3;
-
             margin: 0;
+
+            z-index: 3;
 
             font-size: 15px;
 
@@ -200,6 +214,12 @@
 
         @media (max-width: 768px) {
 
+
+            .top-space {
+                height: 20px;
+            }
+
+
             .header {
                 height: 110px;
 
@@ -235,17 +255,19 @@
 
                 min-height: auto;
 
-                padding-top: 150px;
+                padding-top: 155px;
             }
 
 
-            .yellow-line {
-                height: 150px;
+            .subtitle-line {
+                top: 110px;
+
+                height: 45px;
             }
 
 
             .subtitle {
-                top: 115px;
+                top: 121px;
                 left: 24px;
 
                 font-size: 13px;
@@ -278,10 +300,13 @@
 <body>
 
 
-    <!--
-        スクロールしても上端に残る部分
-    -->
+    <!-- 最初だけ見える上の空白 -->
+    <div class="top-space"></div>
+
+
+    <!-- スクロール後も上に残る -->
     <header class="header">
+
 
         <h1 class="title">
             みんなのまち会議
@@ -304,6 +329,7 @@
 
         </nav>
 
+
     </header>
 
 
@@ -311,8 +337,8 @@
     <main class="main">
 
 
-        <!-- 最初だけ表示される黄色部分 -->
-        <div class="yellow-line"></div>
+        <!-- サブタイトル部分だけの黄色帯 -->
+        <div class="subtitle-line"></div>
 
 
         <!-- スクロールすると消える -->
