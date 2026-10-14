@@ -119,7 +119,6 @@
 
             box-sizing: border-box;
 
-            /* 上側は0px */
             padding: 0 34px 8px 34px;
 
             background-color:
@@ -128,10 +127,6 @@
             position: relative;
             z-index: 10;
 
-            /*
-               ヘッダーの下に入った部分を
-               JavaScriptで切り取る
-            */
             clip-path: inset(0 0 0 0);
         }
 
@@ -162,7 +157,7 @@
 
 
         /* =========================
-           リリース文
+           メッセージ
            ========================= */
 
         .message {
@@ -175,6 +170,15 @@
             padding: 45px 38px 25px 38px;
 
             font-size: 18px;
+
+            position: relative;
+            z-index: 10;
+
+            /*
+               ヘッダーに入った部分を
+               スクロールに合わせて切り取る
+            */
+            clip-path: inset(0 0 0 0);
         }
 
 
@@ -185,7 +189,7 @@
         .photo {
             position: absolute;
 
-            /* HP最上部と合わせる */
+            /* HP最上部と写真上端を揃える */
             top: 0;
             right: 0;
 
@@ -298,7 +302,7 @@
     <div class="top-space"></div>
 
 
-    <!-- 上端で止まる部分 -->
+    <!-- 上端で固定 -->
     <header class="header">
 
         <h1 class="title">
@@ -325,7 +329,7 @@
     </header>
 
 
-    <!-- 普通にスクロールして消える部分 -->
+    <!-- 上へスクロールして吸い込まれる -->
     <div class="subtitle-line">
 
         <p class="subtitle">
@@ -348,9 +352,12 @@
 
     <main class="main">
 
+
+        <!-- これもヘッダー下端へ吸い込まれる -->
         <p class="message">
             リリースまで少々お待ちください。
         </p>
+
 
     </main>
 
@@ -363,59 +370,68 @@
         const subtitleLine =
             document.querySelector(".subtitle-line");
 
+        const message =
+            document.querySelector(".message");
 
-        function updateSubtitleClip() {
+
+        /*
+           指定した要素がヘッダーの下へ
+           入り込んだ部分だけ非表示にする
+        */
+        function clipUnderHeader(element) {
 
             const headerBottom =
                 header.getBoundingClientRect().bottom;
 
-            const subtitleTop =
-                subtitleLine.getBoundingClientRect().top;
+            const elementTop =
+                element.getBoundingClientRect().top;
 
-            const subtitleHeight =
-                subtitleLine.offsetHeight;
+            const elementHeight =
+                element.offsetHeight;
 
 
-            /*
-               サブタイトル帯が
-               ヘッダーの下に何px入ったか
-            */
             const overlap =
                 Math.max(
                     0,
-                    headerBottom - subtitleTop
+                    headerBottom - elementTop
                 );
 
 
-            /*
-               入り込んだ分だけ上から切り取る
-            */
             const clipAmount =
                 Math.min(
                     overlap,
-                    subtitleHeight
+                    elementHeight
                 );
 
 
-            subtitleLine.style.clipPath =
+            element.style.clipPath =
                 `inset(${clipAmount}px 0 0 0)`;
+
+        }
+
+
+        function updateScroll() {
+
+            clipUnderHeader(subtitleLine);
+
+            clipUnderHeader(message);
 
         }
 
 
         window.addEventListener(
             "scroll",
-            updateSubtitleClip
+            updateScroll
         );
 
 
         window.addEventListener(
             "resize",
-            updateSubtitleClip
+            updateScroll
         );
 
 
-        updateSubtitleClip();
+        updateScroll();
 
     </script>
 
