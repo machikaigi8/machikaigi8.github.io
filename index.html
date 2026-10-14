@@ -20,7 +20,7 @@
 
 
         /* =========================
-           最上部の空白
+           最上部 8px
            ========================= */
 
         .top-space {
@@ -35,7 +35,7 @@
 
 
         /* =========================
-           上端で固定されるヘッダー
+           固定ヘッダー
            ========================= */
 
         .header {
@@ -46,9 +46,6 @@
 
             box-sizing: border-box;
 
-            /*
-               「みんなのまち会議」の下に12px
-            */
             padding: 18px 34px 12px 34px;
 
             display: flex;
@@ -85,9 +82,7 @@
 
         .nav-menu {
             display: flex;
-
             gap: 30px;
-
             align-items: center;
         }
 
@@ -116,7 +111,7 @@
 
 
         /* =========================
-           サブタイトル部分
+           サブタイトル帯
            ========================= */
 
         .subtitle-line {
@@ -124,15 +119,20 @@
 
             box-sizing: border-box;
 
-            /* 上側の余白は0px */
+            /* 上側は0px */
             padding: 0 34px 8px 34px;
 
             background-color:
                 rgba(255, 220, 100, 0.80);
 
             position: relative;
-
             z-index: 10;
+
+            /*
+               ヘッダーの下に入った部分を
+               JavaScriptで切り取る
+            */
+            clip-path: inset(0 0 0 0);
         }
 
 
@@ -157,10 +157,6 @@
            ========================= */
 
         .main {
-            display: grid;
-
-            grid-template-columns: 45% 55%;
-
             min-height: 635px;
         }
 
@@ -170,7 +166,9 @@
            ========================= */
 
         .message {
-            grid-column: 1;
+            width: 45%;
+
+            box-sizing: border-box;
 
             margin: 0;
 
@@ -185,11 +183,9 @@
            ========================= */
 
         .photo {
-            /*
-               写真そのものはHP最上部から開始
-            */
             position: absolute;
 
+            /* HP最上部と合わせる */
             top: 0;
             right: 0;
 
@@ -207,6 +203,7 @@
 
             display: block;
         }
+
 
 
         /* =========================
@@ -257,15 +254,11 @@
 
 
             .main {
-                display: block;
-
                 min-height: auto;
             }
 
 
-            /*
-               スマホでは写真を通常配置に戻す
-            */
+            /* スマホでは写真を通常配置 */
             .photo {
                 position: static;
 
@@ -282,6 +275,8 @@
 
 
             .message {
+                width: 100%;
+
                 margin: 0;
 
                 padding: 28px 24px;
@@ -299,11 +294,11 @@
 <body>
 
 
-    <!-- 最初だけ見える8px -->
+    <!-- 最上部8px -->
     <div class="top-space"></div>
 
 
-    <!-- スクロールすると上端で固定 -->
+    <!-- 上端で止まる部分 -->
     <header class="header">
 
         <h1 class="title">
@@ -330,7 +325,7 @@
     </header>
 
 
-    <!-- 普通にスクロールして消える -->
+    <!-- 普通にスクロールして消える部分 -->
     <div class="subtitle-line">
 
         <p class="subtitle">
@@ -340,25 +335,89 @@
     </div>
 
 
-    <main class="main">
+    <!-- 写真 -->
+    <div class="photo">
 
+        <img
+            src="main-photo.jpg"
+            alt="みんなのまち会議の様子"
+        >
+
+    </div>
+
+
+    <main class="main">
 
         <p class="message">
             リリースまで少々お待ちください。
         </p>
 
-
-        <div class="photo">
-
-            <img
-                src="main-photo.jpg"
-                alt="みんなのまち会議の様子"
-            >
-
-        </div>
-
-
     </main>
+
+
+    <script>
+
+        const header =
+            document.querySelector(".header");
+
+        const subtitleLine =
+            document.querySelector(".subtitle-line");
+
+
+        function updateSubtitleClip() {
+
+            const headerBottom =
+                header.getBoundingClientRect().bottom;
+
+            const subtitleTop =
+                subtitleLine.getBoundingClientRect().top;
+
+            const subtitleHeight =
+                subtitleLine.offsetHeight;
+
+
+            /*
+               サブタイトル帯が
+               ヘッダーの下に何px入ったか
+            */
+            const overlap =
+                Math.max(
+                    0,
+                    headerBottom - subtitleTop
+                );
+
+
+            /*
+               入り込んだ分だけ上から切り取る
+            */
+            const clipAmount =
+                Math.min(
+                    overlap,
+                    subtitleHeight
+                );
+
+
+            subtitleLine.style.clipPath =
+                `inset(${clipAmount}px 0 0 0)`;
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            updateSubtitleClip
+        );
+
+
+        window.addEventListener(
+            "resize",
+            updateSubtitleClip
+        );
+
+
+        updateSubtitleClip();
+
+    </script>
 
 
 </body>
