@@ -21,11 +21,10 @@
 
         /* =========================
            最上部のスペース
-           スクロールすると普通に消える
            ========================= */
 
         .top-space {
-            height: 35px;
+            height: 17px;
 
             background-color:
                 rgba(255, 220, 100, 0.80);
@@ -41,7 +40,7 @@
             top: 0;
 
             width: 100%;
-            height: 50px;
+            height: 78px;
 
             box-sizing: border-box;
 
@@ -52,24 +51,11 @@
             align-items: flex-end;
             justify-content: space-between;
 
-            /*
-               最初は透明。
-               後ろにある黄色帯を見せる。
-            */
             background-color: transparent;
 
             z-index: 100;
         }
 
-
-        /*
-           ヘッダーが上端に到達した後だけ
-           黄色を付ける。
-
-           半透明の帯同士が重なって
-           濃く見えないように
-           固定時は同等色の不透明色にする。
-        */
 
         .header.stuck {
             background-color: #FFE383;
@@ -144,17 +130,12 @@
 
             min-height: 635px;
 
-
-            /*
-               写真・黄色帯を
-               ヘッダーの後ろまで伸ばす
-            */
             margin-top: -78px;
         }
 
 
         /* =========================
-           最初に見える黄色帯
+           黄色帯
            ========================= */
 
         .yellow-line {
@@ -182,13 +163,11 @@
         .subtitle {
             position: absolute;
 
-            /*
-               タイトル行の下から
-               約15px空ける
-            */
-            top: 93px;
+            /* タイトルの下から12px */
+            top: 90px;
             left: 34px;
 
+            /* サブタイトル自身の上余白は0 */
             margin: 0;
 
             z-index: 3;
@@ -247,7 +226,7 @@
         @media (max-width: 768px) {
 
             .top-space {
-                height: 35px;
+                height: 17px;
             }
 
 
@@ -298,8 +277,12 @@
 
 
             .subtitle {
-                top: 125px;
+                /* ヘッダー110px + 下余白12px */
+                top: 122px;
+
                 left: 24px;
+
+                margin: 0;
 
                 font-size: 13px;
             }
@@ -331,7 +314,7 @@
 <body>
 
 
-    <!-- 最初だけ見える35px -->
+    <!-- 最初だけ見える17px -->
     <div class="top-space"></div>
 
 
@@ -368,17 +351,14 @@
     <main class="main">
 
 
-        <!-- 黄色の帯 -->
         <div class="yellow-line"></div>
 
 
-        <!-- 普通にスクロールして上へ消える -->
         <p class="subtitle">
             若者と、はちおうじの街を考える会議
         </p>
 
 
-        <!-- 写真 -->
         <div class="photo">
 
             <img
@@ -389,7 +369,6 @@
         </div>
 
 
-        <!-- リリース文 -->
         <p class="message">
             リリースまで少々お待ちください。
         </p>
@@ -408,11 +387,6 @@
 
 
         function updateHeader() {
-
-            /*
-               最上部35pxが消えたら
-               ヘッダーが固定状態になる
-            */
 
             if (
                 window.scrollY >=
