@@ -169,16 +169,35 @@
 
             padding: 45px 38px 25px 38px;
 
-            font-size: 18px;
-
             position: relative;
             z-index: 10;
 
-            /*
-               ヘッダーに入った部分を
-               スクロールに合わせて切り取る
-            */
             clip-path: inset(0 0 0 0);
+        }
+
+
+        /* メッセージの見出し */
+        .message-title {
+            margin: 0 0 24px 0;
+
+            font-size: 20px;
+            line-height: 1.8;
+
+            color: #003700;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                "Hiragino Mincho Pro",
+                serif;
+        }
+
+
+        /* リリース文 */
+        .message-copy {
+            margin: 0;
+
+            font-size: 18px;
         }
 
 
@@ -189,7 +208,6 @@
         .photo {
             position: absolute;
 
-            /* HP最上部と写真上端を揃える */
             top: 0;
             right: 0;
 
@@ -207,7 +225,6 @@
 
             display: block;
         }
-
 
 
         /* =========================
@@ -262,7 +279,6 @@
             }
 
 
-            /* スマホでは写真を通常配置 */
             .photo {
                 position: static;
 
@@ -284,7 +300,15 @@
                 margin: 0;
 
                 padding: 28px 24px;
+            }
 
+
+            .message-title {
+                font-size: 20px;
+            }
+
+
+            .message-copy {
                 font-size: 16px;
             }
 
@@ -298,11 +322,9 @@
 <body>
 
 
-    <!-- 最上部8px -->
     <div class="top-space"></div>
 
 
-    <!-- 上端で固定 -->
     <header class="header">
 
         <h1 class="title">
@@ -329,7 +351,6 @@
     </header>
 
 
-    <!-- 上へスクロールして吸い込まれる -->
     <div class="subtitle-line">
 
         <p class="subtitle">
@@ -339,7 +360,6 @@
     </div>
 
 
-    <!-- 写真 -->
     <div class="photo">
 
         <img
@@ -352,12 +372,18 @@
 
     <main class="main">
 
+        <div class="message">
 
-        <!-- これもヘッダー下端へ吸い込まれる -->
-        <p class="message">
-            リリースまで少々お待ちください。
-        </p>
+            <p class="message-title">
+                誰もが地域の未来づくりに参加できるコミュニティ、<br>
+                それが「みんなのまち会議」
+            </p>
 
+            <p class="message-copy">
+                リリースまで少々お待ちください。
+            </p>
+
+        </div>
 
     </main>
 
@@ -374,10 +400,6 @@
             document.querySelector(".message");
 
 
-        /*
-           指定した要素がヘッダーの下へ
-           入り込んだ部分だけ非表示にする
-        */
         function clipUnderHeader(element) {
 
             const headerBottom =
