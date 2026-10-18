@@ -273,15 +273,35 @@
 
             width: 55%;
 
-            /*
-               635pxから上下4.5pxずつカット
-               635 - 9 = 626px
-            */
             height: 626px;
 
             overflow: hidden;
 
             z-index: 0;
+        }
+
+
+        /* PCのみ：写真の左端40pxをフェード */
+        .photo::before {
+            content: "";
+
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            width: 40px;
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    to right,
+                    rgba(255, 255, 255, 1) 0%,
+                    rgba(255, 255, 255, 0) 100%
+                );
+
+            pointer-events: none;
+
+            z-index: 1;
         }
 
 
@@ -293,10 +313,6 @@
 
             display: block;
 
-            /*
-               上4.5pxを隠す
-               → 下側も4.5px隠れる
-            */
             margin-top: -4.5px;
         }
 
@@ -357,13 +373,15 @@
                 position: static;
 
                 width: 100%;
-
-                /*
-                   350pxから上下4.5pxずつカット
-                */
                 height: 341px;
 
                 overflow: hidden;
+            }
+
+
+            /* スマホではフェードなし */
+            .photo::before {
+                display: none;
             }
 
 
