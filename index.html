@@ -167,8 +167,6 @@
 
             margin: 0;
 
-            /* 30px → 22px
-               「誰もが〜」を8px上へ */
             padding: 22px 38px 25px 38px;
 
             position: relative;
@@ -246,9 +244,7 @@
            ========================= */
 
         .message-copy {
-            /* 35px → 23px
-               「地域コミュニティ〜」を12px上へ */
-            margin: 23px 0 0 0;
+            margin: 15px 0 0 0;
 
             font-size: 20px;
             line-height: 2;
@@ -277,7 +273,11 @@
 
             width: 55%;
 
-            height: 595px;
+            /*
+               635pxから上下4.5pxずつカット
+               635 - 9 = 626px
+            */
+            height: 626px;
 
             overflow: hidden;
 
@@ -293,7 +293,11 @@
 
             display: block;
 
-            margin-top: -20px;
+            /*
+               上4.5pxを隠す
+               → 下側も4.5px隠れる
+            */
+            margin-top: -4.5px;
         }
 
 
@@ -353,7 +357,11 @@
                 position: static;
 
                 width: 100%;
-                height: 310px;
+
+                /*
+                   350pxから上下4.5pxずつカット
+                */
+                height: 341px;
 
                 overflow: hidden;
             }
@@ -367,7 +375,7 @@
 
                 display: block;
 
-                margin-top: -20px;
+                margin-top: -4.5px;
             }
 
 
@@ -391,7 +399,7 @@
 
 
             .message-copy {
-                margin-top: 23px;
+                margin-top: 15px;
 
                 font-size: 20px;
                 line-height: 1.6;
