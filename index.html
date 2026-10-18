@@ -167,7 +167,6 @@
 
             margin: 0;
 
-            /* 「誰もが〜」の上は30px */
             padding: 30px 38px 25px 38px;
 
             position: relative;
@@ -240,11 +239,25 @@
         }
 
 
-        /* リリース文 */
+        /* =========================
+           紹介文
+           ========================= */
+
         .message-copy {
             margin: 35px 0 0 0;
 
-            font-size: 18px;
+            font-size: 20px;
+            line-height: 2;
+
+            color: #3F416D;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-weight: 500;
         }
 
 
@@ -260,10 +273,6 @@
 
             width: 55%;
 
-            /*
-               635pxから上下20pxずつカット
-               635 - 40 = 595px
-            */
             height: 595px;
 
             overflow: hidden;
@@ -273,9 +282,6 @@
 
 
         .photo img {
-            /*
-               画像自体の大きさは以前と同じ
-            */
             width: 100%;
             height: 635px;
 
@@ -283,10 +289,6 @@
 
             display: block;
 
-            /*
-               上20pxを表示枠の外へ出す
-               → 下側も20px隠れる
-            */
             margin-top: -20px;
         }
 
@@ -343,16 +345,10 @@
             }
 
 
-            /* スマホ写真 */
             .photo {
                 position: static;
 
                 width: 100%;
-
-                /*
-                   元々350pxだった写真から
-                   上下20pxずつカット
-                */
                 height: 310px;
 
                 overflow: hidden;
@@ -360,9 +356,6 @@
 
 
             .photo img {
-                /*
-                   画像そのものは350pxのまま
-                */
                 width: 100%;
                 height: 350px;
 
@@ -394,7 +387,8 @@
 
 
             .message-copy {
-                font-size: 16px;
+                font-size: 17px;
+                line-height: 1.9;
             }
 
         }
@@ -482,7 +476,7 @@
 
 
             <p class="message-copy">
-                リリースまで少々お待ちください。
+                八王子市東部地区では、地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなっています。こうした課題に対して、みんなのまち会議は、世代を超えた交流を通して、人と人とのつながりを育み、地域の課題や未来について一緒に考える場を作ることで、市民と学生が共に企画・運営することを目指しています。そして、「参加して終わり」ではなく、新しい出会いやつながりが生まれ、それが地域の力となって広がっていくことを目指しています。
             </p>
 
         </div>
