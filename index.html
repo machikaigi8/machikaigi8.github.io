@@ -167,6 +167,7 @@
 
             margin: 0;
 
+            /* 「誰もが〜」の上を30px */
             padding: 30px 38px 25px 38px;
 
             position: relative;
@@ -203,7 +204,6 @@
 
         .message-main span {
             display: block;
-
             white-space: nowrap;
         }
 
@@ -259,18 +259,28 @@
             right: 0;
 
             width: 55%;
+            height: 635px;
+
+            overflow: hidden;
 
             z-index: 0;
         }
 
 
+        /*
+           元より40px高くして、
+           上へ20pxずらすことで
+           上下20pxずつ見えなくする
+        */
         .photo img {
             width: 100%;
-            height: 635px;
+            height: 675px;
 
             object-fit: cover;
 
             display: block;
+
+            margin-top: -20px;
         }
 
 
@@ -326,18 +336,26 @@
             }
 
 
+            /* スマホ写真 */
             .photo {
                 position: static;
 
                 width: 100%;
+                height: 350px;
+
+                overflow: hidden;
             }
 
 
             .photo img {
                 width: 100%;
-                height: 350px;
+                height: 390px;
 
                 object-fit: cover;
+
+                display: block;
+
+                margin-top: -20px;
             }
 
 
@@ -346,7 +364,7 @@
 
                 margin: 0;
 
-                padding: 28px 18px;
+                padding: 30px 18px 25px 18px;
             }
 
 
@@ -441,6 +459,7 @@
                 </span>
 
             </p>
+
 
             <span class="message-name">
                 みんなのまち会議
