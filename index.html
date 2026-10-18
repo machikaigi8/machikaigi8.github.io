@@ -167,7 +167,7 @@
 
             margin: 0;
 
-            /* 「誰もが〜」の上を30px */
+            /* 「誰もが〜」の上は30px */
             padding: 30px 38px 25px 38px;
 
             position: relative;
@@ -214,7 +214,7 @@
         }
 
 
-        /* みんなのまち会議 */
+        /* メッセージ内の「みんなのまち会議」 */
         .message-name {
             display: block;
 
@@ -259,7 +259,12 @@
             right: 0;
 
             width: 55%;
-            height: 635px;
+
+            /*
+               635pxから上下20pxずつカット
+               635 - 40 = 595px
+            */
+            height: 595px;
 
             overflow: hidden;
 
@@ -267,19 +272,21 @@
         }
 
 
-        /*
-           元より40px高くして、
-           上へ20pxずらすことで
-           上下20pxずつ見えなくする
-        */
         .photo img {
+            /*
+               画像自体の大きさは以前と同じ
+            */
             width: 100%;
-            height: 675px;
+            height: 635px;
 
             object-fit: cover;
 
             display: block;
 
+            /*
+               上20pxを表示枠の外へ出す
+               → 下側も20px隠れる
+            */
             margin-top: -20px;
         }
 
@@ -341,15 +348,23 @@
                 position: static;
 
                 width: 100%;
-                height: 350px;
+
+                /*
+                   元々350pxだった写真から
+                   上下20pxずつカット
+                */
+                height: 310px;
 
                 overflow: hidden;
             }
 
 
             .photo img {
+                /*
+                   画像そのものは350pxのまま
+                */
                 width: 100%;
-                height: 390px;
+                height: 350px;
 
                 object-fit: cover;
 
