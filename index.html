@@ -281,28 +281,32 @@
         }
 
 
-        /* PCのみ：写真の左端40pxをフェード */
-        .photo::before {
-            content: "";
+       /* PCのみ：写真の左端をなめらかにフェード */
+.photo::before {
+    content: "";
 
-            position: absolute;
-            top: 0;
-            left: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 
-            width: 80px;
-            height: 100%;
+    width: 80px;
+    height: 100%;
 
-            background:
-                linear-gradient(
-                    to right,
-                    rgba(255, 255, 255, 1) 0%,
-                    rgba(255, 255, 255, 0) 100%
-                );
+    background:
+        linear-gradient(
+            to right,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.92) 15%,
+            rgba(255, 255, 255, 0.70) 35%,
+            rgba(255, 255, 255, 0.42) 55%,
+            rgba(255, 255, 255, 0.18) 75%,
+            rgba(255, 255, 255, 0) 100%
+        );
 
-            pointer-events: none;
+    pointer-events: none;
 
-            z-index: 1;
-        }
+    z-index: 1;
+}
 
 
         .photo img {
