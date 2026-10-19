@@ -1,1 +1,896 @@
+<!DOCTYPE html>
+<html lang="ja">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+
+    <title>お問い合わせ｜みんなのまち会議</title>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background-color: #FFFDF7;
+            color: #1F1F1F;
+            overflow-x: hidden;
+        }
+
+        /* =========================
+           共通：黄色帯アニメーション
+           ========================= */
+
+        @keyframes yellowSlideIn {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes headerContentFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .top-space,
+        .header,
+        .subtitle-line {
+            animation:
+                yellowSlideIn
+                0.85s
+                cubic-bezier(0.22, 1, 0.36, 1)
+                both;
+        }
+
+        .title,
+        .nav-menu,
+        .subtitle {
+            opacity: 0;
+
+            animation:
+                headerContentFadeIn
+                0.5s
+                ease-out
+                0.85s
+                forwards;
+        }
+
+        /* =========================
+           黄色帯
+           ========================= */
+
+        .top-space {
+            height: 8px;
+            background-color: rgba(255, 220, 100, 0.80);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 18px 34px 12px 34px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            background-color: rgba(255, 220, 100, 0.80);
+            z-index: 100;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 54px;
+            line-height: 1;
+
+            font-family:
+                "HGP創英ﾌﾟﾚｾﾞﾝｽEB",
+                sans-serif;
+
+            color: #001E00;
+            white-space: nowrap;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: #000000;
+            text-decoration: none;
+            font-size: 24px;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                serif;
+
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .nav-menu a:hover {
+            opacity: 0.55;
+        }
+
+        .nav-menu a[aria-current="page"] {
+            text-decoration: underline;
+            text-underline-offset: 5px;
+        }
+
+        .subtitle-line {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 34px 8px 34px;
+
+            background-color: rgba(255, 220, 100, 0.80);
+
+            position: relative;
+            z-index: 10;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #003700;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                "Hiragino Mincho Pro",
+                serif;
+        }
+
+        /* =========================
+           お問い合わせページ
+           ========================= */
+
+        .contact-main {
+            width: min(920px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 54px 0 80px 0;
+        }
+
+        .contact-heading {
+            margin: 0;
+            text-align: center;
+            font-size: 42px;
+            color: #145E20;
+
+            font-family:
+                "Yu Mincho",
+                "Hiragino Mincho ProN",
+                serif;
+        }
+
+        .contact-lead {
+            max-width: 720px;
+            margin: 18px auto 38px auto;
+            text-align: center;
+            font-size: 17px;
+            line-height: 1.8;
+            color: #4A4A4A;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+        }
+
+        .contact-form {
+            padding: 34px 40px 38px 40px;
+
+            border: 3px solid #145E20;
+            border-radius: 30px;
+
+            background-color: rgba(255, 255, 255, 0.56);
+
+            box-sizing: border-box;
+        }
+
+        .form-row {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 8px;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .required-badge,
+        .optional-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-width: 42px;
+
+            padding: 3px 8px;
+
+            border-radius: 999px;
+
+            box-sizing: border-box;
+
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .required-badge {
+            background-color: #D94A4A;
+            color: #FFFFFF;
+        }
+
+        .optional-badge {
+            background-color: #E7E7E7;
+            color: #555555;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            border: 1.5px solid #B9B9B9;
+            border-radius: 12px;
+
+            background-color: #FFFFFF;
+
+            color: #222222;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-size: 16px;
+        }
+
+        .form-input,
+        .form-select {
+            height: 48px;
+            padding: 0 14px;
+        }
+
+        .form-textarea {
+            min-height: 190px;
+
+            padding: 13px 14px;
+
+            line-height: 1.7;
+
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: 3px solid rgba(20, 94, 32, 0.14);
+            border-color: #145E20;
+        }
+
+        /* =========================
+           送信・管理者ボタン
+           ========================= */
+
+        .form-actions {
+            display: grid;
+
+            grid-template-columns:
+                1fr auto 1fr;
+
+            align-items: center;
+
+            gap: 16px;
+
+            margin-top: 34px;
+        }
+
+        .submit-button {
+            grid-column: 2;
+
+            justify-self: center;
+
+            min-width: 170px;
+
+            padding: 13px 28px;
+
+            border: 2px solid #145E20;
+
+            border-radius: 999px;
+
+            background-color: #145E20;
+
+            color: #FFFFFF;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s,
+                background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+
+            background-color: #0F4D19;
+        }
+
+        .admin-button {
+            grid-column: 3;
+
+            justify-self: end;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px 18px;
+
+            border: 1.5px solid #777777;
+
+            border-radius: 999px;
+
+            background-color: transparent;
+
+            color: #555555;
+
+            text-decoration: none;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition:
+                background-color 0.2s,
+                color 0.2s;
+        }
+
+        .admin-button:hover {
+            background-color: #555555;
+            color: #FFFFFF;
+        }
+
+        /* =========================
+           スマホ
+           ========================= */
+
+        @media (max-width: 768px) {
+
+            .header {
+                padding: 16px 24px 12px 24px;
+
+                display: block;
+            }
+
+            .title {
+                font-size: 32px;
+            }
+
+            .nav-menu {
+                margin-top: 14px;
+
+                gap: 14px;
+
+                flex-wrap: wrap;
+            }
+
+            .nav-menu a {
+                font-size: 12px;
+            }
+
+            .subtitle-line {
+                padding: 0 24px 8px 24px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+            }
+
+            .contact-main {
+                width: calc(100% - 28px);
+
+                padding: 38px 0 55px 0;
+            }
+
+            .contact-heading {
+                font-size: 32px;
+            }
+
+            .contact-lead {
+                margin-bottom: 28px;
+
+                font-size: 15px;
+
+                text-align: left;
+            }
+
+            .contact-form {
+                padding: 24px 18px 28px 18px;
+
+                border-width: 2px;
+
+                border-radius: 22px;
+            }
+
+            .form-label {
+                font-size: 16px;
+            }
+
+            .form-actions {
+                grid-template-columns:
+                    1fr auto 1fr;
+
+                gap: 8px;
+            }
+
+            .submit-button {
+                min-width: 138px;
+
+                padding: 11px 18px;
+
+                font-size: 15px;
+            }
+
+            .admin-button {
+                padding: 8px 10px;
+
+                font-size: 11px;
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .top-space,
+            .header,
+            .subtitle-line,
+            .title,
+            .nav-menu,
+            .subtitle {
+                animation: none;
+
+                opacity: 1;
+
+                transform: none;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-space"></div>
+
+    <header class="header">
+
+        <h1 class="title">
+            みんなのまち会議
+        </h1>
+
+        <nav class="nav-menu">
+
+            <a href="news.html">
+                ニュース
+            </a>
+
+            <a href="about.html">
+                まち会議とは
+            </a>
+
+            <a href="organization.html">
+                団体概要
+            </a>
+
+            <a
+                href="contact.html"
+                aria-current="page"
+            >
+                お問い合わせ
+            </a>
+
+        </nav>
+
+    </header>
+
+    <div class="subtitle-line">
+
+        <p class="subtitle">
+            若者と、はちおうじの街を考える会議
+        </p>
+
+    </div>
+
+    <main class="contact-main">
+
+        <h2 class="contact-heading">
+            お問い合わせ
+        </h2>
+
+        <p class="contact-lead">
+            みんなのまち会議へのご質問・ご相談などはこちらからお送りください。
+            必須項目をご入力のうえ、送信ボタンを押してください。
+        </p>
+
+        <form
+            class="contact-form"
+            action="https://formsubmit.co/taka.souda516@gmail.com"
+            method="POST"
+        >
+
+            <input
+                type="hidden"
+                name="_subject"
+                value="みんなのまち会議 お問い合わせ"
+            >
+
+            <input
+                type="text"
+                name="_honey"
+                style="display:none"
+                tabindex="-1"
+                autocomplete="off"
+            >
+
+            <!-- お名前 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="name"
+                >
+                    お名前
+
+                    <span class="required-badge">
+                        必須
+                    </span>
+                </label>
+
+                <input
+                    class="form-input"
+                    type="text"
+                    id="name"
+                    name="お名前"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- メールアドレス -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="email"
+                >
+                    メールアドレス
+
+                    <span class="required-badge">
+                        必須
+                    </span>
+                </label>
+
+                <input
+                    class="form-input"
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- 都道府県 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="prefecture"
+                >
+                    都道府県
+
+                    <span class="required-badge">
+                        必須
+                    </span>
+                </label>
+
+                <select
+                    class="form-select"
+                    id="prefecture"
+                    name="都道府県"
+                    required
+                >
+
+                    <option
+                        value=""
+                        selected
+                        disabled
+                    >
+                        選択してください
+                    </option>
+
+                    <option>北海道</option>
+                    <option>青森県</option>
+                    <option>岩手県</option>
+                    <option>宮城県</option>
+                    <option>秋田県</option>
+                    <option>山形県</option>
+                    <option>福島県</option>
+                    <option>茨城県</option>
+                    <option>栃木県</option>
+                    <option>群馬県</option>
+                    <option>埼玉県</option>
+                    <option>千葉県</option>
+                    <option>東京都</option>
+                    <option>神奈川県</option>
+                    <option>新潟県</option>
+                    <option>富山県</option>
+                    <option>石川県</option>
+                    <option>福井県</option>
+                    <option>山梨県</option>
+                    <option>長野県</option>
+                    <option>岐阜県</option>
+                    <option>静岡県</option>
+                    <option>愛知県</option>
+                    <option>三重県</option>
+                    <option>滋賀県</option>
+                    <option>京都府</option>
+                    <option>大阪府</option>
+                    <option>兵庫県</option>
+                    <option>奈良県</option>
+                    <option>和歌山県</option>
+                    <option>鳥取県</option>
+                    <option>島根県</option>
+                    <option>岡山県</option>
+                    <option>広島県</option>
+                    <option>山口県</option>
+                    <option>徳島県</option>
+                    <option>香川県</option>
+                    <option>愛媛県</option>
+                    <option>高知県</option>
+                    <option>福岡県</option>
+                    <option>佐賀県</option>
+                    <option>長崎県</option>
+                    <option>熊本県</option>
+                    <option>大分県</option>
+                    <option>宮崎県</option>
+                    <option>鹿児島県</option>
+                    <option>沖縄県</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- 市区町村 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="city"
+                >
+                    市区町村
+
+                    <span class="required-badge">
+                        必須
+                    </span>
+                </label>
+
+                <input
+                    class="form-input"
+                    type="text"
+                    id="city"
+                    name="市区町村"
+                    autocomplete="address-level2"
+                    required
+                >
+
+            </div>
+
+
+            <!-- 性別 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="gender"
+                >
+                    性別
+
+                    <span class="optional-badge">
+                        任意
+                    </span>
+                </label>
+
+                <select
+                    class="form-select"
+                    id="gender"
+                    name="性別"
+                >
+
+                    <option
+                        value=""
+                        selected
+                    >
+                        選択しない
+                    </option>
+
+                    <option>男性</option>
+                    <option>女性</option>
+                    <option>その他</option>
+                    <option>回答しない</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- 年代 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="age"
+                >
+                    年代
+
+                    <span class="optional-badge">
+                        任意
+                    </span>
+                </label>
+
+                <select
+                    class="form-select"
+                    id="age"
+                    name="年代"
+                >
+
+                    <option
+                        value=""
+                        selected
+                    >
+                        選択しない
+                    </option>
+
+                    <option>10代</option>
+                    <option>20代</option>
+                    <option>30代</option>
+                    <option>40代</option>
+                    <option>50代</option>
+                    <option>60代</option>
+                    <option>70代</option>
+                    <option>80代以上</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- 職業 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="occupation"
+                >
+                    職業
+
+                    <span class="optional-badge">
+                        任意
+                    </span>
+                </label>
+
+                <input
+                    class="form-input"
+                    type="text"
+                    id="occupation"
+                    name="職業"
+                    autocomplete="organization-title"
+                >
+
+            </div>
+
+
+            <!-- 内容 -->
+            <div class="form-row">
+
+                <label
+                    class="form-label"
+                    for="message"
+                >
+                    内容
+
+                    <span class="required-badge">
+                        必須
+                    </span>
+                </label>
+
+                <textarea
+                    class="form-textarea"
+                    id="message"
+                    name="内容"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- 最下部ボタン -->
+            <div class="form-actions">
+
+                <button
+                    class="submit-button"
+                    type="submit"
+                >
+                    送信する
+                </button>
+
+
+                <a
+                    class="admin-button"
+                    href="admin.html"
+                >
+                    管理者画面
+                </a>
+
+            </div>
+
+        </form>
+
+    </main>
+
+</body>
+
+</html>
