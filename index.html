@@ -3,27 +3,114 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <!-- 制作中なので検索結果に表示させない -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
 
     <title>みんなのまち会議</title>
 
     <style>
-
         html {
             scroll-behavior: smooth;
         }
 
-
         body {
             margin: 0;
             background-color: #FFFDF7;
+            overflow-x: hidden;
         }
 
+        /* =========================
+           共通：黄色帯アニメーション
+           ========================= */
+
+        @keyframes yellowSlideIn {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes headerContentFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /*
+           黄色帯は先に左からスライドイン。
+           その後、帯の中の文字をフェードイン。
+           他ページでもこの設定を共通で使用。
+        */
+        .top-space,
+        .header,
+        .subtitle-line {
+            animation:
+                yellowSlideIn
+                0.85s
+                cubic-bezier(0.22, 1, 0.36, 1)
+                both;
+        }
+
+        .title,
+        .nav-menu,
+        .subtitle {
+            opacity: 0;
+
+            animation:
+                headerContentFadeIn
+                0.5s
+                ease-out
+                0.85s
+                forwards;
+        }
+
+        /* =========================
+           フェード後の強調アニメーション
+           ========================= */
+
+        @keyframes nameEmphasis {
+            0%,
+            100% {
+                transform: scale(1);
+
+                text-shadow:
+                    2px 3px 2px rgba(211, 38, 232, 0.15);
+            }
+
+            50% {
+                transform: scale(1.07);
+
+                text-shadow:
+                    0 0 12px rgba(211, 38, 232, 0.35),
+                    2px 3px 2px rgba(211, 38, 232, 0.20);
+            }
+        }
+
+        @keyframes buttonEmphasis {
+            0%,
+            100% {
+                transform: scale(1);
+
+                box-shadow:
+                    0 2px 6px rgba(0, 0, 0, 0.08),
+                    0 0 0 0 rgba(30, 106, 42, 0);
+            }
+
+            50% {
+                transform: scale(1.06);
+
+                box-shadow:
+                    0 3px 9px rgba(0, 0, 0, 0.12),
+                    0 0 0 7px rgba(30, 106, 42, 0.14);
+            }
+        }
 
         /* =========================
            最上部 8px
@@ -31,14 +118,10 @@
 
         .top-space {
             height: 8px;
-
-            background-color:
-                rgba(255, 220, 100, 0.80);
-
+            background-color: rgba(255, 220, 100, 0.80);
             position: relative;
             z-index: 10;
         }
-
 
         /* =========================
            固定ヘッダー
@@ -47,27 +130,20 @@
         .header {
             position: sticky;
             top: 0;
-
             width: 100%;
-
             box-sizing: border-box;
-
             padding: 18px 34px 12px 34px;
 
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
 
-            background-color:
-                rgba(255, 220, 100, 0.80);
-
+            background-color: rgba(255, 220, 100, 0.80);
             z-index: 100;
         }
 
-
         .title {
             margin: 0;
-
             font-size: 54px;
             line-height: 1;
 
@@ -76,10 +152,8 @@
                 sans-serif;
 
             color: #001E00;
-
             white-space: nowrap;
         }
-
 
         /* =========================
            ナビゲーション
@@ -91,12 +165,9 @@
             align-items: center;
         }
 
-
         .nav-menu a {
             color: #000000;
-
             text-decoration: none;
-
             font-size: 24px;
 
             font-family:
@@ -105,15 +176,12 @@
                 serif;
 
             white-space: nowrap;
-
             transition: opacity 0.2s;
         }
-
 
         .nav-menu a:hover {
             opacity: 0.55;
         }
-
 
         /* =========================
            サブタイトル
@@ -121,13 +189,10 @@
 
         .subtitle-line {
             width: 100%;
-
             box-sizing: border-box;
-
             padding: 0 34px 8px 34px;
 
-            background-color:
-                rgba(255, 220, 100, 0.80);
+            background-color: rgba(255, 220, 100, 0.80);
 
             position: relative;
             z-index: 10;
@@ -135,13 +200,10 @@
             clip-path: inset(0 0 0 0);
         }
 
-
         .subtitle {
             margin: 0;
-
             font-size: 15px;
             line-height: 1.5;
-
             color: #003700;
 
             font-family:
@@ -151,7 +213,6 @@
                 serif;
         }
 
-
         /* =========================
            メイン
            ========================= */
@@ -160,18 +221,14 @@
             min-height: 0;
         }
 
-
         /* =========================
            メッセージ
            ========================= */
 
         .message {
             width: 45%;
-
             box-sizing: border-box;
-
             margin: 0;
-
             padding: 22px 38px 25px 38px;
 
             position: relative;
@@ -180,10 +237,8 @@
             clip-path: inset(0 0 0 0);
         }
 
-
         .message-main {
             margin: 0;
-
             text-align: center;
 
             font-family:
@@ -195,7 +250,6 @@
             font-size: 37px;
             font-weight: 600;
             font-style: italic;
-
             line-height: 1.5;
 
             color: #4A7FE8;
@@ -204,25 +258,19 @@
                 3px 4px 3px rgba(74, 127, 232, 0.22);
         }
 
-
         .message-main span {
             display: block;
             white-space: nowrap;
         }
 
-
         .message-bridge {
             margin-top: 2px;
         }
 
-
         .message-name {
             display: block;
-
             margin-top: 8px;
-
             text-align: center;
-
             white-space: nowrap;
 
             font-family:
@@ -233,13 +281,25 @@
 
             font-size: 48px;
             font-weight: 700;
-
             color: #D326E8;
 
             text-shadow:
                 2px 3px 2px rgba(211, 38, 232, 0.15);
-        }
 
+            transform-origin: center;
+
+            /*
+               0.85秒の黄色帯
+               ＋ 0.5秒の文字フェード
+               ＝ 1.35秒後から強調
+            */
+            animation:
+                nameEmphasis
+                0.85s
+                ease-in-out
+                1.35s
+                2;
+        }
 
         /* =========================
            紹介文
@@ -247,10 +307,8 @@
 
         .message-copy {
             margin: 15px 0 0 0;
-
             font-size: 20px;
             line-height: 1.7;
-
             color: #3F416D;
 
             font-family:
@@ -262,19 +320,13 @@
             font-weight: 500;
         }
 
-
         .more-link {
             color: inherit;
-
             text-decoration: underline;
-
             display: inline-block;
-
             margin-left: 18px;
-
             font-size: 22px;
         }
-
 
         /* =========================
            左下の日程ボタン
@@ -282,29 +334,23 @@
 
         .schedule-jump-button {
             position: fixed;
-
             left: 46px;
             bottom: 10px;
-
             z-index: 300;
 
             display: inline-flex;
-
             align-items: center;
             justify-content: center;
+            gap: 6px;
 
             margin: 0;
-
             padding: 8px 18px 9px 18px;
 
             border: 2px solid #1E6A2A;
-
             border-radius: 999px;
 
             background-color: #F8F7EE;
-
             color: #1E6A2A;
-
             text-decoration: none;
 
             font-family:
@@ -315,8 +361,9 @@
 
             font-size: 15px;
             font-weight: 700;
-
             line-height: 1;
+
+            transform-origin: center;
 
             box-shadow:
                 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -326,24 +373,25 @@
                 color 0.2s,
                 opacity 0.2s,
                 visibility 0.2s;
-        }
 
+            animation:
+                buttonEmphasis
+                0.85s
+                ease-in-out
+                1.35s
+                2;
+        }
 
         .schedule-jump-button:hover {
             background-color: #EEF6EE;
-
             color: #145E20;
         }
 
-
         .schedule-jump-button.hidden {
             opacity: 0;
-
             visibility: hidden;
-
             pointer-events: none;
         }
-
 
         /* =========================
            写真
@@ -351,28 +399,21 @@
 
         .photo {
             position: absolute;
-
             top: 0;
             right: 0;
 
             width: 55%;
-
             height: 626px;
 
             overflow: hidden;
-
             z-index: 0;
         }
-
 
         .photo img {
             width: 100%;
             height: 635px;
-
             object-fit: cover;
-
             display: block;
-
             margin-top: -4.5px;
 
             -webkit-mask-image:
@@ -392,63 +433,45 @@
                 );
         }
 
-
         /* =========================
            次回まち会議
            ========================= */
 
         .next-meeting-section {
             width: 100%;
-
             box-sizing: border-box;
-
             padding: 40px 40px 70px 40px;
         }
-
 
         .meeting-card {
             width: 100%;
             max-width: 1250px;
-
             box-sizing: border-box;
 
             margin: 0 auto;
-
             padding: 28px 32px;
 
             border: 4px solid #145E20;
-
             border-radius: 38px;
 
             display: flex;
-
             align-items: stretch;
-
             gap: 35px;
 
             scroll-margin-top: 120px;
         }
-
-
-        /* =========================
-           左側：開催情報
-           ========================= */
 
         .meeting-info {
             flex: 1;
 
             display: flex;
             flex-direction: column;
-
             justify-content: center;
         }
 
-
         .meeting-label {
             margin: 0 0 20px 0;
-
             font-size: 30px;
-
             font-weight: 700;
 
             font-family:
@@ -459,16 +482,12 @@
 
             color: #000000;
         }
-
 
         .meeting-date {
             margin: 0 0 14px 0;
-
             font-size: 80px;
             font-weight: 700;
-
             line-height: 1.15;
-
             white-space: nowrap;
 
             font-family:
@@ -480,18 +499,12 @@
             color: #000000;
         }
 
-
         .meeting-place {
             margin: 0;
-
             font-size: 44px;
-
             letter-spacing: -1.4px;
-
             white-space: nowrap;
-
             font-weight: 700;
-
             line-height: 1.4;
 
             font-family:
@@ -503,299 +516,229 @@
             color: #000000;
         }
 
-
-        /* 「予約不要〜」だけ8px空ける */
         .meeting-note {
             display: inline-block;
-
             margin-top: 8px;
         }
 
-
         /* =========================
-           右側：地図
+           地図
            ========================= */
 
         .meeting-map {
             width: 38%;
-
             min-width: 340px;
-
             margin-left: 15px;
 
             overflow: hidden;
-
             border-radius: 24px;
         }
-
 
         .meeting-map iframe {
             width: 100%;
             height: 100%;
-
             min-height: 300px;
 
             display: block;
-
             border: 0;
         }
 
-
         /* =========================
-           スマホ用
+           スマホ
            ========================= */
 
         @media (max-width: 768px) {
-
             .top-space {
                 height: 8px;
             }
 
-
             .header {
                 padding: 16px 24px 12px 24px;
-
                 display: block;
             }
-
 
             .title {
                 font-size: 32px;
             }
 
-
             .nav-menu {
                 margin-top: 14px;
-
                 gap: 14px;
-
                 flex-wrap: wrap;
             }
-
 
             .nav-menu a {
                 font-size: 12px;
             }
 
-
             .subtitle-line {
                 padding: 0 24px 8px 24px;
             }
-
 
             .subtitle {
                 font-size: 13px;
             }
 
-
             .photo {
                 position: static;
-
                 width: 100%;
                 height: 341px;
-
                 overflow: hidden;
             }
-
 
             .photo img {
                 width: 100%;
                 height: 350px;
-
                 object-fit: cover;
-
                 display: block;
-
                 margin-top: -4.5px;
 
                 -webkit-mask-image: none;
-
                 mask-image: none;
             }
 
-
             .message {
                 width: 100%;
-
                 margin: 0;
-
                 padding: 18px 18px 25px 18px;
             }
-
 
             .message-main {
                 font-size: 26px;
             }
 
-
             .message-name {
                 font-size: 34px;
             }
 
-
             .message-copy {
                 margin-top: 15px;
-
                 font-size: 20px;
-
                 line-height: 1.6;
             }
 
-
             .more-link {
                 margin-left: 12px;
-
                 font-size: 21px;
             }
 
-
             .schedule-jump-button {
                 left: 16px;
-
                 bottom: 10px;
-
-                max-width:
-                    calc(100% - 32px);
-
+                max-width: calc(100% - 32px);
                 box-sizing: border-box;
-
                 padding: 8px 14px;
-
                 font-size: 14px;
             }
 
-
             .next-meeting-section {
-                padding:
-                    30px 16px 50px 16px;
+                padding: 30px 16px 50px 16px;
             }
-
 
             .meeting-card {
                 padding: 20px;
-
                 border-width: 3px;
-
                 border-radius: 25px;
-
                 display: block;
-
                 scroll-margin-top: 150px;
             }
 
-
             .meeting-label {
                 margin-bottom: 15px;
-
                 font-size: 23px;
             }
 
-
             .meeting-date {
                 margin-bottom: 12px;
-
                 font-size: 36px;
-
                 white-space: normal;
             }
-
 
             .meeting-place {
                 font-size: 22px;
-
                 white-space: normal;
-
                 letter-spacing: 0;
             }
 
-
             .meeting-map {
                 width: 100%;
-
                 min-width: 0;
-
                 margin-top: 22px;
-
                 margin-left: 0;
-
                 border-radius: 18px;
             }
 
-
             .meeting-map iframe {
                 height: 250px;
-
                 min-height: 250px;
             }
-
         }
 
+        /* =========================
+           動きを減らす設定
+           ========================= */
+
+        @media (prefers-reduced-motion: reduce) {
+            .top-space,
+            .header,
+            .subtitle-line,
+            .title,
+            .nav-menu,
+            .subtitle,
+            .message-name,
+            .schedule-jump-button {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+        }
     </style>
-
 </head>
-
 
 <body>
 
-
     <div class="top-space"></div>
 
-
     <header class="header">
-
         <h1 class="title">
             みんなのまち会議
         </h1>
 
-
         <nav class="nav-menu">
+            <a href="news.html">
+                ニュース
+            </a>
 
-    <a href="news.html">
-        ニュース
-    </a>
+            <a href="about.html">
+                まち会議とは
+            </a>
 
-    <a href="about.html">
-        まち会議とは
-    </a>
+            <a href="organization.html">
+                団体概要
+            </a>
 
-    <a href="organization.html">
-        団体概要
-    </a>
-
-    <a href="contact.html">
-        お問い合わせ
-    </a>
-
-</nav>
-
+            <a href="contact.html">
+                お問い合わせ
+            </a>
+        </nav>
     </header>
 
-
     <div class="subtitle-line">
-
         <p class="subtitle">
             若者と、はちおうじの街を考える会議
         </p>
-
     </div>
 
-
     <div class="photo">
-
         <img
             src="main-photo.jpg"
             alt="みんなのまち会議の様子"
         >
-
     </div>
 
-
     <main class="main">
-
         <div class="message">
-
             <p class="message-main">
-
                 <span>
                     誰もが地域の未来づくりに
                 </span>
@@ -807,110 +750,85 @@
                 <span class="message-bridge">
                     それが―
                 </span>
-
             </p>
-
 
             <span class="message-name">
                 みんなのまち会議
             </span>
 
-
             <p class="message-copy">
-
                 地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなった中、みんなのまち会議は、世代を超えた交流を通して、人と人とのつながりを育み、地域の課題や未来について一緒に考える場を作ることを目指しています。
 
-                <a href="about.html"
-                   class="more-link">
+                <a
+                    href="about.html"
+                    class="more-link"
+                >
                     more→
                 </a>
-
             </p>
-
         </div>
-
     </main>
 
-
-    <!-- 左下のボタン -->
-    <a href="#next-meeting"
-       class="schedule-jump-button">
-
+    <a
+        href="#next-meeting"
+        class="schedule-jump-button"
+    >
         次回まち会議の日程はここをクリック
 
-<svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.8"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true">
-
-    <path d="M8 11V3.5a2 2 0 0 1 4 0V10" />
-    <path d="M12 10V8a2 2 0 0 1 4 0v3" />
-    <path d="M16 11v-1a2 2 0 0 1 4 0v5c0 4-2.5 7-7 7h-1.5c-2.3 0-3.8-1-5-2.8L3 14.5a2 2 0 0 1 3-2.6L8 13.5" />
-
-</svg>
-
+        <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+        >
+            <path d="M8 11V3.5a2 2 0 0 1 4 0V10" />
+            <path d="M12 10V8a2 2 0 0 1 4 0v3" />
+            <path d="M16 11v-1a2 2 0 0 1 4 0v5c0 4-2.5 7-7 7h-1.5c-2.3 0-3.8-1-5-2.8L3 14.5a2 2 0 0 1 3-2.6L8 13.5" />
+        </svg>
     </a>
 
-
     <section class="next-meeting-section">
-
-        <div class="meeting-card"
-             id="next-meeting">
-
-
+        <div
+            class="meeting-card"
+            id="next-meeting"
+        >
             <div class="meeting-info">
-
                 <p class="meeting-label">
                     次回まち会議は
                 </p>
-
 
                 <p class="meeting-date">
                     12/12(土) 13:00〜
                 </p>
 
-
                 <p class="meeting-place">
-
                     ＠長池公園自然館レクチャールーム
-
                     <br>
-
                     <span class="meeting-note">
                         予約不要　資料代300円（学生無料）
                     </span>
-
                 </p>
-
             </div>
 
-
             <div class="meeting-map">
-
                 <iframe
                     src="https://www.google.com/maps?q=%E9%95%B7%E6%B1%A0%E5%85%AC%E5%9C%92%E8%87%AA%E7%84%B6%E9%A4%A8&output=embed&z=15"
                     loading="lazy"
                     allowfullscreen=""
                     referrerpolicy="no-referrer-when-downgrade"
-                    title="長池公園自然館の地図">
+                    title="長池公園自然館の地図"
+                >
                 </iframe>
-
             </div>
-
-
         </div>
-
     </section>
 
-
     <script>
-
         const header =
             document.querySelector(".header");
 
@@ -927,13 +845,10 @@
             document.querySelector(".main");
 
         const scheduleJumpButton =
-            document.querySelector(
-                ".schedule-jump-button"
-            );
+            document.querySelector(".schedule-jump-button");
 
 
         function clipUnderHeader(element) {
-
             const headerBottom =
                 header.getBoundingClientRect().bottom;
 
@@ -943,13 +858,11 @@
             const elementHeight =
                 element.offsetHeight;
 
-
             const overlap =
                 Math.max(
                     0,
                     headerBottom - elementTop
                 );
-
 
             const clipAmount =
                 Math.min(
@@ -957,33 +870,24 @@
                     elementHeight
                 );
 
-
             element.style.clipPath =
                 `inset(${clipAmount}px 0 0 0)`;
-
         }
 
 
         function updateMainHeight() {
-
             if (window.innerWidth <= 768) {
-
                 main.style.minHeight = "0px";
-
                 return;
-
             }
-
 
             const photoBottom =
                 photo.getBoundingClientRect().bottom
                 + window.scrollY;
 
-
             const mainTop =
                 main.getBoundingClientRect().top
                 + window.scrollY;
-
 
             const neededHeight =
                 Math.max(
@@ -991,43 +895,30 @@
                     photoBottom - mainTop
                 );
 
-
             main.style.minHeight =
                 `${neededHeight}px`;
-
         }
 
 
-        /* 最上部付近だけボタン表示 */
         function updateScheduleButton() {
-
             if (window.scrollY <= 10) {
-
                 scheduleJumpButton
                     .classList
                     .remove("hidden");
-
             } else {
-
                 scheduleJumpButton
                     .classList
                     .add("hidden");
-
             }
-
         }
 
 
         function updateLayout() {
-
             clipUnderHeader(subtitleLine);
-
             clipUnderHeader(message);
 
             updateMainHeight();
-
             updateScheduleButton();
-
         }
 
 
@@ -1036,18 +927,13 @@
             updateLayout
         );
 
-
         window.addEventListener(
             "resize",
             updateLayout
         );
 
-
         updateLayout();
-
     </script>
 
-
 </body>
-
 </html>
