@@ -16,7 +16,6 @@
 
         body {
             margin: 0;
-
             background-color: #FFFDF7;
         }
 
@@ -155,6 +154,7 @@
 
         .main {
             min-height: 635px;
+            position: relative;
         }
 
 
@@ -262,6 +262,14 @@
             font-weight: 500;
         }
 
+        .more-link {
+            color: inherit;
+            text-decoration: underline;
+            display: inline-block;
+            margin-left: 18px;
+            font-size: 22px;
+        }
+
 
         /* =========================
            写真
@@ -293,7 +301,6 @@
 
             margin-top: -4.5px;
 
-
             /* 写真そのものを左端80pxだけフェード */
             -webkit-mask-image:
                 linear-gradient(
@@ -310,6 +317,88 @@
                     black 80px,
                     black 100%
                 );
+        }
+
+
+        /* =========================
+           次回開催カード（1段組）
+           ========================= */
+
+        .next-meeting-section {
+            padding: 60px 40px 90px 40px;
+        }
+
+        .meeting-card {
+            max-width: 1120px;
+            margin: 0 auto;
+
+            border: 7px solid #145E20;
+            border-radius: 56px;
+
+            box-sizing: border-box;
+            padding: 34px 42px 38px 42px;
+
+            background-color: transparent;
+        }
+
+        .meeting-label {
+            margin: 0 0 36px 0;
+
+            font-size: 64px;
+            line-height: 1.15;
+            font-weight: 400;
+
+            color: #000000;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+        }
+
+        .meeting-date {
+            margin: 0 0 26px 0;
+
+            font-size: 110px;
+            line-height: 1.05;
+            font-weight: 700;
+
+            color: #000000;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+        }
+
+        .meeting-place {
+            margin: 0;
+
+            font-size: 82px;
+            line-height: 1.18;
+            font-weight: 700;
+
+            color: #000000;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+        }
+
+        .meeting-room {
+            display: block;
+            margin-top: 6px;
+            margin-left: 470px;
+
+            font-size: 78px;
+            line-height: 1.18;
+            font-weight: 700;
+
+            color: #000000;
         }
 
 
@@ -385,7 +474,6 @@
 
                 margin-top: -4.5px;
 
-
                 /* スマホではフェードなし */
                 -webkit-mask-image: none;
                 mask-image: none;
@@ -416,6 +504,45 @@
 
                 font-size: 20px;
                 line-height: 1.6;
+            }
+
+            .more-link {
+                margin-left: 12px;
+                font-size: 21px;
+            }
+
+
+            .next-meeting-section {
+                padding: 36px 16px 60px 16px;
+            }
+
+            .meeting-card {
+                border-width: 5px;
+                border-radius: 32px;
+                padding: 22px 20px 24px 20px;
+            }
+
+            .meeting-label {
+                margin: 0 0 24px 0;
+                font-size: 32px;
+            }
+
+            .meeting-date {
+                margin: 0 0 18px 0;
+                font-size: 56px;
+                line-height: 1.1;
+            }
+
+            .meeting-place {
+                font-size: 31px;
+                line-height: 1.4;
+            }
+
+            .meeting-room {
+                margin-top: 2px;
+                margin-left: 0;
+                font-size: 31px;
+                line-height: 1.4;
             }
 
         }
@@ -466,17 +593,17 @@
     </div>
 
 
-    <div class="photo">
-
-        <img
-            src="main-photo.jpg"
-            alt="みんなのまち会議の様子"
-        >
-
-    </div>
-
-
     <main class="main">
+
+        <div class="photo">
+
+            <img
+                src="main-photo.jpg"
+                alt="みんなのまち会議の様子"
+            >
+
+        </div>
+
 
         <div class="message">
 
@@ -503,22 +630,40 @@
 
 
             <p class="message-copy">
-    地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなった中、みんなのまち会議は、世代を超えた交流を通して、人と人とのつながりを育み、地域の課題や未来について一緒に考える場を作ることを目指しています。
-    <a href="about.html"
-       style="
-           color: inherit;
-           text-decoration: underline;
-           display: inline-block;
-           margin-left: 100px;
-           font-size: 22px;
-       ">
-        More→
-    </a>
+                地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなった中、みんなのまち会議は、世代を超えた交流を通して、人と人とのつながりを育み、地域の課題や未来について一緒に考える場を作ることを目指しています。
+                <a href="about.html" class="more-link">
+                    more→
+                </a>
             </p>
 
         </div>
 
     </main>
+
+
+    <!-- 写真の下からは1段組 -->
+    <section class="next-meeting-section">
+
+        <div class="meeting-card">
+
+            <p class="meeting-label">
+                次回まち会議は
+            </p>
+
+            <p class="meeting-date">
+                12/12(土)13:00〜
+            </p>
+
+            <p class="meeting-place">
+                場所：長池公園自然館
+                <span class="meeting-room">
+                    レクチャールーム
+                </span>
+            </p>
+
+        </div>
+
+    </section>
 
 
     <script>
