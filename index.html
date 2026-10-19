@@ -277,14 +277,14 @@
 
 
         /* =========================
-           次回日程へ移動するボタン
+           左下の日程ボタン
            ========================= */
 
         .schedule-jump-button {
             position: fixed;
 
-            left: 50px;
-            bottom: 0;
+            left: 46px;
+            bottom: 10px;
 
             z-index: 300;
 
@@ -295,16 +295,15 @@
 
             margin: 0;
 
-            padding: 7px 16px;
+            padding: 8px 18px 9px 18px;
 
-            border: 2px solid #145E20;
-            border-bottom: 0;
+            border: 2px solid #1E6A2A;
 
-            border-radius: 22px 22px 0 0;
+            border-radius: 999px;
 
-            background-color: #FFFDF7;
+            background-color: #F8F7EE;
 
-            color: #145E20;
+            color: #1E6A2A;
 
             text-decoration: none;
 
@@ -314,8 +313,13 @@
                 "Meiryo",
                 sans-serif;
 
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
+
+            line-height: 1;
+
+            box-shadow:
+                0 2px 6px rgba(0, 0, 0, 0.08);
 
             transition:
                 background-color 0.2s,
@@ -326,14 +330,17 @@
 
 
         .schedule-jump-button:hover {
-            background-color: #145E20;
-            color: #FFFFFF;
+            background-color: #EEF6EE;
+
+            color: #145E20;
         }
 
 
         .schedule-jump-button.hidden {
             opacity: 0;
+
             visibility: hidden;
+
             pointer-events: none;
         }
 
@@ -416,19 +423,23 @@
             display: flex;
 
             align-items: stretch;
+
             gap: 35px;
 
             scroll-margin-top: 120px;
         }
 
 
-        /* 左側：日程 */
+        /* =========================
+           左側：開催情報
+           ========================= */
 
         .meeting-info {
             flex: 1;
 
             display: flex;
             flex-direction: column;
+
             justify-content: center;
         }
 
@@ -474,7 +485,9 @@
             margin: 0;
 
             font-size: 44px;
+
             letter-spacing: -1.4px;
+
             white-space: nowrap;
 
             font-weight: 700;
@@ -491,6 +504,7 @@
         }
 
 
+        /* 「予約不要〜」だけ8px空ける */
         .meeting-note {
             display: inline-block;
 
@@ -504,6 +518,7 @@
 
         .meeting-map {
             width: 38%;
+
             min-width: 340px;
 
             margin-left: 15px;
@@ -517,6 +532,7 @@
         .meeting-map iframe {
             width: 100%;
             height: 100%;
+
             min-height: 300px;
 
             display: block;
@@ -593,6 +609,7 @@
                 margin-top: -4.5px;
 
                 -webkit-mask-image: none;
+
                 mask-image: none;
             }
 
@@ -620,6 +637,7 @@
                 margin-top: 15px;
 
                 font-size: 20px;
+
                 line-height: 1.6;
             }
 
@@ -631,22 +649,25 @@
             }
 
 
-            /* スマホでは画面幅に合わせる */
             .schedule-jump-button {
                 left: 16px;
 
-                max-width: calc(100% - 32px);
+                bottom: 10px;
+
+                max-width:
+                    calc(100% - 32px);
 
                 box-sizing: border-box;
 
-                padding: 7px 13px;
+                padding: 8px 14px;
 
-                font-size: 15px;
+                font-size: 14px;
             }
 
 
             .next-meeting-section {
-                padding: 30px 16px 50px 16px;
+                padding:
+                    30px 16px 50px 16px;
             }
 
 
@@ -667,7 +688,6 @@
                 margin-bottom: 15px;
 
                 font-size: 23px;
-                font-weight: 700;
             }
 
 
@@ -684,15 +704,18 @@
                 font-size: 22px;
 
                 white-space: normal;
+
                 letter-spacing: 0;
             }
 
 
             .meeting-map {
                 width: 100%;
+
                 min-width: 0;
 
                 margin-top: 22px;
+
                 margin-left: 0;
 
                 border-radius: 18px;
@@ -701,6 +724,7 @@
 
             .meeting-map iframe {
                 height: 250px;
+
                 min-height: 250px;
             }
 
@@ -804,13 +828,12 @@
     </main>
 
 
-    <!--
-        画面最上部にいる間だけ表示。
-        .message の外に置くのがポイント。
-    -->
+    <!-- 左下のボタン -->
     <a href="#next-meeting"
        class="schedule-jump-button">
+
         次回まち会議の日程はここをクリック ↓
+
     </a>
 
 
@@ -883,7 +906,9 @@
             document.querySelector(".main");
 
         const scheduleJumpButton =
-            document.querySelector(".schedule-jump-button");
+            document.querySelector(
+                ".schedule-jump-button"
+            );
 
 
         function clipUnderHeader(element) {
@@ -952,16 +977,20 @@
         }
 
 
-        /* 最上部付近にいる間だけ表示 */
+        /* 最上部付近だけボタン表示 */
         function updateScheduleButton() {
 
             if (window.scrollY <= 10) {
 
-                scheduleJumpButton.classList.remove("hidden");
+                scheduleJumpButton
+                    .classList
+                    .remove("hidden");
 
             } else {
 
-                scheduleJumpButton.classList.add("hidden");
+                scheduleJumpButton
+                    .classList
+                    .add("hidden");
 
             }
 
