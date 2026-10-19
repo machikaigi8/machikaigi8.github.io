@@ -152,7 +152,7 @@
            ========================= */
 
         .main {
-            min-height: 626px;
+            min-height: 0;
         }
 
 
@@ -452,11 +452,6 @@
             }
 
 
-            .main {
-                min-height: auto;
-            }
-
-
             .photo {
                 position: static;
 
@@ -683,6 +678,12 @@
         const message =
             document.querySelector(".message");
 
+        const photo =
+            document.querySelector(".photo");
+
+        const main =
+            document.querySelector(".main");
+
 
         function clipUnderHeader(element) {
 
@@ -716,28 +717,61 @@
         }
 
 
-        function updateScroll() {
+        /* 写真の下端とmainの下端を合わせる */
+        function updateMainHeight() {
+
+            if (window.innerWidth <= 768) {
+                main.style.minHeight = "0px";
+                return;
+            }
+
+
+            const photoBottom =
+                photo.getBoundingClientRect().bottom
+                + window.scrollY;
+
+            const mainTop =
+                main.getBoundingClientRect().top
+                + window.scrollY;
+
+
+            const neededHeight =
+                Math.max(
+                    0,
+                    photoBottom - mainTop
+                );
+
+
+            main.style.minHeight =
+                `${neededHeight}px`;
+
+        }
+
+
+        function updateLayout() {
 
             clipUnderHeader(subtitleLine);
 
             clipUnderHeader(message);
+
+            updateMainHeight();
 
         }
 
 
         window.addEventListener(
             "scroll",
-            updateScroll
+            updateLayout
         );
 
 
         window.addEventListener(
             "resize",
-            updateScroll
+            updateLayout
         );
 
 
-        updateScroll();
+        updateLayout();
 
     </script>
 
