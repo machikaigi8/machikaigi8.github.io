@@ -14,6 +14,11 @@
 
     <style>
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+
         body {
             margin: 0;
             background-color: #FFFDF7;
@@ -272,6 +277,60 @@
 
 
         /* =========================
+           次回日程へ移動するボタン
+           ========================= */
+
+        .schedule-jump-button {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 16px;
+
+            padding: 10px 18px;
+
+            border: 2px solid #145E20;
+
+            border-radius: 999px;
+
+            background-color: #FFFDF7;
+
+            color: #145E20;
+
+            text-decoration: none;
+
+            font-family:
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                "Meiryo",
+                sans-serif;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            transition:
+                background-color 0.2s,
+                color 0.2s,
+                opacity 0.2s;
+        }
+
+
+        .schedule-jump-button:hover {
+            background-color: #145E20;
+            color: #FFFFFF;
+        }
+
+
+        /* スクロールしたら非表示 */
+        .schedule-jump-button.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+
+        /* =========================
            写真
            ========================= */
 
@@ -335,25 +394,29 @@
         .meeting-card {
             width: 100%;
             max-width: 1250px;
-            
+
             box-sizing: border-box;
-            
+
             margin: 0 auto;
-            
+
             padding: 28px 32px;
-            
+
             border: 4px solid #145E20;
-            
+
             border-radius: 38px;
-            
+
             display: flex;
-            
+
             align-items: stretch;
             gap: 35px;
+
+            /* 固定ヘッダーの下に隠れないようにする */
+            scroll-margin-top: 120px;
         }
 
 
         /* 左側：日程 */
+
         .meeting-info {
             flex: 1;
 
@@ -368,7 +431,6 @@
 
             font-size: 30px;
 
-            /* 太文字 */
             font-weight: 700;
 
             font-family:
@@ -407,6 +469,7 @@
             font-size: 44px;
             letter-spacing: -1.4px;
             white-space: nowrap;
+
             font-weight: 700;
 
             line-height: 1.4;
@@ -421,8 +484,10 @@
         }
 
 
-        .meeting-room {
-            display: block;
+        .meeting-note {
+            display: inline-block;
+
+            margin-top: 8px;
         }
 
 
@@ -434,7 +499,6 @@
             width: 38%;
             min-width: 340px;
 
-            /* 少し右へ */
             margin-left: 15px;
 
             overflow: hidden;
@@ -560,6 +624,15 @@
             }
 
 
+            .schedule-jump-button {
+                margin-top: 14px;
+
+                padding: 9px 15px;
+
+                font-size: 16px;
+            }
+
+
             .next-meeting-section {
                 padding: 30px 16px 50px 16px;
             }
@@ -573,6 +646,8 @@
                 border-radius: 25px;
 
                 display: block;
+
+                scroll-margin-top: 150px;
             }
 
 
@@ -595,6 +670,9 @@
 
             .meeting-place {
                 font-size: 22px;
+
+                white-space: normal;
+                letter-spacing: 0;
             }
 
 
@@ -699,13 +777,22 @@
 
 
             <p class="message-copy">
+
                 地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなった中、みんなのまち会議は、世代を超えた交流を通して、人と人とのつながりを育み、地域の課題や未来について一緒に考える場を作ることを目指しています。
 
                 <a href="about.html"
                    class="more-link">
                     more→
                 </a>
+
             </p>
+
+
+            <!-- ページ最上部にいるときだけ表示 -->
+            <a href="#next-meeting"
+               class="schedule-jump-button">
+                次回まち会議の日程はここをクリック ↓
+            </a>
 
         </div>
 
@@ -714,10 +801,10 @@
 
     <section class="next-meeting-section">
 
-        <div class="meeting-card">
+        <div class="meeting-card"
+             id="next-meeting">
 
 
-            <!-- 左：開催情報 -->
             <div class="meeting-info">
 
                 <p class="meeting-label">
@@ -731,16 +818,20 @@
 
 
                 <p class="meeting-place">
-                    ＠長池公園自然館レクチャールーム<br>
-                    <span style="display: inline-block; margin-top: 8px;">
-                        予約不要　料金：300円（学生無料）
+
+                    ＠長池公園自然館レクチャールーム
+
+                    <br>
+
+                    <span class="meeting-note">
+                        予約不要　資料代300円（学生無料）
                     </span>
+
                 </p>
 
             </div>
 
 
-            <!-- 右：Googleマップ -->
             <div class="meeting-map">
 
                 <iframe
@@ -775,6 +866,9 @@
 
         const main =
             document.querySelector(".main");
+
+        const scheduleJumpButton =
+            document.querySelector(".schedule-jump-button");
 
 
         function clipUnderHeader(element) {
@@ -812,14 +906,18 @@
         function updateMainHeight() {
 
             if (window.innerWidth <= 768) {
+
                 main.style.minHeight = "0px";
+
                 return;
+
             }
 
 
             const photoBottom =
                 photo.getBoundingClientRect().bottom
                 + window.scrollY;
+
 
             const mainTop =
                 main.getBoundingClientRect().top
@@ -839,6 +937,22 @@
         }
 
 
+        /* 最上部にいるときだけボタンを表示 */
+        function updateScheduleButton() {
+
+            if (window.scrollY <= 10) {
+
+                scheduleJumpButton.classList.remove("hidden");
+
+            } else {
+
+                scheduleJumpButton.classList.add("hidden");
+
+            }
+
+        }
+
+
         function updateLayout() {
 
             clipUnderHeader(subtitleLine);
@@ -846,6 +960,8 @@
             clipUnderHeader(message);
 
             updateMainHeight();
+
+            updateScheduleButton();
 
         }
 
