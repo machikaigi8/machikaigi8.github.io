@@ -366,7 +366,9 @@
             margin: 0 0 20px 0;
 
             font-size: 30px;
-            font-weight: 400;
+
+            /* 太文字 */
+            font-weight: 700;
 
             font-family:
                 "Yu Gothic",
@@ -428,6 +430,9 @@
         .meeting-map {
             width: 38%;
             min-width: 340px;
+
+            /* 少し右へ */
+            margin-left: 15px;
 
             overflow: hidden;
 
@@ -572,6 +577,7 @@
                 margin-bottom: 15px;
 
                 font-size: 23px;
+                font-weight: 700;
             }
 
 
@@ -594,6 +600,7 @@
                 min-width: 0;
 
                 margin-top: 22px;
+                margin-left: 0;
 
                 border-radius: 18px;
             }
@@ -722,7 +729,7 @@
 
                 <p class="meeting-place">
                     ＠長池公園自然館レクチャールーム
-                
+
                 </p>
 
             </div>
@@ -797,7 +804,6 @@
         }
 
 
-        /* 写真の下端とmainの下端を合わせる */
         function updateMainHeight() {
 
             if (window.innerWidth <= 768) {
