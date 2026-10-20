@@ -18,3627 +18,718 @@
 }
 
 * { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
-}
-
-button,
-input,
-textarea {
-  font: inherit;
-}
-
-.admin-page {
-  width: min(900px, calc(100% - 40px));
-  margin: 0 auto;
-  padding: 28px 0 80px;
-}
-
-.logged-in-topbar {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 28px;
-}
-
-.logged-in-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.page-title {
-  margin: 0 0 12px;
-  text-align: center;
-  font-size: 42px;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: 0.04em;
-}
-
-.page-subtitle {
-  margin: 0 0 38px;
-  text-align: center;
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--muted);
-}
-
-.panel,
-.admin-card {
-  background: var(--panel);
-  border: 2px solid var(--navy);
-}
-
-.panel {
-  padding: 32px;
-}
-
-.admin-card {
-  padding: 28px;
-}
-
-.section-title {
-  margin: 0 0 24px;
-  text-align: center;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.login-panel,
-.password-panel,
-.settings-form {
-  width: min(560px, 100%);
-  margin: 0 auto;
-}
-
-.form-row {
-  margin-bottom: 22px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy);
-}
-
-.form-input,
-.form-textarea {
-  width: 100%;
-  padding: 0 14px;
-  border: 2px solid var(--navy);
-  border-radius: 0;
-  background: #FFFFFF;
-  color: var(--text);
-  font-size: 16px;
-}
-
-.form-input {
-  height: 50px;
-}
-
-.form-textarea {
-  min-height: 160px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  resize: vertical;
-}
-
-.form-input:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: #122842;
-  background: #FBFCFE;
-}
-
-.main-button,
-.sub-button,
-.menu-button,
-.back-button,
-.copy-button,
-.developer-item-button {
-  border-radius: 0;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.main-button {
-  display: block;
-  min-width: 180px;
-  margin: 30px auto 0;
-  padding: 12px 26px;
-  border: 2px solid var(--navy);
-  background: var(--navy);
-  color: #FFFFFF;
-}
-
-.main-button:hover {
-  background: var(--navy-dark);
-}
-
-.main-button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.sub-button,
-.back-button,
-.copy-button {
-  padding: 10px 18px;
-  border: 2px solid var(--navy);
-  background: transparent;
-  color: var(--navy);
-}
-
-.sub-button:hover,
-.back-button:hover,
-.copy-button:hover {
-  background: rgba(32, 58, 95, 0.08);
-}
-
-.auth-status,
-.auth-error,
-.password-status,
-.password-error,
-.view-status,
-.account-status,
-.account-error {
-  display: none;
-  width: min(620px, 100%);
-  margin: 24px auto 0;
-  padding: 14px 16px;
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.auth-status,
-.password-status,
-.view-status,
-.account-status {
-  border: 2px solid #496487;
-  background: #EDF3FA;
-  color: var(--navy);
-}
-
-.auth-error,
-.password-error,
-.account-error {
-  border: 2px solid #A05050;
-  background: #FFF3F3;
-  color: var(--danger);
-}
-
-.enrollment-area {
-  display: none;
-  width: min(560px, 100%);
-  margin: 28px auto 0;
-  text-align: center;
-}
-
-#guardian-qr {
-  width: 220px;
-  min-height: 220px;
-  margin: 0 auto 18px;
-  padding: 10px;
-  background: #FFFFFF;
-  border: 2px solid var(--navy);
-}
-
-#guardian-qr img,
-#guardian-qr canvas {
-  margin: 0 auto;
-}
-
-/* 上部タイトルから画面内容まで70px */
-.admin-content {
-  display: none;
-  margin-top: 70px;
-}
-
-.admin-view {
-  display: none;
-}
-
-.admin-view.active {
-  display: block;
-}
-
-.admin-menu {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px;
-}
-
-.menu-button,
-.developer-item-button {
-  width: 100%;
-  min-height: 84px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 20px 24px;
-  border: 2px solid var(--navy);
-  background: var(--panel);
-  color: var(--navy);
-  text-align: left;
-  font-size: 17px;
-}
-
-.menu-button:hover,
-.developer-item-button:hover {
-  background: #E8EEF6;
-}
-
-.menu-arrow {
-  font-size: 22px;
-  line-height: 1;
-}
-
-.view-header {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 22px;
-}
-
-.password-note,
-.placeholder-note,
-.form-note {
-  margin: 0 0 18px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--muted);
-}
-
-.inquiry-empty {
-  padding: 34px 20px;
-  border: 2px dashed #9AA9BC;
-  background: #FFFFFF;
-  text-align: center;
-  color: #5C6D83;
-  line-height: 1.8;
-}
-
-.developer-list {
-  display: grid;
-  gap: 16px;
-}
-
-.account-result {
-  display: none;
-  width: min(620px, 100%);
-  margin: 22px auto 0;
-  padding: 18px;
-  border: 2px solid var(--navy);
-  background: #FFFFFF;
-}
-
-.account-result-row {
-  margin: 12px 0;
-}
-
-.account-result-label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-}
-
-.account-result-value {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.account-code {
-  flex: 1 1 260px;
-  padding: 10px 12px;
-  border: 1px solid #9AA9BC;
-  background: #F4F6F9;
-  font-family: Consolas, monospace;
-  word-break: break-all;
-}
-
-.hidden {
-  display: none !important;
-}
+body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; }
+button, input, textarea { font: inherit; }
+.admin-page { width: min(900px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 80px; }
+.logged-in-topbar { display: none; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 28px; }
+.logged-in-identity { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.logged-in-name { font-size: 16px; font-weight: 700; color: var(--navy); }
+.read-only-badge { display: inline-block; padding: 4px 9px; border: 1px solid var(--navy); background: #FFFFFF; color: var(--navy); font-size: 12px; font-weight: 700; }
+.page-title { margin: 0 0 12px; text-align: center; font-size: 42px; font-weight: 700; color: var(--navy); letter-spacing: 0.04em; }
+.page-subtitle { margin: 0 0 38px; text-align: center; font-size: 15px; line-height: 1.8; color: var(--muted); }
+.panel, .admin-card { background: var(--panel); border: 2px solid var(--navy); }
+.panel { padding: 32px; }
+.admin-card { padding: 28px; }
+.section-title { margin: 0 0 24px; text-align: center; font-size: 28px; font-weight: 700; color: var(--navy); }
+.login-panel, .password-panel, .settings-form { width: min(560px, 100%); margin: 0 auto; }
+.form-row { margin-bottom: 22px; }
+.form-label { display: block; margin-bottom: 8px; font-size: 16px; font-weight: 700; color: var(--navy); }
+.form-input, .form-textarea { width: 100%; padding: 0 14px; border: 2px solid var(--navy); border-radius: 0; background: #FFFFFF; color: var(--text); font-size: 16px; }
+.form-input { height: 50px; }
+.form-textarea { min-height: 160px; padding-top: 12px; padding-bottom: 12px; resize: vertical; }
+.form-input:focus, .form-textarea:focus { outline: none; border-color: #122842; background: #FBFCFE; }
+.main-button, .sub-button, .menu-button, .back-button, .copy-button, .developer-item-button { border-radius: 0; font-weight: 700; cursor: pointer; }
+.main-button { display: block; min-width: 180px; margin: 30px auto 0; padding: 12px 26px; border: 2px solid var(--navy); background: var(--navy); color: #FFFFFF; }
+.main-button:hover { background: var(--navy-dark); }
+.main-button:disabled { opacity: 0.6; cursor: wait; }
+.sub-button, .back-button, .copy-button { padding: 10px 18px; border: 2px solid var(--navy); background: transparent; color: var(--navy); }
+.sub-button:hover, .back-button:hover, .copy-button:hover { background: rgba(32, 58, 95, 0.08); }
+.auth-status, .auth-error, .password-status, .password-error, .view-status, .account-status, .account-error { display: none; width: min(620px, 100%); margin: 24px auto 0; padding: 14px 16px; font-size: 14px; line-height: 1.7; }
+.auth-status, .password-status, .view-status, .account-status { border: 2px solid #496487; background: #EDF3FA; color: var(--navy); }
+.auth-error, .password-error, .account-error { border: 2px solid #A05050; background: #FFF3F3; color: var(--danger); }
+.enrollment-area { display: none; width: min(560px, 100%); margin: 28px auto 0; text-align: center; }
+#guardian-qr { width: 220px; min-height: 220px; margin: 0 auto 18px; padding: 10px; background: #FFFFFF; border: 2px solid var(--navy); }
+#guardian-qr img, #guardian-qr canvas { margin: 0 auto; }
+.admin-content { display: none; margin-top: 70px; }
+.admin-view { display: none; }
+.admin-view.active { display: block; }
+.admin-menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.menu-button, .developer-item-button { width: 100%; min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px 24px; border: 2px solid var(--navy); background: var(--panel); color: var(--navy); text-align: left; font-size: 17px; }
+.menu-button:hover, .developer-item-button:hover { background: #E8EEF6; }
+.menu-arrow { font-size: 22px; line-height: 1; }
+.view-header { display: flex; justify-content: flex-start; margin-bottom: 22px; }
+.password-note, .placeholder-note, .form-note { margin: 0 0 18px; font-size: 13px; line-height: 1.7; color: var(--muted); }
+.inquiry-empty { padding: 34px 20px; border: 2px dashed #9AA9BC; background: #FFFFFF; text-align: center; color: #5C6D83; line-height: 1.8; }
+.developer-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.account-result { width: min(620px, 100%); margin: 22px auto 0; padding: 18px; border: 2px solid var(--navy); background: #FFFFFF; }
+.account-result { display: none; }
+.account-result-row { margin: 12px 0; }
+.account-result-label { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 700; color: var(--muted); }
+.account-result-value { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.account-code { flex: 1 1 260px; padding: 10px 12px; border: 1px solid #9AA9BC; background: #F4F6F9; font-family: Consolas, monospace; word-break: break-all; }
+.hidden { display: none !important; }
 
 @media (max-width: 768px) {
-
-  .admin-page {
-    width: calc(100% - 24px);
-    padding: 20px 0 50px;
-  }
-
-  .page-title {
-    font-size: 32px;
-  }
-
-  .panel,
-  .admin-card {
-    padding: 22px 18px 26px;
-  }
-
-  .admin-menu {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-button,
-  .developer-item-button {
-    min-height: 72px;
-    padding: 17px 16px;
-    font-size: 16px;
-  }
-
+  .admin-page { width: calc(100% - 24px); padding: 20px 0 50px; }
+  .page-title { font-size: 32px; }
+  .panel, .admin-card { padding: 22px 18px 26px; }
+  .admin-menu, .developer-list { grid-template-columns: 1fr; }
+  .menu-button, .developer-item-button { min-height: 72px; padding: 17px 16px; font-size: 16px; }
 }
 </style>
 </head>
 
 <body>
-
 <main class="admin-page">
-
-  <div
-    id="logged-in-topbar"
-    class="logged-in-topbar"
-  >
-    <div
-      id="user-name"
-      class="logged-in-name"
-    ></div>
-
-    <button
-      id="logout-button"
-      class="sub-button"
-      type="button"
-    >
-      ログアウト
-    </button>
+  <div id="logged-in-topbar" class="logged-in-topbar">
+    <div class="logged-in-identity">
+      <div id="user-name" class="logged-in-name"></div>
+      <span id="read-only-badge" class="read-only-badge hidden">閲覧専用</span>
+    </div>
+    <button id="logout-button" class="sub-button" type="button">ログアウト</button>
   </div>
 
+  <h1 id="page-title" class="page-title">管理者画面</h1>
+  <p id="page-subtitle" class="page-subtitle">みんなのまち会議 管理者専用ページ</p>
 
-  <h1
-    id="page-title"
-    class="page-title"
-  >
-    管理者画面
-  </h1>
-
-
-  <p
-    id="page-subtitle"
-    class="page-subtitle"
-  >
-    みんなのまち会議 管理者専用ページ
-  </p>
-
-
-  <!-- =========================
-       ログイン
-       ========================= -->
-
-  <section
-    id="login-section"
-    class="panel"
-  >
-
-    <h2 class="section-title">
-      ログイン
-    </h2>
-
-
-    <form
-      id="login-form"
-      class="login-panel"
-    >
-
+  <section id="login-section" class="panel">
+    <h2 class="section-title">ログイン</h2>
+    <form id="login-form" class="login-panel">
       <div class="form-row">
-
-        <label
-          class="form-label"
-          for="admin-id"
-        >
-          ID
-        </label>
-
-        <input
-          class="form-input"
-          type="text"
-          id="admin-id"
-          autocomplete="username"
-          required
-        >
-
+        <label class="form-label" for="admin-id">ID</label>
+        <input class="form-input" type="text" id="admin-id" autocomplete="username" required>
       </div>
-
-
       <div class="form-row">
-
-        <label
-          class="form-label"
-          for="admin-password"
-        >
-          パスワード
-        </label>
-
-        <input
-          class="form-input"
-          type="password"
-          id="admin-password"
-          autocomplete="current-password"
-          required
-        >
-
+        <label class="form-label" for="admin-password">パスワード</label>
+        <input class="form-input" type="password" id="admin-password" autocomplete="current-password" required>
       </div>
-
-
-      <button
-        id="login-button"
-        class="main-button"
-        type="submit"
-      >
-        ログイン
-      </button>
-
+      <button id="login-button" class="main-button" type="submit">ログイン</button>
     </form>
-
-
-    <div
-      id="auth-status"
-      class="auth-status"
-    ></div>
-
-    <div
-      id="auth-error"
-      class="auth-error"
-    ></div>
-
-
-    <div
-      id="enrollment-area"
-      class="enrollment-area"
-    >
-
-      <h3>
-        Guardianの初回登録
-      </h3>
-
-      <p>
-        スマホのAuth0 Guardianアプリで、
-        下のQRコードを読み取ってください。
-      </p>
-
+    <div id="auth-status" class="auth-status"></div>
+    <div id="auth-error" class="auth-error"></div>
+    <div id="enrollment-area" class="enrollment-area">
+      <h3>Guardianの初回登録</h3>
+      <p>スマホのAuth0 Guardianアプリで、下のQRコードを読み取ってください。</p>
       <div id="guardian-qr"></div>
-
     </div>
-
   </section>
 
-
-  <!-- =========================
-       ログイン後
-       ========================= -->
-
-  <section
-    id="admin-content"
-    class="admin-content"
-  >
-
-
-    <!-- 管理者トップ -->
-
-    <section
-      id="view-home"
-      class="admin-view active"
-    >
-
+  <section id="admin-content" class="admin-content">
+    <section id="view-home" class="admin-view active">
       <div class="admin-menu">
-
-        <button
-          class="menu-button"
-          type="button"
-          data-view="meeting"
-        >
-          <span>
-            次回まち会議日時設定
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          class="menu-button"
-          type="button"
-          data-view="news"
-        >
-          <span>
-            ニュース追加
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          class="menu-button"
-          type="button"
-          data-view="password"
-        >
-          <span>
-            パスワード変更
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          class="menu-button"
-          type="button"
-          data-view="inquiries"
-        >
-          <span>
-            お問い合わせ一覧
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          class="menu-button"
-          type="button"
-          data-view="developer-request"
-        >
-          <span>
-            デベロッパーへの要望
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          id="hp-update-home-button"
-          class="menu-button hidden"
-          type="button"
-          data-view="hp-update"
-        >
-          <span>
-            HP更新
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
-
-        <button
-          id="developer-menu-button"
-          class="menu-button hidden"
-          type="button"
-          data-view="developer"
-        >
-          <span>
-            デベロッパーメニュー
-          </span>
-
-          <span class="menu-arrow">
-            ›
-          </span>
-        </button>
-
+        <button class="menu-button" type="button" data-view="meeting"><span>次回まち会議日時設定</span><span class="menu-arrow">›</span></button>
+        <button class="menu-button" type="button" data-view="news"><span>ニュース追加</span><span class="menu-arrow">›</span></button>
+        <button id="password-menu-button" class="menu-button" type="button" data-view="password"><span>パスワード変更</span><span class="menu-arrow">›</span></button>
+        <button class="menu-button" type="button" data-view="inquiries"><span>お問い合わせ一覧</span><span class="menu-arrow">›</span></button>
+        <button id="developer-request-menu-button" class="menu-button" type="button" data-view="developer-request"><span>デベロッパーへの要望</span><span class="menu-arrow">›</span></button>
+        <button id="hp-update-home-button" class="menu-button hidden" type="button" data-view="hp-update"><span>HP更新</span><span class="menu-arrow">›</span></button>
+        <button id="developer-menu-button" class="menu-button hidden" type="button" data-view="developer"><span>デベロッパーメニュー</span><span class="menu-arrow">›</span></button>
       </div>
-
     </section>
 
-
-    <!-- 次回まち会議日時設定 -->
-
-    <section
-      id="view-meeting"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-meeting" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <form
-          id="meeting-form"
-          class="settings-form"
-        >
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="meeting-date"
-            >
-              開催日
-            </label>
-
-            <input
-              class="form-input"
-              id="meeting-date"
-              type="date"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="meeting-start"
-            >
-              開始時間
-            </label>
-
-            <input
-              class="form-input"
-              id="meeting-start"
-              type="time"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="meeting-end"
-            >
-              終了時間
-            </label>
-
-            <input
-              class="form-input"
-              id="meeting-end"
-              type="time"
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="meeting-place"
-            >
-              会場
-            </label>
-
-            <input
-              class="form-input"
-              id="meeting-place"
-              type="text"
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="meeting-note"
-            >
-              備考
-            </label>
-
-            <textarea
-              class="form-textarea"
-              id="meeting-note"
-            ></textarea>
-
-          </div>
-
-
-          <button
-            class="main-button"
-            type="submit"
-          >
-            保存
-          </button>
-
+        <form id="meeting-form" class="settings-form">
+          <div class="form-row"><label class="form-label" for="meeting-date">開催日</label><input class="form-input" id="meeting-date" type="date" required></div>
+          <div class="form-row"><label class="form-label" for="meeting-start">開始時間</label><input class="form-input" id="meeting-start" type="time" required></div>
+          <div class="form-row"><label class="form-label" for="meeting-end">終了時間</label><input class="form-input" id="meeting-end" type="time"></div>
+          <div class="form-row"><label class="form-label" for="meeting-place">会場</label><input class="form-input" id="meeting-place" type="text"></div>
+          <div class="form-row"><label class="form-label" for="meeting-note">備考</label><textarea class="form-textarea" id="meeting-note"></textarea></div>
+          <button id="meeting-save-button" class="main-button" type="submit">保存</button>
         </form>
-
-
-        <div
-          id="meeting-status"
-          class="view-status"
-        ></div>
-
+        <div id="meeting-status" class="view-status"></div>
       </div>
-
     </section>
 
-
-    <!-- ニュース追加 -->
-
-    <section
-      id="view-news"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-news" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <form
-          id="news-form"
-          class="settings-form"
-        >
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="news-title"
-            >
-              タイトル
-            </label>
-
-            <input
-              class="form-input"
-              id="news-title"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="news-date"
-            >
-              公開日
-            </label>
-
-            <input
-              class="form-input"
-              id="news-date"
-              type="date"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="news-body"
-            >
-              本文
-            </label>
-
-            <textarea
-              class="form-textarea"
-              id="news-body"
-              required
-            ></textarea>
-
-          </div>
-
-
-          <button
-            class="main-button"
-            type="submit"
-          >
-            追加
-          </button>
-
+        <form id="news-form" class="settings-form">
+          <div class="form-row"><label class="form-label" for="news-title">タイトル</label><input class="form-input" id="news-title" type="text" required></div>
+          <div class="form-row"><label class="form-label" for="news-date">公開日</label><input class="form-input" id="news-date" type="date" required></div>
+          <div class="form-row"><label class="form-label" for="news-body">本文</label><textarea class="form-textarea" id="news-body" required></textarea></div>
+          <button id="news-add-button" class="main-button" type="submit">追加</button>
         </form>
-
-
-        <div
-          id="news-status"
-          class="view-status"
-        ></div>
-
+        <div id="news-status" class="view-status"></div>
       </div>
-
     </section>
 
-
-    <!-- パスワード変更 -->
-
-    <section
-      id="view-password"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-password" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <p class="password-note">
-          8文字以上で、半角英字と半角数字を
-          それぞれ1文字以上含めてください。
-          記号を使用しても構いません。
-          変更後は自動的にログアウトします。
-        </p>
-
-
-        <form
-          id="password-form"
-          class="password-panel"
-        >
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="new-password"
-            >
-              新しいパスワード
-            </label>
-
-            <input
-              class="form-input"
-              type="password"
-              id="new-password"
-              autocomplete="new-password"
-              minlength="8"
-              maxlength="128"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="new-password-confirm"
-            >
-              新しいパスワード（確認）
-            </label>
-
-            <input
-              class="form-input"
-              type="password"
-              id="new-password-confirm"
-              autocomplete="new-password"
-              minlength="8"
-              maxlength="128"
-              required
-            >
-
-          </div>
-
-
-          <button
-            id="password-button"
-            class="main-button"
-            type="submit"
-          >
-            パスワードを変更
-          </button>
-
+        <p class="password-note">8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。記号を使用しても構いません。変更後は自動的にログアウトします。</p>
+        <form id="password-form" class="password-panel">
+          <div class="form-row"><label class="form-label" for="new-password">新しいパスワード</label><input class="form-input" type="password" id="new-password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+          <div class="form-row"><label class="form-label" for="new-password-confirm">新しいパスワード（確認）</label><input class="form-input" type="password" id="new-password-confirm" autocomplete="new-password" minlength="8" maxlength="128" required></div>
+          <button id="password-button" class="main-button" type="submit">パスワードを変更</button>
         </form>
-
-
-        <div
-          id="password-status"
-          class="password-status"
-        ></div>
-
-
-        <div
-          id="password-error"
-          class="password-error"
-        ></div>
-
+        <div id="password-status" class="password-status"></div>
+        <div id="password-error" class="password-error"></div>
       </div>
-
     </section>
 
-
-    <!-- お問い合わせ一覧 -->
-
-    <section
-      id="view-inquiries"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-inquiries" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <p class="placeholder-note">
-          現在のお問い合わせフォームは
-          メール送信方式のため、
-          一覧表示には保存先の接続が必要です。
-        </p>
-
-
-        <div class="inquiry-empty">
-          お問い合わせデータの保存機能を接続すると、
-          ここに一覧が表示されます。
-        </div>
-
+        <p class="placeholder-note">現在のお問い合わせフォームはメール送信方式のため、一覧表示には保存先の接続が必要です。</p>
+        <div class="inquiry-empty">お問い合わせデータの保存機能を接続すると、ここに一覧が表示されます。</div>
       </div>
-
     </section>
 
-
-    <!-- デベロッパーへの要望 -->
-
-    <section
-      id="view-developer-request"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-developer-request" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <form
-          id="developer-request-form"
-          class="settings-form"
-        >
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="developer-request-title"
-            >
-              件名
-            </label>
-
-            <input
-              class="form-input"
-              id="developer-request-title"
-              type="text"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="developer-request-body"
-            >
-              要望内容
-            </label>
-
-            <textarea
-              class="form-textarea"
-              id="developer-request-body"
-              required
-            ></textarea>
-
-          </div>
-
-
-          <button
-            class="main-button"
-            type="submit"
-          >
-            送信
-          </button>
-
+        <form id="developer-request-form" class="settings-form">
+          <div class="form-row"><label class="form-label" for="developer-request-title">件名</label><input class="form-input" id="developer-request-title" type="text" required></div>
+          <div class="form-row"><label class="form-label" for="developer-request-body">要望内容</label><textarea class="form-textarea" id="developer-request-body" required></textarea></div>
+          <button class="main-button" type="submit">送信</button>
         </form>
-
-
-        <div
-          id="developer-request-status"
-          class="view-status"
-        ></div>
-
+        <div id="developer-request-status" class="view-status"></div>
       </div>
-
     </section>
 
-
-    <!-- デベロッパーメニュー -->
-
-    <section
-      id="view-developer"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-developer" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
         <div class="developer-list">
-
-          <button
-            class="developer-item-button"
-            type="button"
-            data-view="create-admin"
-          >
-            <span>
-              アカウント作成
-            </span>
-
-            <span class="menu-arrow">
-              ›
-            </span>
-          </button>
-
-
-          <button
-            class="developer-item-button"
-            type="button"
-            data-view="hp-update"
-          >
-            <span>
-              HP更新
-            </span>
-
-            <span class="menu-arrow">
-              ›
-            </span>
-          </button>
-
+          <button class="developer-item-button" type="button" data-view="create-admin"><span>アカウント作成</span><span class="menu-arrow">›</span></button>
+          <button class="developer-item-button" type="button" data-view="hp-update"><span>HP更新</span><span class="menu-arrow">›</span></button>
         </div>
-
       </div>
-
     </section>
 
-
-    <!-- HP更新 -->
-
-    <section
-      id="view-hp-update"
-      class="admin-view"
-    >
-
-      <div class="view-header">
-
-        <button
-          class="back-button"
-          type="button"
-          data-back-home
-        >
-          ← 管理者トップへ戻る
-        </button>
-
-      </div>
-
-
+    <section id="view-hp-update" class="admin-view">
+      <div class="view-header"><button class="back-button" type="button" data-back-home>← 管理者トップへ戻る</button></div>
       <div class="admin-card">
-
-        <p class="placeholder-note">
-          HP更新機能の画面です。
-          実際の公開内容を変更する処理は、
-          次に接続します。
-        </p>
-
-
-        <div class="inquiry-empty">
-          ここにHP更新用の操作項目を追加できます。
-        </div>
-
+        <p class="placeholder-note">HP更新機能の画面です。実際の公開内容を変更する処理は、次に接続します。</p>
+        <div class="inquiry-empty">ここにHP更新用の操作項目を追加できます。</div>
       </div>
-
     </section>
 
-
-    <!-- アカウント作成 -->
-
-    <section
-      id="view-create-admin"
-      class="admin-view"
-    >
-
+    <section id="view-create-admin" class="admin-view">
       <div class="admin-card">
-
-        <form
-          id="create-admin-form"
-          class="settings-form"
-        >
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="create-admin-name"
-            >
-              氏名
-            </label>
-
-            <input
-              class="form-input"
-              id="create-admin-name"
-              type="text"
-              placeholder="例：左右田 崇幌"
-              maxlength="100"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="create-admin-last"
-            >
-              姓のローマ字
-            </label>
-
-            <input
-              class="form-input"
-              id="create-admin-last"
-              type="text"
-              placeholder="例：Souda"
-              autocomplete="off"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="create-admin-first"
-            >
-              名のローマ字
-            </label>
-
-            <input
-              class="form-input"
-              id="create-admin-first"
-              type="text"
-              placeholder="例：Takaaki"
-              autocomplete="off"
-              required
-            >
-
-          </div>
-
-
-          <div class="form-row">
-
-            <label
-              class="form-label"
-              for="create-admin-year"
-            >
-              生年
-            </label>
-
-            <input
-              class="form-input"
-              id="create-admin-year"
-              type="number"
-              min="1900"
-              max="2100"
-              step="1"
-              placeholder="例：2005"
-              required
-            >
-
-          </div>
-
-
-          <button
-            id="create-admin-button"
-            class="main-button"
-            type="submit"
-          >
-            アカウントを作成
-          </button>
-
+        <form id="create-admin-form" class="settings-form">
+          <div class="form-row"><label class="form-label" for="create-admin-name">氏名</label><input class="form-input" id="create-admin-name" type="text" placeholder="例：左右田 崇幌" maxlength="100" required></div>
+          <div class="form-row"><label class="form-label" for="create-admin-last">姓のローマ字</label><input class="form-input" id="create-admin-last" type="text" placeholder="例：Souda" autocomplete="off" required></div>
+          <div class="form-row"><label class="form-label" for="create-admin-first">名のローマ字</label><input class="form-input" id="create-admin-first" type="text" placeholder="例：Takaaki" autocomplete="off" required></div>
+          <div class="form-row"><label class="form-label" for="create-admin-year">生年</label><input class="form-input" id="create-admin-year" type="number" min="1900" max="2100" step="1" placeholder="例：2005" required></div>
+          <button id="create-admin-button" class="main-button" type="submit">アカウントを作成</button>
         </form>
-
-
-        <div
-          id="account-status"
-          class="account-status"
-        ></div>
-
-
-        <div
-          id="account-error"
-          class="account-error"
-        ></div>
-
-
-        <div
-          id="account-result"
-          class="account-result"
-        >
-
-          <strong id="account-result-title">
-            アカウントを作成しました。
-          </strong>
-
-
-          <div class="account-result-row">
-
-            <span class="account-result-label">
-              氏名
-            </span>
-
-            <div id="created-full-name"></div>
-
-          </div>
-
-
-          <div class="account-result-row">
-
-            <span class="account-result-label">
-              ID
-            </span>
-
-            <div class="account-result-value">
-
-              <div
-                id="created-username"
-                class="account-code"
-              ></div>
-
-              <button
-                id="copy-created-username"
-                class="copy-button"
-                type="button"
-              >
-                IDをコピー
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <div class="account-result-row">
-
-            <span class="account-result-label">
-              初期パスワード
-            </span>
-
-            <div class="account-result-value">
-
-              <div
-                id="created-password"
-                class="account-code"
-              ></div>
-
-              <button
-                id="copy-created-password"
-                class="copy-button"
-                type="button"
-              >
-                PWをコピー
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <p class="form-note">
-            初期パスワードはこの画面で本人に安全に共有し、
-            初回ログイン後に変更してください。
-          </p>
-
+        <div id="account-status" class="account-status"></div>
+        <div id="account-error" class="account-error"></div>
+        <div id="account-result" class="account-result">
+          <strong id="account-result-title">アカウントを作成しました。</strong>
+          <div class="account-result-row"><span class="account-result-label">氏名</span><div id="created-full-name"></div></div>
+          <div class="account-result-row"><span class="account-result-label">ID</span><div class="account-result-value"><div id="created-username" class="account-code"></div><button id="copy-created-username" class="copy-button" type="button">IDをコピー</button></div></div>
+          <div class="account-result-row"><span class="account-result-label">初期パスワード</span><div class="account-result-value"><div id="created-password" class="account-code"></div><button id="copy-created-password" class="copy-button" type="button">PWをコピー</button></div></div>
+          <p class="form-note">初期パスワードはこの画面で本人に安全に共有し、初回ログイン後に変更してください。</p>
         </div>
-
       </div>
-
-
-      <div
-        class="view-header"
-        style="margin-top: 22px; margin-bottom: 0;"
-      >
-
-        <button
-          class="back-button"
-          type="button"
-          data-view="developer"
-        >
-          ← デベロッパーメニューへ戻る
-        </button>
-
-      </div>
-
+      <div class="view-header" style="margin-top: 22px; margin-bottom: 0;"><button class="back-button" type="button" data-view="developer">← デベロッパーメニューへ戻る</button></div>
     </section>
-
   </section>
-
 </main>
 
-
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
-></script>
-
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-
-const AUTH0_DOMAIN =
-  "dev-8e2z74rs10plmrtk.us.auth0.com";
-
-const AUTH0_CLIENT_ID =
-  "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
-
-const AUTH0_REALM =
-  "Username-Password-Authentication";
-
-const API_AUDIENCE =
-  "https://machikaigi8-admin-api";
-
-const WORKER_URL =
-  "https://machikaigi-admin-api.taka-souda516.workers.dev";
-
-const AUTH0_BASE =
-  `https://${AUTH0_DOMAIN}`;
-
-const ACCOUNT_CREATOR_SUB =
-  "auth0|6ad6c756c6029c5d0a72e78a";
-
-
-const loggedInTopbar =
-  document.getElementById(
-    "logged-in-topbar"
-  );
-
-const pageTitle =
-  document.getElementById(
-    "page-title"
-  );
-
-const pageSubtitle =
-  document.getElementById(
-    "page-subtitle"
-  );
-
-const loginSection =
-  document.getElementById(
-    "login-section"
-  );
-
-const loginForm =
-  document.getElementById(
-    "login-form"
-  );
-
-const adminId =
-  document.getElementById(
-    "admin-id"
-  );
-
-const adminPassword =
-  document.getElementById(
-    "admin-password"
-  );
-
-const loginButton =
-  document.getElementById(
-    "login-button"
-  );
-
-const authStatus =
-  document.getElementById(
-    "auth-status"
-  );
-
-const authError =
-  document.getElementById(
-    "auth-error"
-  );
-
-const enrollmentArea =
-  document.getElementById(
-    "enrollment-area"
-  );
-
-const guardianQr =
-  document.getElementById(
-    "guardian-qr"
-  );
-
-const adminContent =
-  document.getElementById(
-    "admin-content"
-  );
-
-const userName =
-  document.getElementById(
-    "user-name"
-  );
-
-const logoutButton =
-  document.getElementById(
-    "logout-button"
-  );
-
-const passwordForm =
-  document.getElementById(
-    "password-form"
-  );
-
-const newPassword =
-  document.getElementById(
-    "new-password"
-  );
-
-const newPasswordConfirm =
-  document.getElementById(
-    "new-password-confirm"
-  );
-
-const passwordButton =
-  document.getElementById(
-    "password-button"
-  );
-
-const passwordStatus =
-  document.getElementById(
-    "password-status"
-  );
-
-const passwordError =
-  document.getElementById(
-    "password-error"
-  );
-
-const meetingForm =
-  document.getElementById(
-    "meeting-form"
-  );
-
-const meetingStatus =
-  document.getElementById(
-    "meeting-status"
-  );
-
-const newsForm =
-  document.getElementById(
-    "news-form"
-  );
-
-const newsStatus =
-  document.getElementById(
-    "news-status"
-  );
-
-const developerRequestForm =
-  document.getElementById(
-    "developer-request-form"
-  );
-
-const developerRequestStatus =
-  document.getElementById(
-    "developer-request-status"
-  );
-
-const developerMenuButton =
-  document.getElementById(
-    "developer-menu-button"
-  );
-
-const hpUpdateHomeButton =
-  document.getElementById(
-    "hp-update-home-button"
-  );
-
-const createAdminForm =
-  document.getElementById(
-    "create-admin-form"
-  );
-
-const createAdminName =
-  document.getElementById(
-    "create-admin-name"
-  );
-
-const createAdminLast =
-  document.getElementById(
-    "create-admin-last"
-  );
-
-const createAdminFirst =
-  document.getElementById(
-    "create-admin-first"
-  );
-
-const createAdminYear =
-  document.getElementById(
-    "create-admin-year"
-  );
-
-const createAdminButton =
-  document.getElementById(
-    "create-admin-button"
-  );
-
-const accountStatus =
-  document.getElementById(
-    "account-status"
-  );
-
-const accountError =
-  document.getElementById(
-    "account-error"
-  );
-
-const accountResult =
-  document.getElementById(
-    "account-result"
-  );
-
-const accountResultTitle =
-  document.getElementById(
-    "account-result-title"
-  );
-
-const createdFullName =
-  document.getElementById(
-    "created-full-name"
-  );
-
-const createdUsername =
-  document.getElementById(
-    "created-username"
-  );
-
-const createdPassword =
-  document.getElementById(
-    "created-password"
-  );
-
-const copyCreatedUsername =
-  document.getElementById(
-    "copy-created-username"
-  );
-
-const copyCreatedPassword =
-  document.getElementById(
-    "copy-created-password"
-  );
-
-const adminViews =
-  document.querySelectorAll(
-    ".admin-view"
-  );
-
-const navigationButtons =
-  document.querySelectorAll(
-    "[data-view]"
-  );
-
-const homeButtons =
-  document.querySelectorAll(
-    "[data-back-home]"
-  );
-
-
-let pollingStopped =
-  false;
-
-
-/* =========================
-   表示メッセージ
-   ========================= */
-
-function showAuthStatus(
-  message
-) {
-
-  authError.style.display =
-    "none";
-
-  authStatus.textContent =
-    message;
-
-  authStatus.style.display =
-    "block";
-
+const AUTH0_DOMAIN = "dev-8e2z74rs10plmrtk.us.auth0.com";
+const AUTH0_CLIENT_ID = "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
+const AUTH0_REALM = "Username-Password-Authentication";
+const API_AUDIENCE = "https://machikaigi8-admin-api";
+const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
+const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
+const ACCOUNT_CREATOR_SUB = "auth0|6ad6c756c6029c5d0a72e78a";
+const DUMMY_ACCOUNT_SUB = "auth0|6ad712865703ba3cd5630025";
+
+const loggedInTopbar = document.getElementById("logged-in-topbar");
+const pageTitle = document.getElementById("page-title");
+const pageSubtitle = document.getElementById("page-subtitle");
+const loginSection = document.getElementById("login-section");
+const loginForm = document.getElementById("login-form");
+const adminId = document.getElementById("admin-id");
+const adminPassword = document.getElementById("admin-password");
+const loginButton = document.getElementById("login-button");
+const authStatus = document.getElementById("auth-status");
+const authError = document.getElementById("auth-error");
+const enrollmentArea = document.getElementById("enrollment-area");
+const guardianQr = document.getElementById("guardian-qr");
+const adminContent = document.getElementById("admin-content");
+const userName = document.getElementById("user-name");
+const readOnlyBadge = document.getElementById("read-only-badge");
+const logoutButton = document.getElementById("logout-button");
+const passwordForm = document.getElementById("password-form");
+const newPassword = document.getElementById("new-password");
+const newPasswordConfirm = document.getElementById("new-password-confirm");
+const passwordButton = document.getElementById("password-button");
+const passwordStatus = document.getElementById("password-status");
+const passwordError = document.getElementById("password-error");
+const meetingForm = document.getElementById("meeting-form");
+const meetingStatus = document.getElementById("meeting-status");
+const newsForm = document.getElementById("news-form");
+const newsStatus = document.getElementById("news-status");
+const developerRequestForm = document.getElementById("developer-request-form");
+const developerRequestStatus = document.getElementById("developer-request-status");
+const developerMenuButton = document.getElementById("developer-menu-button");
+const hpUpdateHomeButton = document.getElementById("hp-update-home-button");
+const passwordMenuButton = document.getElementById("password-menu-button");
+const developerRequestMenuButton = document.getElementById("developer-request-menu-button");
+const meetingSaveButton = document.getElementById("meeting-save-button");
+const newsAddButton = document.getElementById("news-add-button");
+const createAdminForm = document.getElementById("create-admin-form");
+const createAdminName = document.getElementById("create-admin-name");
+const createAdminLast = document.getElementById("create-admin-last");
+const createAdminFirst = document.getElementById("create-admin-first");
+const createAdminYear = document.getElementById("create-admin-year");
+const createAdminButton = document.getElementById("create-admin-button");
+const accountStatus = document.getElementById("account-status");
+const accountError = document.getElementById("account-error");
+const accountResult = document.getElementById("account-result");
+const accountResultTitle = document.getElementById("account-result-title");
+const createdFullName = document.getElementById("created-full-name");
+const createdUsername = document.getElementById("created-username");
+const createdPassword = document.getElementById("created-password");
+const copyCreatedUsername = document.getElementById("copy-created-username");
+const copyCreatedPassword = document.getElementById("copy-created-password");
+const adminViews = document.querySelectorAll(".admin-view");
+const navigationButtons = document.querySelectorAll("[data-view]");
+const homeButtons = document.querySelectorAll("[data-back-home]");
+
+let pollingStopped = false;
+
+function showAuthStatus(message) { authError.style.display = "none"; authStatus.textContent = message; authStatus.style.display = "block"; }
+function showAuthError(message) { authStatus.style.display = "none"; authError.textContent = message; authError.style.display = "block"; }
+function clearAuthMessages() { authStatus.style.display = "none"; authError.style.display = "none"; }
+function showPasswordStatus(message) { passwordError.style.display = "none"; passwordStatus.textContent = message; passwordStatus.style.display = "block"; }
+function showPasswordError(message) { passwordStatus.style.display = "none"; passwordError.textContent = message; passwordError.style.display = "block"; }
+function clearPasswordMessages() { passwordStatus.style.display = "none"; passwordError.style.display = "none"; }
+function showViewStatus(element, message) { element.textContent = message; element.style.display = "block"; }
+function clearAccountMessages() { accountStatus.style.display = "none"; accountError.style.display = "none"; }
+function showAccountStatus(message) { accountError.style.display = "none"; accountStatus.textContent = message; accountStatus.style.display = "block"; }
+function showAccountError(message) { accountStatus.style.display = "none"; accountError.textContent = message; accountError.style.display = "block"; }
+
+async function readJson(response) {
+  const text = await response.text();
+  if (!text) return {};
+  try { return JSON.parse(text); }
+  catch { return { error_description: text }; }
 }
 
-
-function showAuthError(
-  message
-) {
-
-  authStatus.style.display =
-    "none";
-
-  authError.textContent =
-    message;
-
-  authError.style.display =
-    "block";
-
-}
-
-
-function clearAuthMessages() {
-
-  authStatus.style.display =
-    "none";
-
-  authError.style.display =
-    "none";
-
-}
-
-
-function showPasswordStatus(
-  message
-) {
-
-  passwordError.style.display =
-    "none";
-
-  passwordStatus.textContent =
-    message;
-
-  passwordStatus.style.display =
-    "block";
-
-}
-
-
-function showPasswordError(
-  message
-) {
-
-  passwordStatus.style.display =
-    "none";
-
-  passwordError.textContent =
-    message;
-
-  passwordError.style.display =
-    "block";
-
-}
-
-
-function clearPasswordMessages() {
-
-  passwordStatus.style.display =
-    "none";
-
-  passwordError.style.display =
-    "none";
-
-}
-
-
-function showViewStatus(
-  element,
-  message
-) {
-
-  element.textContent =
-    message;
-
-  element.style.display =
-    "block";
-
-}
-
-
-function clearAccountMessages() {
-
-  accountStatus.style.display =
-    "none";
-
-  accountError.style.display =
-    "none";
-
-}
-
-
-function showAccountStatus(
-  message
-) {
-
-  accountError.style.display =
-    "none";
-
-  accountStatus.textContent =
-    message;
-
-  accountStatus.style.display =
-    "block";
-
-}
-
-
-function showAccountError(
-  message
-) {
-
-  accountStatus.style.display =
-    "none";
-
-  accountError.textContent =
-    message;
-
-  accountError.style.display =
-    "block";
-
-}
-
-
-/* =========================
-   JSON
-   ========================= */
-
-async function readJson(
-  response
-) {
-
-  const text =
-    await response.text();
-
-
-  if (!text) {
-
-    return {};
-
-  }
-
-
+function decodeJwtPayload(token) {
   try {
-
-    return JSON.parse(
-      text
-    );
-
-  } catch {
-
-    return {
-      error_description:
-        text
-    };
-
-  }
-
-}
-
-
-/* =========================
-   JWT表示用Decode
-   ========================= */
-
-function decodeJwtPayload(
-  token
-) {
-
-  try {
-
-    const parts =
-      token.split(".");
-
-
-    if (
-      parts.length < 2
-    ) {
-
-      return {};
-
-    }
-
-
-    const normalized =
-      parts[1]
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
-
-
-    const padded =
-      normalized +
-      "=".repeat(
-        (4 - normalized.length % 4) % 4
-      );
-
-
-    const bytes =
-      Uint8Array.from(
-
-        atob(padded),
-
-        character =>
-          character.charCodeAt(0)
-
-      );
-
-
-    return JSON.parse(
-      new TextDecoder().decode(bytes)
-    );
-
-
+    const parts = token.split(".");
+    if (parts.length < 2) return {};
+    const normalized = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+    const bytes = Uint8Array.from(atob(padded), character => character.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
   } catch (error) {
-
-    console.error(
-      "JWT decode error:",
-      error
-    );
-
-
+    console.error("JWT decode error:", error);
     return {};
-
   }
-
 }
 
-
-/* =========================
-   Auth0ログイン
-   ========================= */
-
-async function requestPasswordLogin(
-  username,
-  password
-) {
-
-  const body =
-    new URLSearchParams({
-
-      grant_type:
-        "http://auth0.com/oauth/grant-type/password-realm",
-
-      client_id:
-        AUTH0_CLIENT_ID,
-
-      username,
-
-      password,
-
-      realm:
-        AUTH0_REALM,
-
-      audience:
-        API_AUDIENCE,
-
-      scope:
-        "openid profile"
-
-    });
-
-
-  const response =
-    await fetch(
-
-      `${AUTH0_BASE}/oauth/token`,
-
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/x-www-form-urlencoded"
-
-        },
-
-        body
-
-      }
-
-    );
-
-
-  return {
-
-    response,
-
-    data:
-      await readJson(
-        response
-      )
-
-  };
-
+async function requestPasswordLogin(username, password) {
+  const body = new URLSearchParams({
+    grant_type: "http://auth0.com/oauth/grant-type/password-realm",
+    client_id: AUTH0_CLIENT_ID,
+    username,
+    password,
+    realm: AUTH0_REALM,
+    audience: API_AUDIENCE,
+    scope: "openid profile"
+  });
+  const response = await fetch(`${AUTH0_BASE}/oauth/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  return { response, data: await readJson(response) };
 }
 
-
-/* =========================
-   MFA
-   ========================= */
-
-async function getAuthenticators(
-  mfaToken
-) {
-
-  const response =
-    await fetch(
-
-      `${AUTH0_BASE}/mfa/authenticators`,
-
-      {
-
-        headers: {
-
-          "Authorization":
-            `Bearer ${mfaToken}`
-
-        }
-
-      }
-
-    );
-
-
-  const data =
-    await readJson(
-      response
-    );
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-
-      data.error_description ||
-      "二段階認証情報を取得できませんでした。"
-
-    );
-
-  }
-
-
+async function getAuthenticators(mfaToken) {
+  const response = await fetch(`${AUTH0_BASE}/mfa/authenticators`, {
+    headers: { "Authorization": `Bearer ${mfaToken}` }
+  });
+  const data = await readJson(response);
+  if (!response.ok) throw new Error(data.error_description || "二段階認証情報を取得できませんでした。");
   return data;
-
 }
 
-
-async function requestPushChallenge(
-  mfaToken,
-  authenticatorId
-) {
-
-  const response =
-    await fetch(
-
-      `${AUTH0_BASE}/mfa/challenge`,
-
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json"
-
-        },
-
-        body:
-          JSON.stringify({
-
-            client_id:
-              AUTH0_CLIENT_ID,
-
-            mfa_token:
-              mfaToken,
-
-            challenge_type:
-              "oob",
-
-            authenticator_id:
-              authenticatorId
-
-          })
-
-      }
-
-    );
-
-
-  const data =
-    await readJson(
-      response
-    );
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-
-      data.error_description ||
-      "Guardianへの通知を送信できませんでした。"
-
-    );
-
-  }
-
-
+async function requestPushChallenge(mfaToken, authenticatorId) {
+  const response = await fetch(`${AUTH0_BASE}/mfa/challenge`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_id: AUTH0_CLIENT_ID,
+      mfa_token: mfaToken,
+      challenge_type: "oob",
+      authenticator_id: authenticatorId
+    })
+  });
+  const data = await readJson(response);
+  if (!response.ok) throw new Error(data.error_description || "Guardianへの通知を送信できませんでした。");
   return data;
-
 }
 
-
-async function associateGuardian(
-  mfaToken
-) {
-
-  const response =
-    await fetch(
-
-      `${AUTH0_BASE}/mfa/associate`,
-
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Authorization":
-            `Bearer ${mfaToken}`,
-
-          "Content-Type":
-            "application/json"
-
-        },
-
-        body:
-          JSON.stringify({
-
-            authenticator_types:
-              ["oob"],
-
-            oob_channels:
-              ["auth0"]
-
-          })
-
-      }
-
-    );
-
-
-  const data =
-    await readJson(
-      response
-    );
-
-
-  if (
-    !response.ok
-  ) {
-
-    throw new Error(
-
-      data.error_description ||
-      "Guardianの登録を開始できませんでした。"
-
-    );
-
-  }
-
-
+async function associateGuardian(mfaToken) {
+  const response = await fetch(`${AUTH0_BASE}/mfa/associate`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${mfaToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ authenticator_types: ["oob"], oob_channels: ["auth0"] })
+  });
+  const data = await readJson(response);
+  if (!response.ok) throw new Error(data.error_description || "Guardianの登録を開始できませんでした。");
   return data;
-
 }
 
-
-async function verifyOob(
-  mfaToken,
-  oobCode
-) {
-
-  const body =
-    new URLSearchParams({
-
-      grant_type:
-        "http://auth0.com/oauth/grant-type/mfa-oob",
-
-      client_id:
-        AUTH0_CLIENT_ID,
-
-      mfa_token:
-        mfaToken,
-
-      oob_code:
-        oobCode
-
-    });
-
-
-  const response =
-    await fetch(
-
-      `${AUTH0_BASE}/oauth/token`,
-
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/x-www-form-urlencoded"
-
-        },
-
-        body
-
-      }
-
-    );
-
-
-  return {
-
-    response,
-
-    data:
-      await readJson(
-        response
-      )
-
-  };
-
+async function verifyOob(mfaToken, oobCode) {
+  const body = new URLSearchParams({
+    grant_type: "http://auth0.com/oauth/grant-type/mfa-oob",
+    client_id: AUTH0_CLIENT_ID,
+    mfa_token: mfaToken,
+    oob_code: oobCode
+  });
+  const response = await fetch(`${AUTH0_BASE}/oauth/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body
+  });
+  return { response, data: await readJson(response) };
 }
 
+function wait(milliseconds) { return new Promise(resolve => setTimeout(resolve, milliseconds)); }
 
-function wait(
-  milliseconds
-) {
-
-  return new Promise(
-
-    resolve =>
-      setTimeout(
-        resolve,
-        milliseconds
-      )
-
-  );
-
-}
-
-
-async function pollGuardian(
-  mfaToken,
-  oobCode
-) {
-
-  pollingStopped =
-    false;
-
-
-  let interval =
-    5000;
-
-
-  for (
-    let attempt = 0;
-    attempt < 30;
-    attempt++
-  ) {
-
-    if (
-      pollingStopped
-    ) {
-
-      return;
-
-    }
-
-
-    await wait(
-      interval
-    );
-
-
-    const {
-      response,
-      data
-    } =
-      await verifyOob(
-
-        mfaToken,
-
-        oobCode
-
-      );
-
-
-    if (
-      response.ok &&
-      data.access_token
-    ) {
-
-      finishLogin(
-        data
-      );
-
-      return;
-
-    }
-
-
-    if (
-      data.error ===
-      "authorization_pending"
-    ) {
-
-      continue;
-
-    }
-
-
-    if (
-      data.error ===
-      "slow_down"
-    ) {
-
-      interval =
-        Math.min(
-
-          interval + 2000,
-
-          10000
-
-        );
-
-      continue;
-
-    }
-
-
-    throw new Error(
-
-      data.error_description ||
-      "二段階認証を完了できませんでした。"
-
-    );
-
+async function pollGuardian(mfaToken, oobCode) {
+  pollingStopped = false;
+  let interval = 5000;
+  for (let attempt = 0; attempt < 30; attempt++) {
+    if (pollingStopped) return;
+    await wait(interval);
+    const { response, data } = await verifyOob(mfaToken, oobCode);
+    if (response.ok && data.access_token) { finishLogin(data); return; }
+    if (data.error === "authorization_pending") continue;
+    if (data.error === "slow_down") { interval = Math.min(interval + 2000, 10000); continue; }
+    throw new Error(data.error_description || "二段階認証を完了できませんでした。");
   }
-
-
-  throw new Error(
-    "認証待ちがタイムアウトしました。"
-  );
-
+  throw new Error("認証待ちがタイムアウトしました。");
 }
 
-
-function showGuardianEnrollment(
-  data
-) {
-
-  enrollmentArea.style.display =
-    "block";
-
-
-  guardianQr.innerHTML =
-    "";
-
-
-  if (
-    !data.barcode_uri
-  ) {
-
-    throw new Error(
-      "Guardian登録用QRコードを取得できませんでした。"
-    );
-
-  }
-
-
-  new QRCode(
-
-    guardianQr,
-
-    {
-
-      text:
-        data.barcode_uri,
-
-      width:
-        200,
-
-      height:
-        200
-
-    }
-
-  );
-
-
-  showAuthStatus(
-    "GuardianアプリでQRコードを読み取ってください。"
-  );
-
+function showGuardianEnrollment(data) {
+  enrollmentArea.style.display = "block";
+  guardianQr.innerHTML = "";
+  if (!data.barcode_uri) throw new Error("Guardian登録用QRコードを取得できませんでした。");
+  new QRCode(guardianQr, { text: data.barcode_uri, width: 200, height: 200 });
+  showAuthStatus("GuardianアプリでQRコードを読み取ってください。");
 }
 
-
-/* =========================
-   ログイン完了
-   ========================= */
-
-function finishLogin(
-  tokenData
-) {
-
-  pollingStopped =
-    true;
-
-
-  const expiresAt =
-    Date.now() +
-    (
-      Number(
-        tokenData.expires_in ||
-        600
-      ) * 1000
-    );
-
-
-  const idClaims =
-    tokenData.id_token
-      ? decodeJwtPayload(
-          tokenData.id_token
-        )
-      : {};
-
-
-  const accessClaims =
-    decodeJwtPayload(
-      tokenData.access_token
-    );
-
-
-  const displayName =
-    idClaims.name ||
-    idClaims.nickname ||
-    adminId.value.trim() ||
-    "管理者";
-
-
-  const userSub =
-    accessClaims.sub ||
-    idClaims.sub ||
-    "";
-
-
-  sessionStorage.setItem(
-    "admin_access_token",
-    tokenData.access_token
-  );
-
-
-  sessionStorage.setItem(
-    "admin_expires_at",
-    String(expiresAt)
-  );
-
-
-  sessionStorage.setItem(
-    "admin_username",
-    displayName
-  );
-
-
-  sessionStorage.setItem(
-    "admin_sub",
-    userSub
-  );
-
-
+function finishLogin(tokenData) {
+  pollingStopped = true;
+  const expiresAt = Date.now() + (Number(tokenData.expires_in || 600) * 1000);
+  const idClaims = tokenData.id_token ? decodeJwtPayload(tokenData.id_token) : {};
+  const accessClaims = decodeJwtPayload(tokenData.access_token);
+  const displayName = idClaims.name || idClaims.nickname || adminId.value.trim() || "管理者";
+  const userSub = accessClaims.sub || idClaims.sub || "";
+  sessionStorage.setItem("admin_access_token", tokenData.access_token);
+  sessionStorage.setItem("admin_expires_at", String(expiresAt));
+  sessionStorage.setItem("admin_username", displayName);
+  sessionStorage.setItem("admin_sub", userSub);
   showAdmin();
-
 }
 
+function isDummyAccount() {
+  return (sessionStorage.getItem("admin_sub") || "") === DUMMY_ACCOUNT_SUB;
+}
 
-/* =========================
-   内部画面切替
-   ========================= */
+function applyReadOnlyMode(enabled) {
+  readOnlyBadge.classList.toggle("hidden", !enabled);
+  passwordMenuButton.classList.toggle("hidden", enabled);
+  developerRequestMenuButton.classList.toggle("hidden", enabled);
 
-function showAdminView(
-  viewName
-) {
-
-  const adminSub =
-    sessionStorage.getItem(
-      "admin_sub"
-    ) || "";
-
-
-  if (
-    (
-      viewName === "developer" ||
-      viewName === "create-admin"
-    ) &&
-    adminSub !== ACCOUNT_CREATOR_SUB
-  ) {
-
-    viewName =
-      "home";
-
-  }
-
-
-  const viewTitles = {
-
-    home:
-      "管理者画面",
-
-    meeting:
-      "次回まち会議日時設定",
-
-    news:
-      "ニュース追加",
-
-    password:
-      "パスワード変更",
-
-    inquiries:
-      "お問い合わせ一覧",
-
-    "developer-request":
-      "デベロッパーへの要望",
-
-    developer:
-      "デベロッパーメニュー",
-
-    "hp-update":
-      "HP更新",
-
-    "create-admin":
-      "アカウント作成"
-
-  };
-
-
-  pageTitle.textContent =
-    viewTitles[viewName] ||
-    "管理者画面";
-
-
-  adminViews.forEach(
-
-    view =>
-      view.classList.remove(
-        "active"
-      )
-
-  );
-
-
-  const target =
-    document.getElementById(
-      `view-${viewName}`
-    );
-
-
-  if (
-    target
-  ) {
-
-    target.classList.add(
-      "active"
-    );
-
-  }
-
-
-  window.scrollTo({
-
-    top: 0,
-
-    behavior:
-      "smooth"
-
+  [meetingForm, newsForm].forEach(form => {
+    form.querySelectorAll("input, textarea").forEach(field => {
+      field.disabled = enabled;
+    });
   });
 
+  meetingSaveButton.classList.toggle("hidden", enabled);
+  newsAddButton.classList.toggle("hidden", enabled);
 }
 
+function showAdminView(viewName) {
+  const adminSub = sessionStorage.getItem("admin_sub") || "";
 
-/* =========================
-   管理者画面
-   ========================= */
+  const dummyBlockedViews = [
+    "password",
+    "developer-request",
+    "developer",
+    "hp-update",
+    "create-admin"
+  ];
 
-function showAdmin() {
-
-  loginSection.style.display =
-    "none";
-
-
-  adminContent.style.display =
-    "block";
-
-
-  loggedInTopbar.style.display =
-    "flex";
-
-
-  pageSubtitle.style.display =
-    "none";
-
-
-  userName.textContent =
-    sessionStorage.getItem(
-      "admin_username"
-    ) ||
-    "管理者";
-
-
-  const adminSub =
-    sessionStorage.getItem(
-      "admin_sub"
-    ) || "";
-
-
-  const isDeveloper =
-    adminSub ===
-    ACCOUNT_CREATOR_SUB;
-
-
-  developerMenuButton
-    .classList
-    .toggle(
-      "hidden",
-      !isDeveloper
-    );
-
-
-  hpUpdateHomeButton
-    .classList
-    .toggle(
-      "hidden",
-      isDeveloper
-    );
-
-
-  showAdminView(
-    "home"
-  );
-
-}
-
-
-/* =========================
-   ログイン画面
-   ========================= */
-
-function showLogin() {
-
-  pageTitle.textContent =
-    "管理者画面";
-
-
-  adminContent.style.display =
-    "none";
-
-
-  loggedInTopbar.style.display =
-    "none";
-
-
-  pageSubtitle.style.display =
-    "block";
-
-
-  loginSection.style.display =
-    "block";
-
-
-  developerMenuButton
-    .classList
-    .add(
-      "hidden"
-    );
-
-
-  hpUpdateHomeButton
-    .classList
-    .add(
-      "hidden"
-    );
-
-}
-
-
-/* =========================
-   セッション
-   ========================= */
-
-function clearSession() {
-
-  sessionStorage.removeItem(
-    "admin_access_token"
-  );
-
-  sessionStorage.removeItem(
-    "admin_expires_at"
-  );
-
-  sessionStorage.removeItem(
-    "admin_username"
-  );
-
-  sessionStorage.removeItem(
-    "admin_sub"
-  );
-
-}
-
-
-function restoreSession() {
-
-  const token =
-    sessionStorage.getItem(
-      "admin_access_token"
-    );
-
-
-  const expiresAt =
-    Number(
-      sessionStorage.getItem(
-        "admin_expires_at"
-      ) || 0
-    );
-
+  if (adminSub === DUMMY_ACCOUNT_SUB && dummyBlockedViews.includes(viewName)) {
+    viewName = "home";
+  }
 
   if (
-    !token ||
-    Date.now() >= expiresAt
+    (viewName === "developer" || viewName === "create-admin") &&
+    adminSub !== ACCOUNT_CREATOR_SUB
   ) {
-
-    clearSession();
-
-    showLogin();
-
-    return;
-
+    viewName = "home";
   }
 
+  const viewTitles = {
+    home: "管理者画面",
+    meeting: "次回まち会議日時設定",
+    news: "ニュース追加",
+    password: "パスワード変更",
+    inquiries: "お問い合わせ一覧",
+    "developer-request": "デベロッパーへの要望",
+    developer: "デベロッパーメニュー",
+    "hp-update": "HP更新",
+    "create-admin": "アカウント作成"
+  };
 
-  showAdmin();
+  pageTitle.textContent =
+    viewTitles[viewName] || "管理者画面";
 
+  adminViews.forEach(
+    view => view.classList.remove("active")
+  );
+
+  const target =
+    document.getElementById(`view-${viewName}`);
+
+  if (target) {
+    target.classList.add("active");
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
-
-/* =========================
-   ナビゲーション
-   ========================= */
-
-navigationButtons.forEach(
-
-  button =>
-
-    button.addEventListener(
-
-      "click",
-
-      () => {
-
-        showAdminView(
-          button.dataset.view
-        );
-
-      }
-
-    )
-
-);
-
-
-homeButtons.forEach(
-
-  button =>
-
-    button.addEventListener(
-
-      "click",
-
-      () => {
-
-        showAdminView(
-          "home"
-        );
-
-      }
-
-    )
-
-);
-
-
-/* =========================
-   現時点ではUIのみ
-   ========================= */
-
-meetingForm.addEventListener(
-
-  "submit",
-
-  event => {
-
-    event.preventDefault();
-
-
-    showViewStatus(
-
-      meetingStatus,
-
-      "画面は完成しています。実際の保存は、次にデータ保存先を接続すると有効になります。"
-
-    );
-
-  }
-
-);
-
-
-newsForm.addEventListener(
-
-  "submit",
-
-  event => {
-
-    event.preventDefault();
-
-
-    showViewStatus(
-
-      newsStatus,
-
-      "画面は完成しています。実際のニュース追加は、次にデータ保存先を接続すると有効になります。"
-
-    );
-
-  }
-
-);
-
-
-developerRequestForm.addEventListener(
-
-  "submit",
-
-  event => {
-
-    event.preventDefault();
-
-
-    showViewStatus(
-
-      developerRequestStatus,
-
-      "要望入力画面は完成しています。送信・保存先は次に接続します。"
-
-    );
-
-  }
-
-);
-
-
-/* =========================
-   アカウント作成
-   ========================= */
-
-createAdminForm.addEventListener(
-
-  "submit",
-
-  async event => {
-
-    event.preventDefault();
-
-
-    clearAccountMessages();
-
-
-    accountResult.style.display =
-      "none";
-
-
-    const token =
-      sessionStorage.getItem(
-        "admin_access_token"
-      );
-
-
-    const adminSub =
-      sessionStorage.getItem(
-        "admin_sub"
-      ) || "";
-
-
-    if (
-      !token ||
-      adminSub !== ACCOUNT_CREATOR_SUB
-    ) {
-
-      showAccountError(
-        "この操作を行う権限がありません。"
-      );
-
-      return;
-
-    }
-
-
-    createAdminButton.disabled =
-      true;
-
-
-    showAccountStatus(
-      "アカウントを作成しています…"
-    );
-
-
-    try {
-
-      const response =
-        await fetch(
-
-          `${WORKER_URL}/create-admin`,
-
-          {
-
-            method:
-              "POST",
-
-            headers: {
-
-              "Authorization":
-                `Bearer ${token}`,
-
-              "Content-Type":
-                "application/json"
-
-            },
-
-            body:
-              JSON.stringify({
-
-                fullName:
-                  createAdminName.value.trim(),
-
-                lastNameRoman:
-                  createAdminLast.value.trim(),
-
-                firstNameRoman:
-                  createAdminFirst.value.trim(),
-
-                birthYear:
-                  Number(
-                    createAdminYear.value
-                  )
-
-              })
-
-          }
-
-        );
-
-
-      const data =
-        await readJson(
-          response
-        );
-
-
-      if (
-        !response.ok
-      ) {
-
-        throw new Error(
-
-          data.error ||
-          "アカウントを作成できませんでした。"
-
-        );
-
-      }
-
-
-      accountStatus.style.display =
-        "none";
-
-
-      accountResultTitle.textContent =
-        data.simulated
-          ? "仮発行しました（実際のアカウントは作成していません）。"
-          : "アカウントを作成しました。";
-
-
-      createdFullName.textContent =
-        data.fullName;
-
-
-      createdUsername.textContent =
-        data.username;
-
-
-      createdPassword.textContent =
-        data.initialPassword;
-
-
-      accountResult.style.display =
-        "block";
-
-
-      createAdminForm.reset();
-
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-
-
-      showAccountError(
-
-        error.message ||
-        "アカウント作成中にエラーが発生しました。"
-
-      );
-
-
-    } finally {
-
-      createAdminButton.disabled =
-        false;
-
-    }
-
-  }
-
-);
-
-
-/* =========================
-   コピー
-   ========================= */
-
-copyCreatedUsername.addEventListener(
-
-  "click",
-
-  async () => {
-
-    await navigator.clipboard.writeText(
-      createdUsername.textContent
-    );
-
-
-    copyCreatedUsername.textContent =
-      "コピーしました";
-
-
-    setTimeout(
-
-      () => {
-
-        copyCreatedUsername.textContent =
-          "IDをコピー";
-
+function showAdmin() {
+  loginSection.style.display = "none";
+  adminContent.style.display = "block";
+  loggedInTopbar.style.display = "flex";
+  pageSubtitle.style.display = "none";
+  userName.textContent = sessionStorage.getItem("admin_username") || "管理者";
+  const adminSub = sessionStorage.getItem("admin_sub") || "";
+  const isDeveloper = adminSub === ACCOUNT_CREATOR_SUB;
+  const isDummy = adminSub === DUMMY_ACCOUNT_SUB;
+
+  applyReadOnlyMode(isDummy);
+
+  developerMenuButton.classList.toggle("hidden", !isDeveloper || isDummy);
+  hpUpdateHomeButton.classList.toggle("hidden", isDeveloper || isDummy);
+  showAdminView("home");
+}
+
+function showLogin() {
+  pageTitle.textContent = "管理者画面";
+  adminContent.style.display = "none";
+  loggedInTopbar.style.display = "none";
+  pageSubtitle.style.display = "block";
+  loginSection.style.display = "block";
+  developerMenuButton.classList.add("hidden");
+  hpUpdateHomeButton.classList.add("hidden");
+  applyReadOnlyMode(false);
+}
+
+function clearSession() {
+  sessionStorage.removeItem("admin_access_token");
+  sessionStorage.removeItem("admin_expires_at");
+  sessionStorage.removeItem("admin_username");
+  sessionStorage.removeItem("admin_sub");
+}
+
+function restoreSession() {
+  const token = sessionStorage.getItem("admin_access_token");
+  const expiresAt = Number(sessionStorage.getItem("admin_expires_at") || 0);
+  if (!token || Date.now() >= expiresAt) { clearSession(); showLogin(); return; }
+  showAdmin();
+}
+
+navigationButtons.forEach(button => button.addEventListener("click", () => showAdminView(button.dataset.view)));
+homeButtons.forEach(button => button.addEventListener("click", () => showAdminView("home")));
+
+meetingForm.addEventListener("submit", event => {
+  event.preventDefault();
+  if (isDummyAccount()) return;
+  showViewStatus(meetingStatus, "画面は完成しています。実際の保存は、次にデータ保存先を接続すると有効になります。");
+});
+
+newsForm.addEventListener("submit", event => {
+  event.preventDefault();
+  if (isDummyAccount()) return;
+  showViewStatus(newsStatus, "画面は完成しています。実際のニュース追加は、次にデータ保存先を接続すると有効になります。");
+});
+
+developerRequestForm.addEventListener("submit", event => {
+  event.preventDefault();
+  if (isDummyAccount()) return;
+  showViewStatus(developerRequestStatus, "要望入力画面は完成しています。送信・保存先は次に接続します。");
+});
+
+createAdminForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  clearAccountMessages();
+  accountResult.style.display = "none";
+  const token = sessionStorage.getItem("admin_access_token");
+  const adminSub = sessionStorage.getItem("admin_sub") || "";
+  if (!token || adminSub !== ACCOUNT_CREATOR_SUB) { showAccountError("この操作を行う権限がありません。"); return; }
+  createAdminButton.disabled = true;
+  showAccountStatus("アカウントを作成しています…");
+  try {
+    const response = await fetch(`${WORKER_URL}/create-admin`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
       },
-
-      1500
-
-    );
-
+      body: JSON.stringify({
+        fullName: createAdminName.value.trim(),
+        lastNameRoman: createAdminLast.value.trim(),
+        firstNameRoman: createAdminFirst.value.trim(),
+        birthYear: Number(createAdminYear.value)
+      })
+    });
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "アカウントを作成できませんでした。");
+    accountStatus.style.display = "none";
+    accountResultTitle.textContent = data.simulated
+      ? "仮発行しました（実際のアカウントは作成していません）。"
+      : "アカウントを作成しました。";
+    createdFullName.textContent = data.fullName;
+    createdUsername.textContent = data.username;
+    createdPassword.textContent = data.initialPassword;
+    accountResult.style.display = "block";
+    createAdminForm.reset();
+  } catch (error) {
+    console.error(error);
+    showAccountError(error.message || "アカウント作成中にエラーが発生しました。");
+  } finally {
+    createAdminButton.disabled = false;
   }
-
-);
-
-
-copyCreatedPassword.addEventListener(
-
-  "click",
-
-  async () => {
-
-    await navigator.clipboard.writeText(
-      createdPassword.textContent
-    );
-
-
-    copyCreatedPassword.textContent =
-      "コピーしました";
-
-
-    setTimeout(
-
-      () => {
-
-        copyCreatedPassword.textContent =
-          "PWをコピー";
-
-      },
-
-      1500
-
-    );
-
-  }
-
-);
-
-
-/* =========================
-   ログイン
-   ========================= */
-
-loginForm.addEventListener(
-
-  "submit",
-
-  async event => {
-
-    event.preventDefault();
-
-
-    pollingStopped =
-      true;
-
-
-    clearAuthMessages();
-
-
-    enrollmentArea.style.display =
-      "none";
-
-
-    loginButton.disabled =
-      true;
-
-
-    const username =
-      adminId.value.trim();
-
-
-    const password =
-      adminPassword.value;
-
-
-    try {
-
-      showAuthStatus(
-        "ID・パスワードを確認しています…"
-      );
-
-
-      const {
-        response,
-        data
-      } =
-        await requestPasswordLogin(
-          username,
-          password
-        );
-
-
-      adminPassword.value =
-        "";
-
-
-      if (
-        response.ok &&
-        data.access_token
-      ) {
-
-        throw new Error(
-          "Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。安全のため管理画面は開きません。"
-        );
-
-      }
-
-
-      if (
-        data.error !==
-          "mfa_required" ||
-        !data.mfa_token
-      ) {
-
-        if (
-          data.error ===
-          "invalid_grant"
-        ) {
-
-          throw new Error(
-            "IDまたはパスワードが違います。"
-          );
-
-        }
-
-
-        throw new Error(
-
-          data.error_description ||
-          "ログインできませんでした。"
-
-        );
-
-      }
-
-
-      const mfaToken =
-        data.mfa_token;
-
-
-      const authenticators =
-        await getAuthenticators(
-          mfaToken
-        );
-
-
-      const pushAuthenticator =
-        authenticators.find(
-
-          item =>
-
-            item.authenticator_type ===
-              "oob" &&
-
-            item.oob_channel ===
-              "auth0" &&
-
-            item.active
-
-        );
-
-
-      if (
-        pushAuthenticator
-      ) {
-
-        const challenge =
-          await requestPushChallenge(
-
-            mfaToken,
-
-            pushAuthenticator.id
-
-          );
-
-
-        showAuthStatus(
-          "スマホのAuth0 Guardianに通知を送りました。承認してください。"
-        );
-
-
-        await pollGuardian(
-
-          mfaToken,
-
-          challenge.oob_code
-
-        );
-
-
-        return;
-
-      }
-
-
-      if (
-        authenticators.length === 0
-      ) {
-
-        const association =
-          await associateGuardian(
-            mfaToken
-          );
-
-
-        showGuardianEnrollment(
-          association
-        );
-
-
-        await pollGuardian(
-
-          mfaToken,
-
-          association.oob_code
-
-        );
-
-
-        return;
-
-      }
-
-
-      throw new Error(
-        "Guardian Pushが登録されていません。"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-
-
-      showAuthError(
-
-        error.message ||
-        "認証中にエラーが発生しました。"
-
-      );
-
-
-    } finally {
-
-      loginButton.disabled =
-        false;
-
+});
+
+copyCreatedUsername.addEventListener("click", async () => {
+  await navigator.clipboard.writeText(createdUsername.textContent);
+  copyCreatedUsername.textContent = "コピーしました";
+  setTimeout(() => { copyCreatedUsername.textContent = "IDをコピー"; }, 1500);
+});
+
+copyCreatedPassword.addEventListener("click", async () => {
+  await navigator.clipboard.writeText(createdPassword.textContent);
+  copyCreatedPassword.textContent = "コピーしました";
+  setTimeout(() => { copyCreatedPassword.textContent = "PWをコピー"; }, 1500);
+});
+
+loginForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  pollingStopped = true;
+  clearAuthMessages();
+  enrollmentArea.style.display = "none";
+  loginButton.disabled = true;
+  const username = adminId.value.trim();
+  const password = adminPassword.value;
+  try {
+    showAuthStatus("ID・パスワードを確認しています…");
+    const { response, data } = await requestPasswordLogin(username, password);
+    adminPassword.value = "";
+    if (response.ok && data.access_token) throw new Error("Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。安全のため管理画面は開きません。");
+    if (data.error !== "mfa_required" || !data.mfa_token) {
+      if (data.error === "invalid_grant") throw new Error("IDまたはパスワードが違います。");
+      throw new Error(data.error_description || "ログインできませんでした。");
     }
-
-  }
-
-);
-
-
-/* =========================
-   パスワード変更
-   ========================= */
-
-passwordForm.addEventListener(
-
-  "submit",
-
-  async event => {
-
-    event.preventDefault();
-
-
-    clearPasswordMessages();
-
-
-    const first =
-      newPassword.value;
-
-
-    const second =
-      newPasswordConfirm.value;
-
-
-    if (
-      first !== second
-    ) {
-
-      showPasswordError(
-        "確認用パスワードが一致しません。"
-      );
-
+    const mfaToken = data.mfa_token;
+    const authenticators = await getAuthenticators(mfaToken);
+    const pushAuthenticator = authenticators.find(item => item.authenticator_type === "oob" && item.oob_channel === "auth0" && item.active);
+    if (pushAuthenticator) {
+      const challenge = await requestPushChallenge(mfaToken, pushAuthenticator.id);
+      showAuthStatus("スマホのAuth0 Guardianに通知を送りました。承認してください。");
+      await pollGuardian(mfaToken, challenge.oob_code);
       return;
-
     }
-
-
-    if (
-      first.length < 8 ||
-      first.length > 128 ||
-      !/[A-Za-z]/.test(first) ||
-      !/[0-9]/.test(first)
-    ) {
-
-      showPasswordError(
-        "8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。"
-      );
-
+    if (authenticators.length === 0) {
+      const association = await associateGuardian(mfaToken);
+      showGuardianEnrollment(association);
+      await pollGuardian(mfaToken, association.oob_code);
       return;
-
     }
-
-
-    const token =
-      sessionStorage.getItem(
-        "admin_access_token"
-      );
-
-
-    if (
-      !token
-    ) {
-
-      clearSession();
-
-
-      showLogin();
-
-
-      showAuthError(
-        "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
-      );
-
-
-      return;
-
-    }
-
-
-    passwordButton.disabled =
-      true;
-
-
-    showPasswordStatus(
-      "パスワードを変更しています…"
-    );
-
-
-    try {
-
-      const response =
-        await fetch(
-
-          `${WORKER_URL}/change-password`,
-
-          {
-
-            method:
-              "POST",
-
-            headers: {
-
-              "Authorization":
-                `Bearer ${token}`,
-
-              "Content-Type":
-                "application/json"
-
-            },
-
-            body:
-              JSON.stringify({
-
-                newPassword:
-                  first
-
-              })
-
-          }
-
-        );
-
-
-      const data =
-        await readJson(
-          response
-        );
-
-
-      if (
-        !response.ok
-      ) {
-
-        throw new Error(
-
-          data.error ||
-          "パスワードを変更できませんでした。"
-
-        );
-
-      }
-
-
-      newPassword.value =
-        "";
-
-
-      newPasswordConfirm.value =
-        "";
-
-
-      clearSession();
-
-
-      showLogin();
-
-
-      clearAuthMessages();
-
-
-      showAuthStatus(
-        "パスワードを変更しました。新しいパスワードで再ログインしてください。"
-      );
-
-
-    } catch (error) {
-
-      console.error(
-        error
-      );
-
-
-      showPasswordError(
-
-        error.message ||
-        "パスワード変更中にエラーが発生しました。"
-
-      );
-
-
-    } finally {
-
-      passwordButton.disabled =
-        false;
-
-    }
-
+    throw new Error("Guardian Pushが登録されていません。");
+  } catch (error) {
+    console.error(error);
+    showAuthError(error.message || "認証中にエラーが発生しました。");
+  } finally {
+    loginButton.disabled = false;
   }
+});
 
-);
-
-
-/* =========================
-   ログアウト
-   ========================= */
-
-logoutButton.addEventListener(
-
-  "click",
-
-  () => {
-
-    pollingStopped =
-      true;
-
-
+passwordForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  clearPasswordMessages();
+  if (isDummyAccount()) { showPasswordError("閲覧専用アカウントでは変更できません。"); return; }
+  const first = newPassword.value;
+  const second = newPasswordConfirm.value;
+  if (first !== second) { showPasswordError("確認用パスワードが一致しません。"); return; }
+  if (first.length < 8 || first.length > 128 || !/[A-Za-z]/.test(first) || !/[0-9]/.test(first)) {
+    showPasswordError("8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。");
+    return;
+  }
+  const token = sessionStorage.getItem("admin_access_token");
+  if (!token) {
     clearSession();
-
-
     showLogin();
-
-
-    adminId.value =
-      "";
-
-
-    adminPassword.value =
-      "";
-
-
-    enrollmentArea.style.display =
-      "none";
-
-
-    clearAuthMessages();
-
-
-    clearPasswordMessages();
-
-
-    clearAccountMessages();
-
-
-    accountResult.style.display =
-      "none";
-
+    showAuthError("ログイン情報の有効期限が切れました。もう一度ログインしてください。");
+    return;
   }
+  passwordButton.disabled = true;
+  showPasswordStatus("パスワードを変更しています…");
+  try {
+    const response = await fetch(`${WORKER_URL}/change-password`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ newPassword: first })
+    });
+    const data = await readJson(response);
+    if (!response.ok) throw new Error(data.error || "パスワードを変更できませんでした。");
+    newPassword.value = "";
+    newPasswordConfirm.value = "";
+    clearSession();
+    showLogin();
+    clearAuthMessages();
+    showAuthStatus("パスワードを変更しました。新しいパスワードで再ログインしてください。");
+  } catch (error) {
+    console.error(error);
+    showPasswordError(error.message || "パスワード変更中にエラーが発生しました。");
+  } finally {
+    passwordButton.disabled = false;
+  }
+});
 
-);
-
-
-/* =========================
-   初期表示
-   ========================= */
+logoutButton.addEventListener("click", () => {
+  pollingStopped = true;
+  clearSession();
+  showLogin();
+  adminId.value = "";
+  adminPassword.value = "";
+  enrollmentArea.style.display = "none";
+  clearAuthMessages();
+  clearPasswordMessages();
+  clearAccountMessages();
+  accountResult.style.display = "none";
+});
 
 restoreSession();
-
 </script>
-
 </body>
 </html>
