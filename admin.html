@@ -309,47 +309,175 @@ textarea {
   line-height: 1.8;
 }
 
-/* デベロッパーメニューは常に2列×1行 */
+/* デベロッパーメニューは2列×2行 */
 .developer-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
-.developer-users { margin-top: 30px; }
-
-.developer-users-title {
-  margin: 0 0 14px;
-  font-size: 18px;
-  color: var(--navy);
-}
-
-.developer-users-status {
+.data-status {
   padding: 14px 0;
   color: var(--muted);
   font-size: 14px;
 }
 
-.developer-users-table-wrap { overflow-x: auto; }
+.data-table-wrap {
+  overflow-x: auto;
+}
 
-.developer-users-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   background: #FFFFFF;
 }
 
-.developer-users-table th,
-.developer-users-table td {
+.data-table th,
+.data-table td {
   padding: 13px 14px;
   border: 1px solid #9AA9BC;
   text-align: left;
   vertical-align: middle;
 }
 
-.developer-users-table th {
+.data-table th {
   background: #E8EEF6;
   color: var(--navy);
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.field-hint {
+  margin: 7px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.mfa-code-area {
+  display: none;
+  width: min(560px, 100%);
+  margin: 28px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid #A8B3C2;
+}
+
+.mfa-method-area,
+.account-verification-area {
+  display: none;
+  width: min(560px, 100%);
+  margin: 28px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid #A8B3C2;
+}
+
+.mfa-method-title,
+.account-verification-title {
+  margin: 0 0 14px;
+  font-size: 18px;
+  color: var(--navy);
+}
+
+.mfa-method-options {
+  display: grid;
+  gap: 10px;
+}
+
+.mfa-method-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border: 1px solid #9AA9BC;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+
+.mfa-method-option.unavailable {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mfa-method-option input {
+  width: 18px;
+  height: 18px;
+}
+
+.account-verification-message {
+  margin: 0 0 18px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+#account-guardian-qr {
+  display: none;
+  width: 220px;
+  min-height: 220px;
+  margin: 0 auto 18px;
+  padding: 10px;
+  background: #FFFFFF;
+  border: 2px solid var(--navy);
+}
+
+#account-guardian-qr img,
+#account-guardian-qr canvas {
+  margin: 0 auto;
+}
+
+.account-verification-code-form {
+  display: none;
+}
+
+.request-history {
+  margin-top: 34px;
+}
+
+.request-history-title {
+  margin: 0 0 16px;
+  font-size: 18px;
+  color: var(--navy);
+}
+
+.request-list {
+  display: grid;
+  gap: 16px;
+}
+
+.request-card {
+  padding: 18px;
+  border: 1px solid #9AA9BC;
+  background: #FFFFFF;
+}
+
+.request-card-title {
+  margin: 0 0 8px;
+  font-size: 17px;
+  color: var(--navy);
+}
+
+.request-meta {
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.request-body {
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+
+.request-answer-box {
+  margin-top: 16px;
+  padding: 14px;
+  border-left: 4px solid var(--navy);
+  background: #EEF3F8;
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+
+.request-answer-form {
+  margin-top: 16px;
 }
 
 .account-result {
@@ -447,10 +575,28 @@ textarea {
     <div id="auth-status" class="auth-status"></div>
     <div id="auth-error" class="auth-error"></div>
 
+    <div id="mfa-method-area" class="mfa-method-area">
+      <h3 class="mfa-method-title">認証方法を選択</h3>
+      <p class="placeholder-note">利用する認証方法を選んで「再度認証」を押してください。その時点でアプリ・SMS・メールへ認証が送信されます。</p>
+      <div id="mfa-method-options" class="mfa-method-options"></div>
+      <button id="mfa-send-button" class="main-button" type="button">再度認証</button>
+    </div>
+
     <div id="enrollment-area" class="enrollment-area">
       <h3>Guardianの初回登録</h3>
       <p>スマホのAuth0 Guardianアプリで、下のQRコードを読み取ってください。</p>
       <div id="guardian-qr"></div>
+    </div>
+
+    <div id="mfa-code-area" class="mfa-code-area">
+      <form id="mfa-code-form" class="login-panel">
+        <p id="mfa-code-message" class="placeholder-note"></p>
+        <div class="form-row">
+          <label class="form-label" for="mfa-code">認証コード</label>
+          <input class="form-input" id="mfa-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required>
+        </div>
+        <button id="mfa-code-button" class="main-button" type="submit">認証する</button>
+      </form>
     </div>
   </section>
 
@@ -603,18 +749,24 @@ textarea {
         <form id="developer-request-form" class="settings-form">
           <div class="form-row">
             <label class="form-label" for="developer-request-title">件名</label>
-            <input class="form-input" id="developer-request-title" type="text" required>
+            <input class="form-input" id="developer-request-title" type="text" maxlength="120" required>
           </div>
 
           <div class="form-row">
             <label class="form-label" for="developer-request-body">要望内容</label>
-            <textarea class="form-textarea" id="developer-request-body" required></textarea>
+            <textarea class="form-textarea" id="developer-request-body" maxlength="4000" required></textarea>
           </div>
 
           <button id="developer-request-send-button" class="main-button" type="submit">送信</button>
         </form>
 
         <div id="developer-request-status" class="view-status"></div>
+
+        <div class="request-history">
+          <h3 class="request-history-title">送信した要望・回答</h3>
+          <div id="my-developer-requests-status" class="data-status">読み込み中...</div>
+          <div id="my-developer-requests-list" class="request-list"></div>
+        </div>
       </div>
     </section>
 
@@ -625,30 +777,56 @@ textarea {
 
       <div class="admin-card">
         <div class="developer-list">
-          <button class="developer-item-button" type="button" data-view="create-admin">
-            <span>アカウント作成</span><span class="menu-arrow">›</span>
-          </button>
-
           <button class="developer-item-button" type="button" data-view="hp-update">
             <span>HP更新</span><span class="menu-arrow">›</span>
           </button>
+
+          <button class="developer-item-button" type="button" data-view="developer-responses">
+            <span>デベロッパーへの要望の回答</span><span class="menu-arrow">›</span>
+          </button>
+
+          <button class="developer-item-button" type="button" data-view="admin-users">
+            <span>アカウント一覧</span><span class="menu-arrow">›</span>
+          </button>
+
+          <button class="developer-item-button" type="button" data-view="create-admin">
+            <span>アカウント作成</span><span class="menu-arrow">›</span>
+          </button>
         </div>
+      </div>
+    </section>
 
-        <div class="developer-users">
-          <h3 class="developer-users-title">アカウント一覧</h3>
-          <div id="developer-users-status" class="developer-users-status">読み込み中...</div>
+    <section id="view-developer-responses" class="admin-view">
+      <div class="view-header">
+        <button class="back-button" type="button" data-view="developer">← デベロッパーメニューへ戻る</button>
+      </div>
 
-          <div class="developer-users-table-wrap">
-            <table class="developer-users-table">
-              <thead>
-                <tr>
-                  <th>名前</th>
-                  <th>ID</th>
-                </tr>
-              </thead>
-              <tbody id="developer-users-body"></tbody>
-            </table>
-          </div>
+      <div class="admin-card">
+        <div id="developer-responses-status" class="data-status">読み込み中...</div>
+        <div id="developer-responses-list" class="request-list"></div>
+      </div>
+    </section>
+
+    <section id="view-admin-users" class="admin-view">
+      <div class="view-header">
+        <button class="back-button" type="button" data-view="developer">← デベロッパーメニューへ戻る</button>
+      </div>
+
+      <div class="admin-card">
+        <div id="developer-users-status" class="data-status">読み込み中...</div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>名前</th>
+                <th>ID</th>
+                <th>電話番号</th>
+                <th>メールアドレス</th>
+                <th>認証方法</th>
+              </tr>
+            </thead>
+            <tbody id="developer-users-body"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -687,8 +865,43 @@ textarea {
             <input class="form-input" id="create-admin-year" type="number" min="1900" max="2100" step="1" placeholder="例：2005" required>
           </div>
 
-          <button id="create-admin-button" class="main-button" type="submit">アカウントを作成</button>
+          <div class="form-row">
+            <label class="form-label" for="create-admin-phone">電話番号</label>
+            <input class="form-input" id="create-admin-phone" type="tel" placeholder="例：+819012345678" autocomplete="tel">
+            <p class="field-hint">電話認証を選ぶ場合は必須です。国番号付きの形式で入力してください。</p>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="create-admin-email">メールアドレス</label>
+            <input class="form-input" id="create-admin-email" type="email" placeholder="例：user@example.com" autocomplete="email">
+            <p class="field-hint">メール認証を選ぶ場合は必須です。</p>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="create-admin-mfa-method">認証方法</label>
+            <select class="form-input" id="create-admin-mfa-method" required>
+              <option value="app">アプリから認証</option>
+              <option value="phone">電話認証（SMS）</option>
+              <option value="email">メール認証</option>
+            </select>
+          </div>
+
+          <button id="create-admin-button" class="main-button" type="submit">入力内容を認証</button>
         </form>
+
+        <div id="account-verification-area" class="account-verification-area">
+          <h3 class="account-verification-title">入力内容の認証</h3>
+          <p id="account-verification-message" class="account-verification-message"></p>
+          <div id="account-guardian-qr"></div>
+
+          <form id="account-verification-code-form" class="account-verification-code-form">
+            <div class="form-row">
+              <label class="form-label" for="account-verification-code">認証コード</label>
+              <input class="form-input" id="account-verification-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" required>
+            </div>
+            <button id="account-verification-code-button" class="main-button" type="submit">認証してアカウントを作成</button>
+          </form>
+        </div>
 
         <div id="account-status" class="account-status"></div>
         <div id="account-error" class="account-error"></div>
@@ -717,6 +930,11 @@ textarea {
             </div>
           </div>
 
+          <div class="account-result-row">
+            <span class="account-result-label">認証方法</span>
+            <div id="created-mfa-method"></div>
+          </div>
+
           <p class="form-note">初期パスワードはこの画面で本人に安全に共有し、初回ログイン後に変更してください。</p>
         </div>
       </div>
@@ -730,6 +948,7 @@ textarea {
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script>
 const AUTH0_DOMAIN = "dev-8e2z74rs10plmrtk.us.auth0.com";
 const AUTH0_CLIENT_ID = "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
@@ -750,8 +969,16 @@ const adminPassword = document.getElementById("admin-password");
 const loginButton = document.getElementById("login-button");
 const authStatus = document.getElementById("auth-status");
 const authError = document.getElementById("auth-error");
+const mfaMethodArea = document.getElementById("mfa-method-area");
+const mfaMethodOptions = document.getElementById("mfa-method-options");
+const mfaSendButton = document.getElementById("mfa-send-button");
 const enrollmentArea = document.getElementById("enrollment-area");
 const guardianQr = document.getElementById("guardian-qr");
+const mfaCodeArea = document.getElementById("mfa-code-area");
+const mfaCodeForm = document.getElementById("mfa-code-form");
+const mfaCodeMessage = document.getElementById("mfa-code-message");
+const mfaCode = document.getElementById("mfa-code");
+const mfaCodeButton = document.getElementById("mfa-code-button");
 const adminContent = document.getElementById("admin-content");
 const userName = document.getElementById("user-name");
 const logoutButton = document.getElementById("logout-button");
@@ -768,18 +995,33 @@ const newsForm = document.getElementById("news-form");
 const newsAddButton = document.getElementById("news-add-button");
 const newsStatus = document.getElementById("news-status");
 const developerRequestForm = document.getElementById("developer-request-form");
+const developerRequestTitle = document.getElementById("developer-request-title");
+const developerRequestBody = document.getElementById("developer-request-body");
 const developerRequestSendButton = document.getElementById("developer-request-send-button");
 const developerRequestStatus = document.getElementById("developer-request-status");
+const myDeveloperRequestsStatus = document.getElementById("my-developer-requests-status");
+const myDeveloperRequestsList = document.getElementById("my-developer-requests-list");
 const developerMenuButton = document.getElementById("developer-menu-button");
 const developerUsersStatus = document.getElementById("developer-users-status");
 const developerUsersBody = document.getElementById("developer-users-body");
+const developerResponsesStatus = document.getElementById("developer-responses-status");
+const developerResponsesList = document.getElementById("developer-responses-list");
 const hpUpdateHomeButton = document.getElementById("hp-update-home-button");
 const createAdminForm = document.getElementById("create-admin-form");
 const createAdminName = document.getElementById("create-admin-name");
 const createAdminLast = document.getElementById("create-admin-last");
 const createAdminFirst = document.getElementById("create-admin-first");
 const createAdminYear = document.getElementById("create-admin-year");
+const createAdminPhone = document.getElementById("create-admin-phone");
+const createAdminEmail = document.getElementById("create-admin-email");
+const createAdminMfaMethod = document.getElementById("create-admin-mfa-method");
 const createAdminButton = document.getElementById("create-admin-button");
+const accountVerificationArea = document.getElementById("account-verification-area");
+const accountVerificationMessage = document.getElementById("account-verification-message");
+const accountGuardianQr = document.getElementById("account-guardian-qr");
+const accountVerificationCodeForm = document.getElementById("account-verification-code-form");
+const accountVerificationCode = document.getElementById("account-verification-code");
+const accountVerificationCodeButton = document.getElementById("account-verification-code-button");
 const accountStatus = document.getElementById("account-status");
 const accountError = document.getElementById("account-error");
 const accountResult = document.getElementById("account-result");
@@ -787,6 +1029,7 @@ const accountResultTitle = document.getElementById("account-result-title");
 const createdFullName = document.getElementById("created-full-name");
 const createdUsername = document.getElementById("created-username");
 const createdPassword = document.getElementById("created-password");
+const createdMfaMethod = document.getElementById("created-mfa-method");
 const copyCreatedUsername = document.getElementById("copy-created-username");
 const copyCreatedPassword = document.getElementById("copy-created-password");
 const adminViews = document.querySelectorAll(".admin-view");
@@ -794,6 +1037,11 @@ const navigationButtons = document.querySelectorAll("[data-view]");
 const homeButtons = document.querySelectorAll("[data-back-home]");
 
 let pollingStopped = false;
+let pendingMfaChallenge = null;
+let pendingLoginMfaToken = "";
+let loginMfaAuthenticators = [];
+let pendingCreatedAccount = null;
+let accountVerificationPollingStopped = false;
 
 function showAuthStatus(message) {
   authError.style.display = "none";
@@ -899,74 +1147,82 @@ async function requestPasswordLogin(username, password) {
 }
 
 async function getAuthenticators(mfaToken) {
-  const response = await fetch(`${AUTH0_BASE}/mfa/authenticators`, {
-    headers: { "Authorization": `Bearer ${mfaToken}` }
+  const response = await fetch(`${WORKER_URL}/mfa-authenticators`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mfaToken })
   });
 
   const data = await readJson(response);
 
   if (!response.ok) {
-    throw new Error(data.error_description || "二段階認証情報を取得できませんでした。");
+    throw new Error(data.error_description || data.error || "二段階認証情報を取得できませんでした。");
   }
 
   return data;
 }
 
-async function requestPushChallenge(mfaToken, authenticatorId) {
-  const response = await fetch(`${AUTH0_BASE}/mfa/challenge`, {
+async function requestMfaChallenge(mfaToken, authenticatorId) {
+  const response = await fetch(`${WORKER_URL}/mfa-challenge`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: AUTH0_CLIENT_ID,
-      mfa_token: mfaToken,
-      challenge_type: "oob",
-      authenticator_id: authenticatorId
-    })
+    body: JSON.stringify({ mfaToken, authenticatorId })
   });
 
   const data = await readJson(response);
 
   if (!response.ok) {
-    throw new Error(data.error_description || "Guardianへの通知を送信できませんでした。");
+    throw new Error(data.error_description || data.error || "認証コードを送信できませんでした。");
   }
 
   return data;
 }
 
 async function associateGuardian(mfaToken) {
-  const response = await fetch(`${AUTH0_BASE}/mfa/associate`, {
+  const response = await fetch(`${WORKER_URL}/mfa-associate`, {
     method: "POST",
-    headers: {
-      "Authorization": `Bearer ${mfaToken}`,
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      authenticator_types: ["oob"],
-      oob_channels: ["auth0"]
+      mfaToken,
+      channel: "auth0",
+      destination: ""
     })
   });
 
   const data = await readJson(response);
 
   if (!response.ok) {
-    throw new Error(data.error_description || "Guardianの登録を開始できませんでした。");
+    throw new Error(data.error_description || data.error || "Guardianの登録を開始できませんでした。");
   }
 
   return data;
 }
 
-async function verifyOob(mfaToken, oobCode) {
-  const body = new URLSearchParams({
-    grant_type: "http://auth0.com/oauth/grant-type/mfa-oob",
-    client_id: AUTH0_CLIENT_ID,
-    mfa_token: mfaToken,
-    oob_code: oobCode
+async function associateContactAuthenticator(mfaToken, channel, destination) {
+  const response = await fetch(`${WORKER_URL}/mfa-associate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mfaToken, channel, destination })
   });
 
-  const response = await fetch(`${AUTH0_BASE}/oauth/token`, {
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(data.error_description || data.error || "認証コードを送信できませんでした。");
+  }
+
+  return data;
+}
+
+async function verifyOob(mfaToken, oobCode, bindingCode = "") {
+  const response = await fetch(`${WORKER_URL}/mfa-verify`, {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mfaToken,
+      oobCode,
+      bindingCode
+    })
   });
 
   return { response, data: await readJson(response) };
@@ -984,11 +1240,10 @@ async function pollGuardian(mfaToken, oobCode) {
     if (pollingStopped) return;
 
     await wait(interval);
-
     const { response, data } = await verifyOob(mfaToken, oobCode);
 
     if (response.ok && data.access_token) {
-      finishLogin(data);
+      await finishLogin(data);
       return;
     }
 
@@ -1006,6 +1261,8 @@ async function pollGuardian(mfaToken, oobCode) {
 }
 
 function showGuardianEnrollment(data) {
+  mfaCodeArea.style.display = "none";
+  pendingMfaChallenge = null;
   enrollmentArea.style.display = "block";
   guardianQr.innerHTML = "";
 
@@ -1022,14 +1279,116 @@ function showGuardianEnrollment(data) {
   showAuthStatus("GuardianアプリでQRコードを読み取ってください。");
 }
 
-function finishLogin(tokenData) {
+function showCodeChallenge(mfaToken, oobCode, channel, destination = "") {
+  enrollmentArea.style.display = "none";
+  pendingMfaChallenge = { mfaToken, oobCode, channel };
+  mfaCode.value = "";
+
+  const methodText = channel === "email" ? "メール" : "SMS";
+  const destinationText = destination ? `（${destination}）` : "";
+  mfaCodeMessage.textContent = `${methodText}${destinationText}に届いた認証コードを入力してください。`;
+  mfaCodeArea.style.display = "block";
+  showAuthStatus(`${methodText}で認証コードを送信しました。`);
+  mfaCode.focus();
+}
+
+function loginAuthenticatorKey(item) {
+  if (item.authenticator_type === "oob" && item.oob_channel === "auth0") return "app";
+  if (item.authenticator_type === "oob" && item.oob_channel === "sms") return "phone";
+  if (item.authenticator_type === "oob" && item.oob_channel === "email") return "email";
+  return "";
+}
+
+function loginAuthenticatorLabel(key) {
+  if (key === "app") return "アプリから認証";
+  if (key === "phone") return "電話認証（SMS）";
+  if (key === "email") return "メール認証";
+  return "認証";
+}
+
+function showLoginMfaMethodChoice(mfaToken, authenticators) {
+  pendingLoginMfaToken = mfaToken;
+  loginMfaAuthenticators = authenticators.filter(item => item.active && loginAuthenticatorKey(item));
+  mfaMethodOptions.innerHTML = "";
+  mfaMethodArea.style.display = "block";
+  enrollmentArea.style.display = "none";
+  mfaCodeArea.style.display = "none";
+
+  const methods = [
+    { key: "app", label: "アプリから認証" },
+    { key: "phone", label: "電話認証（SMS）" },
+    { key: "email", label: "メール認証" }
+  ];
+
+  let firstAvailable = true;
+
+  methods.forEach(method => {
+    const authenticator = loginMfaAuthenticators.find(item => loginAuthenticatorKey(item) === method.key);
+    const allowInitialAppEnrollment = method.key === "app" && loginMfaAuthenticators.length === 0;
+    const available = Boolean(authenticator) || allowInitialAppEnrollment;
+
+    const label = document.createElement("label");
+    label.className = `mfa-method-option${available ? "" : " unavailable"}`;
+
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.name = "login-mfa-method";
+    radio.value = method.key;
+    radio.disabled = !available;
+    radio.dataset.authenticatorId = authenticator?.id || "";
+    radio.dataset.destination = authenticator?.name || "";
+
+    if (available && firstAvailable) {
+      radio.checked = true;
+      firstAvailable = false;
+    }
+
+    const text = document.createElement("span");
+    text.textContent = available
+      ? method.label
+      : `${method.label}（未登録）`;
+
+    label.appendChild(radio);
+    label.appendChild(text);
+    mfaMethodOptions.appendChild(label);
+  });
+
+  mfaSendButton.disabled = firstAvailable;
+  showAuthStatus("ID・パスワードを確認しました。認証方法を選択してください。");
+}
+
+async function fetchSessionProfile(accessToken) {
+  const response = await fetch(`${WORKER_URL}/session-profile`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(data.error || "ログイン中のアカウント情報を確認できませんでした。");
+  }
+
+  return data;
+}
+
+async function finishLogin(tokenData) {
   pollingStopped = true;
+  pendingMfaChallenge = null;
+  pendingLoginMfaToken = "";
+  loginMfaAuthenticators = [];
+  mfaMethodArea.style.display = "none";
+  mfaCodeArea.style.display = "none";
+  enrollmentArea.style.display = "none";
 
   const expiresAt = Date.now() + (Number(tokenData.expires_in || 600) * 1000);
-  const idClaims = tokenData.id_token ? decodeJwtPayload(tokenData.id_token) : {};
   const accessClaims = decodeJwtPayload(tokenData.access_token);
-  const displayName = idClaims.name || idClaims.nickname || adminId.value.trim() || "管理者";
-  const userSub = accessClaims.sub || idClaims.sub || "";
+  const profile = await fetchSessionProfile(tokenData.access_token);
+  const displayName = profile.name || profile.username || adminId.value.trim() || "管理者";
+  const userSub = profile.sub || accessClaims.sub || "";
 
   sessionStorage.setItem("admin_access_token", tokenData.access_token);
   sessionStorage.setItem("admin_expires_at", String(expiresAt));
@@ -1059,6 +1418,185 @@ function applyReadOnlyMode(enabled) {
   newsAddButton.disabled = enabled;
   passwordButton.disabled = enabled;
   developerRequestSendButton.disabled = enabled;
+}
+
+function mfaMethodLabel(value) {
+  if (value === "phone") return "電話認証（SMS）";
+  if (value === "email") return "メール認証";
+  return "アプリから認証";
+}
+
+function updateMfaContactRequirements() {
+  const method = createAdminMfaMethod.value;
+  createAdminPhone.required = method === "phone";
+  createAdminEmail.required = method === "email";
+}
+
+function resetAccountVerificationUi() {
+  accountVerificationPollingStopped = true;
+  pendingCreatedAccount = null;
+  accountVerificationArea.style.display = "none";
+  accountGuardianQr.style.display = "none";
+  accountGuardianQr.innerHTML = "";
+  accountVerificationCodeForm.style.display = "none";
+  accountVerificationCode.value = "";
+}
+
+function setCreateAdminFormDisabled(disabled) {
+  createAdminForm.querySelectorAll("input, select, button").forEach(element => {
+    element.disabled = disabled;
+  });
+}
+
+async function finalizeCreatedAccount(verifiedAccessToken) {
+  if (!pendingCreatedAccount) {
+    throw new Error("作成中のアカウント情報が見つかりません。");
+  }
+
+  const ownerToken = sessionStorage.getItem("admin_access_token");
+  const response = await fetch(`${WORKER_URL}/create-admin-finalize`, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${ownerToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId: pendingCreatedAccount.userId,
+      verifiedAccessToken,
+      mfaMethod: pendingCreatedAccount.mfaMethod
+    })
+  });
+
+  const data = await readJson(response);
+  if (!response.ok) {
+    throw new Error(data.error || "アカウントの認証完了処理に失敗しました。");
+  }
+
+  accountVerificationPollingStopped = true;
+  accountVerificationArea.style.display = "none";
+  accountStatus.style.display = "none";
+  accountResultTitle.textContent = "認証が完了し、アカウントを作成しました。";
+  createdFullName.textContent = pendingCreatedAccount.fullName;
+  createdUsername.textContent = pendingCreatedAccount.username;
+  createdPassword.textContent = pendingCreatedAccount.initialPassword;
+  createdMfaMethod.textContent = mfaMethodLabel(pendingCreatedAccount.mfaMethod);
+  accountResult.style.display = "block";
+  createAdminForm.reset();
+  setCreateAdminFormDisabled(false);
+  updateMfaContactRequirements();
+  pendingCreatedAccount = null;
+}
+
+async function pollAccountGuardian(mfaToken, oobCode) {
+  accountVerificationPollingStopped = false;
+  let interval = 5000;
+
+  for (let attempt = 0; attempt < 30; attempt++) {
+    if (accountVerificationPollingStopped) return;
+
+    await wait(interval);
+    const { response, data } = await verifyOob(mfaToken, oobCode);
+
+    if (response.ok && data.access_token) {
+      await finalizeCreatedAccount(data.access_token);
+      return;
+    }
+
+    if (data.error === "authorization_pending") continue;
+
+    if (data.error === "slow_down") {
+      interval = Math.min(interval + 2000, 10000);
+      continue;
+    }
+
+    throw new Error(data.error_description || "アプリ認証を完了できませんでした。");
+  }
+
+  throw new Error("アプリ認証待ちがタイムアウトしました。");
+}
+
+async function beginCreatedAccountVerification(accountData) {
+  pendingCreatedAccount = accountData;
+  accountVerificationArea.style.display = "block";
+  accountGuardianQr.style.display = "none";
+  accountGuardianQr.innerHTML = "";
+  accountVerificationCodeForm.style.display = "none";
+  accountVerificationCode.value = "";
+
+  showAccountStatus("入力した認証先を確認しています…");
+
+  const { response, data } = await requestPasswordLogin(
+    accountData.username,
+    accountData.initialPassword
+  );
+
+  if (response.ok && data.access_token) {
+    throw new Error("Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。");
+  }
+
+  if (data.error !== "mfa_required" || !data.mfa_token) {
+    throw new Error(data.error_description || "作成したアカウントの認証を開始できませんでした。");
+  }
+
+  const mfaToken = data.mfa_token;
+  const authenticators = await getAuthenticators(mfaToken);
+  const active = authenticators.filter(item => item.active);
+  const selectedKey = accountData.mfaMethod;
+  const selectedAuthenticator = active.find(item => loginAuthenticatorKey(item) === selectedKey);
+
+  if (selectedAuthenticator) {
+    const challenge = await requestMfaChallenge(mfaToken, selectedAuthenticator.id);
+    pendingCreatedAccount.mfaToken = mfaToken;
+    pendingCreatedAccount.oobCode = challenge.oob_code;
+
+    if (selectedKey === "app") {
+      accountVerificationMessage.textContent = "Auth0 Guardianに通知しました。スマホで承認してください。";
+      accountStatus.style.display = "none";
+      await pollAccountGuardian(mfaToken, challenge.oob_code);
+      return;
+    }
+
+    const methodText = selectedKey === "email" ? "メール" : "SMS";
+    accountVerificationMessage.textContent = `${methodText}へ認証コードを送信しました。届いたコードを入力してください。`;
+    accountVerificationCodeForm.style.display = "block";
+    accountStatus.style.display = "none";
+    accountVerificationCode.focus();
+    return;
+  }
+
+  if (active.length > 0) {
+    throw new Error("この未完了アカウントには別の認証方法がすでに登録されています。Auth0で状態を確認してください。");
+  }
+
+  if (selectedKey === "app") {
+    const association = await associateGuardian(mfaToken);
+    pendingCreatedAccount.mfaToken = mfaToken;
+    pendingCreatedAccount.oobCode = association.oob_code;
+
+    accountGuardianQr.style.display = "block";
+    new QRCode(accountGuardianQr, {
+      text: association.barcode_uri,
+      width: 200,
+      height: 200
+    });
+
+    accountVerificationMessage.textContent = "GuardianアプリでQRコードを読み取り、登録を承認してください。";
+    accountStatus.style.display = "none";
+    await pollAccountGuardian(mfaToken, association.oob_code);
+    return;
+  }
+
+  const channel = selectedKey === "phone" ? "sms" : "email";
+  const destination = selectedKey === "phone" ? accountData.phone : accountData.email;
+  const association = await associateContactAuthenticator(mfaToken, channel, destination);
+  pendingCreatedAccount.mfaToken = mfaToken;
+  pendingCreatedAccount.oobCode = association.oob_code;
+
+  const methodText = selectedKey === "email" ? "メール" : "SMS";
+  accountVerificationMessage.textContent = `${methodText}へ認証コードを送信しました。届いたコードを入力してください。`;
+  accountVerificationCodeForm.style.display = "block";
+  accountStatus.style.display = "none";
+  accountVerificationCode.focus();
 }
 
 async function loadAdminUsers() {
@@ -1095,14 +1633,19 @@ async function loadAdminUsers() {
 
     users.forEach(user => {
       const row = document.createElement("tr");
-      const nameCell = document.createElement("td");
-      const idCell = document.createElement("td");
 
-      nameCell.textContent = user.name || "—";
-      idCell.textContent = user.username || "—";
+      [
+        user.name || "—",
+        user.username || "—",
+        user.phone || "—",
+        user.email || "—",
+        mfaMethodLabel(user.mfaMethod)
+      ].forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
 
-      row.appendChild(nameCell);
-      row.appendChild(idCell);
       developerUsersBody.appendChild(row);
     });
 
@@ -1113,11 +1656,271 @@ async function loadAdminUsers() {
   }
 }
 
+function formatDateTime(value) {
+  if (!value) return "";
+
+  const date = new Date(
+    value.replace(" ", "T") +
+    (value.includes("Z") ? "" : "Z")
+  );
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Tokyo"
+  }).format(date);
+}
+
+function buildRequestCard(item, ownerMode = false) {
+  const card = document.createElement("article");
+  card.className = "request-card";
+
+  const title = document.createElement("h3");
+  title.className = "request-card-title";
+  title.textContent = item.subject || "（件名なし）";
+  card.appendChild(title);
+
+  const meta = document.createElement("div");
+  meta.className = "request-meta";
+
+  const sender = ownerMode
+    ? `${item.requesterName || "—"} / ${item.requesterUsername || "—"}`
+    : `送信日時：${formatDateTime(item.createdAt)}`;
+
+  meta.textContent = ownerMode
+    ? `${sender}　送信日時：${formatDateTime(item.createdAt)}`
+    : sender;
+
+  card.appendChild(meta);
+
+  const body = document.createElement("div");
+  body.className = "request-body";
+  body.textContent = item.body || "";
+  card.appendChild(body);
+
+  if (ownerMode) {
+    const form = document.createElement("div");
+    form.className = "request-answer-form";
+
+    const textarea = document.createElement("textarea");
+    textarea.className = "form-textarea";
+    textarea.maxLength = 4000;
+    textarea.placeholder = "回答を入力";
+    textarea.value = item.response || "";
+
+    const button = document.createElement("button");
+    button.className = "main-button";
+    button.type = "button";
+    button.textContent = item.response
+      ? "回答を更新"
+      : "回答を保存";
+
+    button.addEventListener("click", async () => {
+      const responseText = textarea.value.trim();
+
+      if (!responseText) {
+        alert("回答を入力してください。");
+        return;
+      }
+
+      button.disabled = true;
+
+      try {
+        await saveDeveloperResponse(
+          item.id,
+          responseText
+        );
+
+        await loadDeveloperRequestsAdmin();
+      } catch (error) {
+        alert(
+          error.message ||
+          "回答を保存できませんでした。"
+        );
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    form.appendChild(textarea);
+    form.appendChild(button);
+    card.appendChild(form);
+  } else if (item.response) {
+    const answer = document.createElement("div");
+    answer.className = "request-answer-box";
+    answer.textContent = `回答\n${item.response}`;
+    card.appendChild(answer);
+  } else {
+    const pending = document.createElement("div");
+    pending.className = "request-answer-box";
+    pending.textContent = "回答待ち";
+    card.appendChild(pending);
+  }
+
+  return card;
+}
+
+async function loadMyDeveloperRequests() {
+  const token = sessionStorage.getItem("admin_access_token");
+  if (!token) return;
+
+  myDeveloperRequestsStatus.textContent = "読み込み中...";
+  myDeveloperRequestsStatus.style.display = "block";
+  myDeveloperRequestsList.innerHTML = "";
+
+  try {
+    const response = await fetch(
+      `${WORKER_URL}/developer-request-mine`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const data = await readJson(response);
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "要望一覧を取得できませんでした。"
+      );
+    }
+
+    const items = Array.isArray(data.requests)
+      ? data.requests
+      : [];
+
+    if (items.length === 0) {
+      myDeveloperRequestsStatus.textContent =
+        "送信済みの要望はありません。";
+      return;
+    }
+
+    items.forEach(item => {
+      myDeveloperRequestsList.appendChild(
+        buildRequestCard(item, false)
+      );
+    });
+
+    myDeveloperRequestsStatus.style.display = "none";
+  } catch (error) {
+    console.error(error);
+
+    myDeveloperRequestsStatus.textContent =
+      error.message ||
+      "要望一覧を取得できませんでした。";
+  }
+}
+
+async function loadDeveloperRequestsAdmin() {
+  const token = sessionStorage.getItem("admin_access_token");
+  const adminSub = sessionStorage.getItem("admin_sub") || "";
+
+  if (!token || adminSub !== ACCOUNT_CREATOR_SUB) return;
+
+  developerResponsesStatus.textContent = "読み込み中...";
+  developerResponsesStatus.style.display = "block";
+  developerResponsesList.innerHTML = "";
+
+  try {
+    const response = await fetch(
+      `${WORKER_URL}/developer-requests-admin`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const data = await readJson(response);
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "要望一覧を取得できませんでした。"
+      );
+    }
+
+    const items = Array.isArray(data.requests)
+      ? data.requests
+      : [];
+
+    if (items.length === 0) {
+      developerResponsesStatus.textContent =
+        "届いている要望はありません。";
+      return;
+    }
+
+    items.forEach(item => {
+      developerResponsesList.appendChild(
+        buildRequestCard(item, true)
+      );
+    });
+
+    developerResponsesStatus.style.display = "none";
+  } catch (error) {
+    console.error(error);
+
+    developerResponsesStatus.textContent =
+      error.message ||
+      "要望一覧を取得できませんでした。";
+  }
+}
+
+async function saveDeveloperResponse(id, responseText) {
+  const token = sessionStorage.getItem("admin_access_token");
+
+  if (!token) {
+    throw new Error("ログイン情報がありません。");
+  }
+
+  const response = await fetch(
+    `${WORKER_URL}/developer-request-answer`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id,
+        response: responseText
+      })
+    }
+  );
+
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      "回答を保存できませんでした。"
+    );
+  }
+}
+
 function showAdminView(viewName) {
   const adminSub = sessionStorage.getItem("admin_sub") || "";
 
+  const developerOnlyViews = [
+    "developer",
+    "developer-responses",
+    "admin-users",
+    "create-admin"
+  ];
+
   if (
-    (viewName === "developer" || viewName === "create-admin") &&
+    developerOnlyViews.includes(viewName) &&
     adminSub !== ACCOUNT_CREATOR_SUB
   ) {
     viewName = "home";
@@ -1131,22 +1934,45 @@ function showAdminView(viewName) {
     inquiries: "お問い合わせ一覧",
     "developer-request": "デベロッパーへの要望",
     developer: "デベロッパーメニュー",
+    "developer-responses": "デベロッパーへの要望の回答",
+    "admin-users": "アカウント一覧",
     "hp-update": "HP更新",
     "create-admin": "アカウント作成"
   };
 
-  pageTitle.textContent = viewTitles[viewName] || "管理者画面";
+  pageTitle.textContent =
+    viewTitles[viewName] ||
+    "管理者画面";
 
-  adminViews.forEach(view => view.classList.remove("active"));
+  adminViews.forEach(view =>
+    view.classList.remove("active")
+  );
 
-  const target = document.getElementById(`view-${viewName}`);
-  if (target) target.classList.add("active");
+  const target =
+    document.getElementById(
+      `view-${viewName}`
+    );
 
-  if (viewName === "developer") {
+  if (target) {
+    target.classList.add("active");
+  }
+
+  if (viewName === "admin-users") {
     loadAdminUsers();
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (viewName === "developer-responses") {
+    loadDeveloperRequestsAdmin();
+  }
+
+  if (viewName === "developer-request") {
+    loadMyDeveloperRequests();
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 function showAdmin() {
@@ -1154,16 +1980,32 @@ function showAdmin() {
   adminContent.style.display = "block";
   loggedInTopbar.style.display = "flex";
   pageSubtitle.style.display = "none";
-  userName.textContent = sessionStorage.getItem("admin_username") || "管理者";
 
-  const adminSub = sessionStorage.getItem("admin_sub") || "";
-  const isDeveloper = adminSub === ACCOUNT_CREATOR_SUB;
-  const isDummy = adminSub === DUMMY_ACCOUNT_SUB;
+  userName.textContent =
+    sessionStorage.getItem("admin_username") ||
+    "管理者";
+
+  const adminSub =
+    sessionStorage.getItem("admin_sub") ||
+    "";
+
+  const isDeveloper =
+    adminSub === ACCOUNT_CREATOR_SUB;
+
+  const isDummy =
+    adminSub === DUMMY_ACCOUNT_SUB;
 
   applyReadOnlyMode(isDummy);
 
-  developerMenuButton.classList.toggle("hidden", !isDeveloper);
-  hpUpdateHomeButton.classList.toggle("hidden", isDeveloper);
+  developerMenuButton.classList.toggle(
+    "hidden",
+    !isDeveloper
+  );
+
+  hpUpdateHomeButton.classList.toggle(
+    "hidden",
+    isDeveloper
+  );
 
   showAdminView("home");
 }
@@ -1174,8 +2016,18 @@ function showLogin() {
   loggedInTopbar.style.display = "none";
   pageSubtitle.style.display = "block";
   loginSection.style.display = "block";
+
   developerMenuButton.classList.add("hidden");
   hpUpdateHomeButton.classList.add("hidden");
+
+  enrollmentArea.style.display = "none";
+  mfaMethodArea.style.display = "none";
+  mfaCodeArea.style.display = "none";
+
+  pendingMfaChallenge = null;
+  pendingLoginMfaToken = "";
+  loginMfaAuthenticators = [];
+
   applyReadOnlyMode(false);
 }
 
@@ -1187,10 +2039,19 @@ function clearSession() {
 }
 
 function restoreSession() {
-  const token = sessionStorage.getItem("admin_access_token");
-  const expiresAt = Number(sessionStorage.getItem("admin_expires_at") || 0);
+  const token =
+    sessionStorage.getItem("admin_access_token");
 
-  if (!token || Date.now() >= expiresAt) {
+  const expiresAt =
+    Number(
+      sessionStorage.getItem("admin_expires_at") ||
+      0
+    );
+
+  if (
+    !token ||
+    Date.now() >= expiresAt
+  ) {
     clearSession();
     showLogin();
     return;
@@ -1201,7 +2062,9 @@ function restoreSession() {
 
 navigationButtons.forEach(button => {
   button.addEventListener("click", () => {
-    showAdminView(button.dataset.view);
+    showAdminView(
+      button.dataset.view
+    );
   });
 });
 
@@ -1213,6 +2076,7 @@ homeButtons.forEach(button => {
 
 meetingForm.addEventListener("submit", event => {
   event.preventDefault();
+
   if (isDummyAccount()) return;
 
   showViewStatus(
@@ -1223,6 +2087,7 @@ meetingForm.addEventListener("submit", event => {
 
 newsForm.addEventListener("submit", event => {
   event.preventDefault();
+
   if (isDummyAccount()) return;
 
   showViewStatus(
@@ -1231,221 +2096,748 @@ newsForm.addEventListener("submit", event => {
   );
 });
 
-developerRequestForm.addEventListener("submit", event => {
-  event.preventDefault();
-  if (isDummyAccount()) return;
+developerRequestForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
 
-  showViewStatus(
-    developerRequestStatus,
-    "要望入力画面は完成しています。送信・保存先は次に接続します。"
-  );
-});
+    if (isDummyAccount()) return;
 
-createAdminForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  clearAccountMessages();
-  accountResult.style.display = "none";
+    const token =
+      sessionStorage.getItem(
+        "admin_access_token"
+      );
 
-  const token = sessionStorage.getItem("admin_access_token");
-  const adminSub = sessionStorage.getItem("admin_sub") || "";
+    if (!token) return;
 
-  if (!token || adminSub !== ACCOUNT_CREATOR_SUB) {
-    showAccountError("この操作を行う権限がありません。");
-    return;
-  }
+    developerRequestSendButton.disabled = true;
 
-  createAdminButton.disabled = true;
-  showAccountStatus("アカウントを作成しています…");
-
-  try {
-    const response = await fetch(`${WORKER_URL}/create-admin`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        fullName: createAdminName.value.trim(),
-        lastNameRoman: createAdminLast.value.trim(),
-        firstNameRoman: createAdminFirst.value.trim(),
-        birthYear: Number(createAdminYear.value)
-      })
-    });
-
-    const data = await readJson(response);
-
-    if (!response.ok) {
-      throw new Error(data.error || "アカウントを作成できませんでした。");
-    }
-
-    accountStatus.style.display = "none";
-    accountResultTitle.textContent = data.simulated
-      ? "仮発行しました（実際のアカウントは作成していません）。"
-      : "アカウントを作成しました。";
-
-    createdFullName.textContent = data.fullName;
-    createdUsername.textContent = data.username;
-    createdPassword.textContent = data.initialPassword;
-    accountResult.style.display = "block";
-    createAdminForm.reset();
-  } catch (error) {
-    console.error(error);
-    showAccountError(error.message || "アカウント作成中にエラーが発生しました。");
-  } finally {
-    createAdminButton.disabled = false;
-  }
-});
-
-copyCreatedUsername.addEventListener("click", async () => {
-  await navigator.clipboard.writeText(createdUsername.textContent);
-  copyCreatedUsername.textContent = "コピーしました";
-  setTimeout(() => { copyCreatedUsername.textContent = "IDをコピー"; }, 1500);
-});
-
-copyCreatedPassword.addEventListener("click", async () => {
-  await navigator.clipboard.writeText(createdPassword.textContent);
-  copyCreatedPassword.textContent = "コピーしました";
-  setTimeout(() => { copyCreatedPassword.textContent = "PWをコピー"; }, 1500);
-});
-
-loginForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  pollingStopped = true;
-  clearAuthMessages();
-  enrollmentArea.style.display = "none";
-  loginButton.disabled = true;
-
-  const username = adminId.value.trim();
-  const password = adminPassword.value;
-
-  try {
-    showAuthStatus("ID・パスワードを確認しています…");
-
-    const { response, data } = await requestPasswordLogin(username, password);
-    adminPassword.value = "";
-
-    if (response.ok && data.access_token) {
-      throw new Error("Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。安全のため管理画面は開きません。");
-    }
-
-    if (data.error !== "mfa_required" || !data.mfa_token) {
-      if (data.error === "invalid_grant") {
-        throw new Error("IDまたはパスワードが違います。");
-      }
-
-      throw new Error(data.error_description || "ログインできませんでした。");
-    }
-
-    const mfaToken = data.mfa_token;
-    const authenticators = await getAuthenticators(mfaToken);
-
-    const pushAuthenticator = authenticators.find(item =>
-      item.authenticator_type === "oob" &&
-      item.oob_channel === "auth0" &&
-      item.active
+    showViewStatus(
+      developerRequestStatus,
+      "送信しています…"
     );
 
-    if (pushAuthenticator) {
-      const challenge = await requestPushChallenge(mfaToken, pushAuthenticator.id);
-      showAuthStatus("スマホのAuth0 Guardianに通知を送りました。承認してください。");
-      await pollGuardian(mfaToken, challenge.oob_code);
+    try {
+      const response = await fetch(
+        `${WORKER_URL}/developer-request-create`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization":
+              `Bearer ${token}`,
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            subject:
+              developerRequestTitle.value.trim(),
+            body:
+              developerRequestBody.value.trim()
+          })
+        }
+      );
+
+      const data = await readJson(response);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "要望を送信できませんでした。"
+        );
+      }
+
+      developerRequestForm.reset();
+
+      showViewStatus(
+        developerRequestStatus,
+        "要望を送信しました。"
+      );
+
+      await loadMyDeveloperRequests();
+    } catch (error) {
+      console.error(error);
+
+      showViewStatus(
+        developerRequestStatus,
+        error.message ||
+        "要望を送信できませんでした。"
+      );
+    } finally {
+      developerRequestSendButton.disabled = false;
+    }
+  }
+);
+
+createAdminMfaMethod.addEventListener(
+  "change",
+  updateMfaContactRequirements
+);
+
+updateMfaContactRequirements();
+
+createAdminForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    clearAccountMessages();
+    accountResult.style.display = "none";
+    resetAccountVerificationUi();
+
+    const token =
+      sessionStorage.getItem(
+        "admin_access_token"
+      );
+
+    const adminSub =
+      sessionStorage.getItem(
+        "admin_sub"
+      ) || "";
+
+    if (
+      !token ||
+      adminSub !== ACCOUNT_CREATOR_SUB
+    ) {
+      showAccountError(
+        "この操作を行う権限がありません。"
+      );
       return;
     }
 
-    if (authenticators.length === 0) {
-      const association = await associateGuardian(mfaToken);
-      showGuardianEnrollment(association);
-      await pollGuardian(mfaToken, association.oob_code);
+    const mfaMethod =
+      createAdminMfaMethod.value;
+
+    const phone =
+      createAdminPhone.value.trim();
+
+    const email =
+      createAdminEmail.value.trim();
+
+    if (
+      mfaMethod === "phone" &&
+      !phone
+    ) {
+      showAccountError(
+        "電話認証を選ぶ場合は電話番号を入力してください。"
+      );
       return;
     }
 
-    throw new Error("Guardian Pushが登録されていません。");
-  } catch (error) {
-    console.error(error);
-    showAuthError(error.message || "認証中にエラーが発生しました。");
-  } finally {
-    loginButton.disabled = false;
-  }
-});
-
-passwordForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  clearPasswordMessages();
-
-  if (isDummyAccount()) return;
-
-  const first = newPassword.value;
-  const second = newPasswordConfirm.value;
-
-  if (first !== second) {
-    showPasswordError("確認用パスワードが一致しません。");
-    return;
-  }
-
-  if (
-    first.length < 8 ||
-    first.length > 128 ||
-    !/[A-Za-z]/.test(first) ||
-    !/[0-9]/.test(first)
-  ) {
-    showPasswordError("8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。");
-    return;
-  }
-
-  const token = sessionStorage.getItem("admin_access_token");
-
-  if (!token) {
-    clearSession();
-    showLogin();
-    showAuthError("ログイン情報の有効期限が切れました。もう一度ログインしてください。");
-    return;
-  }
-
-  passwordButton.disabled = true;
-  showPasswordStatus("パスワードを変更しています…");
-
-  try {
-    const response = await fetch(`${WORKER_URL}/change-password`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ newPassword: first })
-    });
-
-    const data = await readJson(response);
-
-    if (!response.ok) {
-      throw new Error(data.error || "パスワードを変更できませんでした。");
+    if (
+      mfaMethod === "email" &&
+      !email
+    ) {
+      showAccountError(
+        "メール認証を選ぶ場合はメールアドレスを入力してください。"
+      );
+      return;
     }
 
-    newPassword.value = "";
-    newPasswordConfirm.value = "";
-    clearSession();
-    showLogin();
+    createAdminButton.disabled = true;
+
+    showAccountStatus(
+      "認証用のアカウントを準備しています…"
+    );
+
+    try {
+      const response = await fetch(
+        `${WORKER_URL}/create-admin`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization":
+              `Bearer ${token}`,
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            fullName:
+              createAdminName.value.trim(),
+            lastNameRoman:
+              createAdminLast.value.trim(),
+            firstNameRoman:
+              createAdminFirst.value.trim(),
+            birthYear:
+              Number(
+                createAdminYear.value
+              ),
+            phone,
+            email,
+            mfaMethod
+          })
+        }
+      );
+
+      const data =
+        await readJson(response);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "アカウントを準備できませんでした。"
+        );
+      }
+
+      if (data.simulated) {
+        accountStatus.style.display = "none";
+
+        accountResultTitle.textContent =
+          "仮発行しました（実際のアカウントは作成していません）。";
+
+        createdFullName.textContent =
+          data.fullName;
+
+        createdUsername.textContent =
+          data.username;
+
+        createdPassword.textContent =
+          data.initialPassword;
+
+        createdMfaMethod.textContent =
+          mfaMethodLabel(
+            data.mfaMethod
+          );
+
+        accountResult.style.display =
+          "block";
+
+        createAdminForm.reset();
+
+        updateMfaContactRequirements();
+
+        return;
+      }
+
+      setCreateAdminFormDisabled(true);
+
+      await beginCreatedAccountVerification(
+        data
+      );
+    } catch (error) {
+      console.error(error);
+
+      setCreateAdminFormDisabled(false);
+      updateMfaContactRequirements();
+
+      showAccountError(
+        error.message ||
+        "アカウント作成中にエラーが発生しました。"
+      );
+    } finally {
+      if (!pendingCreatedAccount) {
+        createAdminButton.disabled = false;
+      }
+    }
+  }
+);
+
+accountVerificationCodeForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (
+      !pendingCreatedAccount?.mfaToken ||
+      !pendingCreatedAccount?.oobCode
+    ) {
+      showAccountError(
+        "認証情報が見つかりません。もう一度入力からやり直してください。"
+      );
+      return;
+    }
+
+    const code =
+      accountVerificationCode.value.trim();
+
+    if (!/^\d{4,10}$/.test(code)) {
+      showAccountError(
+        "認証コードを数字で入力してください。"
+      );
+      return;
+    }
+
+    accountVerificationCodeButton.disabled = true;
+
+    showAccountStatus(
+      "認証コードを確認しています…"
+    );
+
+    try {
+      const { response, data } =
+        await verifyOob(
+          pendingCreatedAccount.mfaToken,
+          pendingCreatedAccount.oobCode,
+          code
+        );
+
+      if (
+        !response.ok ||
+        !data.access_token
+      ) {
+        throw new Error(
+          data.error_description ||
+          "認証コードが正しくありません。"
+        );
+      }
+
+      await finalizeCreatedAccount(
+        data.access_token
+      );
+    } catch (error) {
+      console.error(error);
+
+      showAccountError(
+        error.message ||
+        "入力内容を認証できませんでした。"
+      );
+    } finally {
+      accountVerificationCodeButton.disabled = false;
+    }
+  }
+);
+
+copyCreatedUsername.addEventListener(
+  "click",
+  async () => {
+    await navigator.clipboard.writeText(
+      createdUsername.textContent
+    );
+
+    copyCreatedUsername.textContent =
+      "コピーしました";
+
+    setTimeout(() => {
+      copyCreatedUsername.textContent =
+        "IDをコピー";
+    }, 1500);
+  }
+);
+
+copyCreatedPassword.addEventListener(
+  "click",
+  async () => {
+    await navigator.clipboard.writeText(
+      createdPassword.textContent
+    );
+
+    copyCreatedPassword.textContent =
+      "コピーしました";
+
+    setTimeout(() => {
+      copyCreatedPassword.textContent =
+        "PWをコピー";
+    }, 1500);
+  }
+);
+
+mfaCodeForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (!pendingMfaChallenge) {
+      showAuthError(
+        "認証情報が見つかりません。もう一度ログインしてください。"
+      );
+      return;
+    }
+
+    const code =
+      mfaCode.value.trim();
+
+    if (!/^\d{4,10}$/.test(code)) {
+      showAuthError(
+        "認証コードを数字で入力してください。"
+      );
+      return;
+    }
+
+    mfaCodeButton.disabled = true;
+
+    try {
+      const { response, data } =
+        await verifyOob(
+          pendingMfaChallenge.mfaToken,
+          pendingMfaChallenge.oobCode,
+          code
+        );
+
+      if (
+        !response.ok ||
+        !data.access_token
+      ) {
+        throw new Error(
+          data.error_description ||
+          "認証コードが正しくありません。"
+        );
+      }
+
+      await finishLogin(
+        data
+      );
+    } catch (error) {
+      console.error(error);
+
+      showAuthError(
+        error.message ||
+        "認証を完了できませんでした。"
+      );
+    } finally {
+      mfaCodeButton.disabled = false;
+    }
+  }
+);
+
+mfaSendButton.addEventListener(
+  "click",
+  async () => {
     clearAuthMessages();
-    showAuthStatus("パスワードを変更しました。新しいパスワードで再ログインしてください。");
-  } catch (error) {
-    console.error(error);
-    showPasswordError(error.message || "パスワード変更中にエラーが発生しました。");
-  } finally {
-    passwordButton.disabled = false;
-  }
-});
 
-logoutButton.addEventListener("click", () => {
-  pollingStopped = true;
-  clearSession();
-  showLogin();
-  adminId.value = "";
-  adminPassword.value = "";
-  enrollmentArea.style.display = "none";
-  clearAuthMessages();
-  clearPasswordMessages();
-  clearAccountMessages();
-  accountResult.style.display = "none";
-});
+    if (!pendingLoginMfaToken) {
+      showAuthError(
+        "認証情報が見つかりません。もう一度ID・パスワードからログインしてください。"
+      );
+      return;
+    }
+
+    const selected =
+      document.querySelector(
+        'input[name="login-mfa-method"]:checked'
+      );
+
+    if (!selected) {
+      showAuthError(
+        "認証方法を選択してください。"
+      );
+      return;
+    }
+
+    const method =
+      selected.value;
+
+    mfaSendButton.disabled = true;
+    pollingStopped = true;
+    pendingMfaChallenge = null;
+
+    mfaCodeArea.style.display = "none";
+    enrollmentArea.style.display = "none";
+
+    try {
+      if (
+        method === "app" &&
+        !selected.dataset.authenticatorId
+      ) {
+        const association =
+          await associateGuardian(
+            pendingLoginMfaToken
+          );
+
+        showGuardianEnrollment(
+          association
+        );
+
+        showAuthStatus(
+          "GuardianアプリでQRコードを読み取り、登録後に承認してください。"
+        );
+
+        pollingStopped = false;
+
+        await pollGuardian(
+          pendingLoginMfaToken,
+          association.oob_code
+        );
+
+        return;
+      }
+
+      const authenticator =
+        loginMfaAuthenticators.find(
+          item =>
+            item.id ===
+            selected.dataset.authenticatorId
+        );
+
+      if (!authenticator) {
+        throw new Error(
+          "選択した認証方法を確認できませんでした。"
+        );
+      }
+
+      const challenge =
+        await requestMfaChallenge(
+          pendingLoginMfaToken,
+          authenticator.id
+        );
+
+      const channel =
+        authenticator.oob_channel;
+
+      if (channel === "auth0") {
+        showAuthStatus(
+          "Auth0 Guardianに通知しました。スマホで承認してください。"
+        );
+
+        pollingStopped = false;
+
+        await pollGuardian(
+          pendingLoginMfaToken,
+          challenge.oob_code
+        );
+
+        return;
+      }
+
+      if (
+        channel === "sms" ||
+        channel === "email"
+      ) {
+        showCodeChallenge(
+          pendingLoginMfaToken,
+          challenge.oob_code,
+          channel,
+          authenticator.name || ""
+        );
+
+        return;
+      }
+
+      throw new Error(
+        "この管理画面で利用できない認証方法です。"
+      );
+    } catch (error) {
+      console.error(error);
+
+      showAuthError(
+        error.message ||
+        "認証を送信できませんでした。"
+      );
+    } finally {
+      mfaSendButton.disabled = false;
+    }
+  }
+);
+
+loginForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    pollingStopped = true;
+    pendingMfaChallenge = null;
+    pendingLoginMfaToken = "";
+    loginMfaAuthenticators = [];
+
+    clearAuthMessages();
+
+    enrollmentArea.style.display = "none";
+    mfaMethodArea.style.display = "none";
+    mfaCodeArea.style.display = "none";
+
+    loginButton.disabled = true;
+
+    const username =
+      adminId.value.trim();
+
+    const password =
+      adminPassword.value;
+
+    try {
+      showAuthStatus(
+        "ID・パスワードを確認しています…"
+      );
+
+      const { response, data } =
+        await requestPasswordLogin(
+          username,
+          password
+        );
+
+      adminPassword.value = "";
+
+      if (
+        response.ok &&
+        data.access_token
+      ) {
+        throw new Error(
+          "Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。安全のため管理画面は開きません。"
+        );
+      }
+
+      if (
+        data.error !== "mfa_required" ||
+        !data.mfa_token
+      ) {
+        if (
+          data.error === "invalid_grant"
+        ) {
+          throw new Error(
+            "IDまたはパスワードが違います。"
+          );
+        }
+
+        throw new Error(
+          data.error_description ||
+          "ログインできませんでした。"
+        );
+      }
+
+      const authenticators =
+        await getAuthenticators(
+          data.mfa_token
+        );
+
+      showLoginMfaMethodChoice(
+        data.mfa_token,
+        authenticators
+      );
+    } catch (error) {
+      console.error(error);
+
+      showAuthError(
+        error.message ||
+        "認証中にエラーが発生しました。"
+      );
+    } finally {
+      loginButton.disabled = false;
+    }
+  }
+);
+
+passwordForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    clearPasswordMessages();
+
+    if (isDummyAccount()) return;
+
+    const first =
+      newPassword.value;
+
+    const second =
+      newPasswordConfirm.value;
+
+    if (first !== second) {
+      showPasswordError(
+        "確認用パスワードが一致しません。"
+      );
+      return;
+    }
+
+    if (
+      first.length < 8 ||
+      first.length > 128 ||
+      !/[A-Za-z]/.test(first) ||
+      !/[0-9]/.test(first)
+    ) {
+      showPasswordError(
+        "8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。"
+      );
+      return;
+    }
+
+    const token =
+      sessionStorage.getItem(
+        "admin_access_token"
+      );
+
+    if (!token) {
+      clearSession();
+      showLogin();
+
+      showAuthError(
+        "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
+      );
+
+      return;
+    }
+
+    passwordButton.disabled = true;
+
+    showPasswordStatus(
+      "パスワードを変更しています…"
+    );
+
+    try {
+      const response = await fetch(
+        `${WORKER_URL}/change-password`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization":
+              `Bearer ${token}`,
+            "Content-Type":
+              "application/json"
+          },
+          body: JSON.stringify({
+            newPassword: first
+          })
+        }
+      );
+
+      const data =
+        await readJson(response);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "パスワードを変更できませんでした。"
+        );
+      }
+
+      newPassword.value = "";
+      newPasswordConfirm.value = "";
+
+      clearSession();
+      showLogin();
+      clearAuthMessages();
+
+      showAuthStatus(
+        "パスワードを変更しました。新しいパスワードで再ログインしてください。"
+      );
+    } catch (error) {
+      console.error(error);
+
+      showPasswordError(
+        error.message ||
+        "パスワード変更中にエラーが発生しました。"
+      );
+    } finally {
+      passwordButton.disabled = false;
+    }
+  }
+);
+
+logoutButton.addEventListener(
+  "click",
+  () => {
+    pollingStopped = true;
+    pendingMfaChallenge = null;
+    pendingLoginMfaToken = "";
+    loginMfaAuthenticators = [];
+    accountVerificationPollingStopped = true;
+
+    clearSession();
+    showLogin();
+
+    adminId.value = "";
+    adminPassword.value = "";
+    mfaCode.value = "";
+
+    enrollmentArea.style.display = "none";
+    mfaMethodArea.style.display = "none";
+    mfaCodeArea.style.display = "none";
+
+    resetAccountVerificationUi();
+
+    clearAuthMessages();
+    clearPasswordMessages();
+    clearAccountMessages();
+
+    accountResult.style.display = "none";
+  }
+);
 
 restoreSession();
 </script>
