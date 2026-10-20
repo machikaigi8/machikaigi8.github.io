@@ -1095,9 +1095,11 @@
                 </h3>
 
 
+                <!-- ★ 約580行目付近：PW条件 -->
                 <p class="password-note">
-                    12文字以上で、大文字・小文字・数字・記号を
+                    8文字以上で、半角英字と半角数字を
                     それぞれ1文字以上含めてください。
+                    記号を使用しても構いません。
                     変更後は自動的にログアウトします。
                 </p>
 
@@ -1122,6 +1124,8 @@
                             type="password"
                             id="new-password"
                             autocomplete="new-password"
+                            minlength="8"
+                            maxlength="128"
                             required
                         >
 
@@ -1143,6 +1147,8 @@
                             type="password"
                             id="new-password-confirm"
                             autocomplete="new-password"
+                            minlength="8"
+                            maxlength="128"
                             required
                         >
 
@@ -1179,7 +1185,6 @@
     </main>
 
 
-    <!-- QRコード生成 -->
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
     ></script>
@@ -1203,18 +1208,10 @@
             "Username-Password-Authentication";
 
 
-        /*
-           ★今回追加
-           Auth0からこのAPI用の
-           Access Tokenを取得する
-        */
         const API_AUDIENCE =
             "https://machikaigi8-admin-api";
 
 
-        /*
-           Cloudflare Worker
-        */
         const WORKER_URL =
             "https://machikaigi-admin-api.taka-souda516.workers.dev";
 
@@ -1513,9 +1510,6 @@
                     realm:
                         AUTH0_REALM,
 
-                    /*
-                       ★重要
-                    */
                     audience:
                         API_AUDIENCE,
 
@@ -2173,10 +2167,6 @@
                         "";
 
 
-                    /*
-                       MFAなしなら
-                       安全のため止める
-                    */
                     if (
                         response.ok
                         &&
@@ -2283,9 +2273,6 @@
                     }
 
 
-                    /*
-                       Guardian未登録
-                    */
                     if (
                         authenticators.length === 0
                     ) {
@@ -2350,7 +2337,7 @@
 
         /* =====================================
            パスワード変更
-           ===================================== */
+           ========================= */
 
         passwordForm.addEventListener(
 
@@ -2385,22 +2372,20 @@
                 }
 
 
+                /* ★ 約1070行目付近：PW条件 */
+
                 if (
-                    first.length < 12
+                    first.length < 8
                     ||
                     first.length > 128
                     ||
-                    !/[A-Z]/.test(first)
-                    ||
-                    !/[a-z]/.test(first)
+                    !/[A-Za-z]/.test(first)
                     ||
                     !/[0-9]/.test(first)
-                    ||
-                    !/[^A-Za-z0-9]/.test(first)
                 ) {
 
                     showPasswordError(
-                        "12文字以上で、大文字・小文字・数字・記号をそれぞれ1文字以上含めてください。"
+                        "8文字以上で、半角英字と半角数字をそれぞれ1文字以上含めてください。"
                     );
 
                     return;
