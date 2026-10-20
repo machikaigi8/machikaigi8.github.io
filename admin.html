@@ -14,7 +14,9 @@
         content="noindex, nofollow"
     >
 
-    <title>管理者画面｜みんなのまち会議</title>
+    <title>
+        管理者画面｜みんなのまち会議
+    </title>
 
     <style>
 
@@ -22,11 +24,14 @@
             scroll-behavior: smooth;
         }
 
+
         body {
             margin: 0;
+
             min-height: 100vh;
 
             background-color: #FFFDF7;
+
             color: #1F1F1F;
 
             overflow-x: hidden;
@@ -124,8 +129,7 @@
 
             align-items: flex-end;
 
-            justify-content:
-                space-between;
+            justify-content: space-between;
 
             background-color:
                 rgba(255, 220, 100, 0.80);
@@ -236,7 +240,7 @@
 
 
         /* =========================
-           管理者ログイン
+           管理者ページ
            ========================= */
 
         .admin-main {
@@ -290,7 +294,8 @@
         }
 
 
-        .login-panel {
+        .login-panel,
+        .password-panel {
 
             width:
                 min(520px, 100%);
@@ -311,13 +316,17 @@
 
             display: block;
 
-            margin-bottom: 8px;
+            margin-bottom:
+                8px;
 
-            font-size: 17px;
+            font-size:
+                17px;
 
-            font-weight: 700;
+            font-weight:
+                700;
 
-            color: #333333;
+            color:
+                #333333;
 
             font-family:
                 "Yu Gothic",
@@ -329,11 +338,14 @@
 
         .form-input {
 
-            width: 100%;
+            width:
+                100%;
 
-            height: 50px;
+            height:
+                50px;
 
-            box-sizing: border-box;
+            box-sizing:
+                border-box;
 
             padding:
                 0 14px;
@@ -341,7 +353,8 @@
             border:
                 1.5px solid #A9A9A9;
 
-            border-radius: 10px;
+            border-radius:
+                10px;
 
             background-color:
                 #FFFFFF;
@@ -363,17 +376,17 @@
         .form-input:focus {
 
             outline:
-                3px solid
-                rgba(20, 94, 32, 0.14);
+                3px solid rgba(20, 94, 32, 0.14);
 
             border-color:
                 #145E20;
         }
 
 
-        .login-button {
+        .main-button {
 
-            display: block;
+            display:
+                block;
 
             min-width:
                 180px;
@@ -410,27 +423,47 @@
                 "Hiragino Kaku Gothic ProN",
                 "Meiryo",
                 sans-serif;
+
+            transition:
+                background-color 0.2s,
+                transform 0.2s;
         }
 
 
-        .login-button:disabled {
+        .main-button:hover {
+
+            background-color:
+                #0F4D19;
+
+            transform:
+                translateY(-2px);
+        }
+
+
+        .main-button:disabled {
 
             opacity:
                 0.55;
 
             cursor:
                 wait;
+
+            transform:
+                none;
         }
 
 
         /* =========================
-           認証状態
+           メッセージ
            ========================= */
 
         .auth-status,
-        .auth-error {
+        .auth-error,
+        .password-status,
+        .password-error {
 
-            display: none;
+            display:
+                none;
 
             width:
                 min(560px, 100%);
@@ -458,7 +491,8 @@
         }
 
 
-        .auth-status {
+        .auth-status,
+        .password-status {
 
             border:
                 1px solid #6B8F70;
@@ -471,7 +505,8 @@
         }
 
 
-        .auth-error {
+        .auth-error,
+        .password-error {
 
             border:
                 1px solid #C56A6A;
@@ -490,7 +525,8 @@
 
         .enrollment-area {
 
-            display: none;
+            display:
+                none;
 
             width:
                 min(560px, 100%);
@@ -565,54 +601,6 @@
 
             margin:
                 0 auto;
-        }
-
-
-        .recovery-box {
-
-            display:
-                none;
-
-            margin-top:
-                20px;
-
-            padding:
-                16px;
-
-            border:
-                1px solid #C9C9C9;
-
-            background-color:
-                #FFFFFF;
-
-            text-align:
-                left;
-        }
-
-
-        .recovery-box strong {
-
-            display:
-                block;
-
-            margin-bottom:
-                8px;
-        }
-
-
-        .recovery-codes {
-
-            margin:
-                0;
-
-            padding-left:
-                22px;
-
-            font-family:
-                monospace;
-
-            line-height:
-                1.8;
         }
 
 
@@ -719,6 +707,9 @@
 
             background-color:
                 rgba(255, 255, 255, 0.45);
+
+            margin-bottom:
+                24px;
         }
 
 
@@ -747,6 +738,22 @@
 
             color:
                 #555555;
+        }
+
+
+        .password-note {
+
+            margin:
+                0 0 18px 0;
+
+            font-size:
+                13px;
+
+            line-height:
+                1.7;
+
+            color:
+                #666666;
         }
 
 
@@ -942,7 +949,7 @@
                         class="form-label"
                         for="admin-id"
                     >
-                        ID（メールアドレス）
+                        ID
                     </label>
 
 
@@ -980,7 +987,7 @@
 
                 <button
                     id="login-button"
-                    class="login-button"
+                    class="main-button"
                     type="submit"
                 >
                     ログイン
@@ -1001,7 +1008,6 @@
             ></div>
 
 
-            <!-- Guardian未登録の場合 -->
             <div
                 id="enrollment-area"
                 class="enrollment-area"
@@ -1015,35 +1021,10 @@
                 <p>
                     スマホのAuth0 Guardianアプリで、
                     下のQRコードを読み取ってください。
-                    登録が完了すると自動的に認証を続行します。
                 </p>
 
 
                 <div id="guardian-qr"></div>
-
-
-                <div
-                    id="recovery-box"
-                    class="recovery-box"
-                >
-
-                    <strong>
-                        リカバリーコード
-                    </strong>
-
-
-                    <p>
-                        スマホを紛失した場合などに必要です。
-                        安全な場所に保存してください。
-                    </p>
-
-
-                    <ul
-                        id="recovery-codes"
-                        class="recovery-codes"
-                    ></ul>
-
-                </div>
 
             </div>
 
@@ -1075,7 +1056,7 @@
 
                     ログイン中：
 
-                    <strong id="user-email">
+                    <strong id="user-name">
                     </strong>
 
                 </div>
@@ -1100,9 +1081,95 @@
 
 
                 <p>
-                    ここにお問い合わせ一覧・既読管理などを
-                    追加していきます。
+                    お問い合わせ一覧・既読管理などを、
+                    次の工程で追加できます。
                 </p>
+
+            </div>
+
+
+            <div class="admin-card">
+
+                <h3>
+                    パスワード変更
+                </h3>
+
+
+                <p class="password-note">
+                    12文字以上で、大文字・小文字・数字・記号を
+                    それぞれ1文字以上含めてください。
+                    変更後は自動的にログアウトします。
+                </p>
+
+
+                <form
+                    id="password-form"
+                    class="password-panel"
+                >
+
+                    <div class="form-row">
+
+                        <label
+                            class="form-label"
+                            for="new-password"
+                        >
+                            新しいパスワード
+                        </label>
+
+
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="new-password"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <label
+                            class="form-label"
+                            for="new-password-confirm"
+                        >
+                            新しいパスワード（確認）
+                        </label>
+
+
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="new-password-confirm"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <button
+                        id="password-button"
+                        class="main-button"
+                        type="submit"
+                    >
+                        パスワードを変更
+                    </button>
+
+                </form>
+
+
+                <div
+                    id="password-status"
+                    class="password-status"
+                ></div>
+
+
+                <div
+                    id="password-error"
+                    class="password-error"
+                ></div>
 
             </div>
 
@@ -1112,7 +1179,7 @@
     </main>
 
 
-    <!-- Guardian登録用QRコード -->
+    <!-- QRコード生成 -->
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
     ></script>
@@ -1121,7 +1188,7 @@
     <script>
 
         /* =====================================
-           Auth0設定
+           Auth0 / Worker 設定
            ===================================== */
 
         const AUTH0_DOMAIN =
@@ -1136,12 +1203,28 @@
             "Username-Password-Authentication";
 
 
+        /*
+           ★今回追加
+           Auth0からこのAPI用の
+           Access Tokenを取得する
+        */
+        const API_AUDIENCE =
+            "https://machikaigi8-admin-api";
+
+
+        /*
+           Cloudflare Worker
+        */
+        const WORKER_URL =
+            "https://machikaigi-admin-api.taka-souda516.workers.dev";
+
+
         const AUTH0_BASE =
             `https://${AUTH0_DOMAIN}`;
 
 
         /* =====================================
-           HTML要素
+           HTML
            ===================================== */
 
         const loginSection =
@@ -1198,33 +1281,57 @@
             );
 
 
-        const recoveryBox =
-            document.getElementById(
-                "recovery-box"
-            );
-
-
-        const recoveryCodes =
-            document.getElementById(
-                "recovery-codes"
-            );
-
-
         const adminContent =
             document.getElementById(
                 "admin-content"
             );
 
 
-        const userEmail =
+        const userName =
             document.getElementById(
-                "user-email"
+                "user-name"
             );
 
 
         const logoutButton =
             document.getElementById(
                 "logout-button"
+            );
+
+
+        const passwordForm =
+            document.getElementById(
+                "password-form"
+            );
+
+
+        const newPassword =
+            document.getElementById(
+                "new-password"
+            );
+
+
+        const newPasswordConfirm =
+            document.getElementById(
+                "new-password-confirm"
+            );
+
+
+        const passwordButton =
+            document.getElementById(
+                "password-button"
+            );
+
+
+        const passwordStatus =
+            document.getElementById(
+                "password-status"
+            );
+
+
+        const passwordError =
+            document.getElementById(
+                "password-error"
             );
 
 
@@ -1240,19 +1347,17 @@
             );
 
 
-        let currentMfaToken =
-            null;
-
-
         let pollingStopped =
             false;
 
 
         /* =====================================
-           メッセージ表示
+           表示
            ===================================== */
 
-        function showStatus(message) {
+        function showAuthStatus(
+            message
+        ) {
 
             authError.style.display =
                 "none";
@@ -1268,7 +1373,9 @@
         }
 
 
-        function showError(message) {
+        function showAuthError(
+            message
+        ) {
 
             authStatus.style.display =
                 "none";
@@ -1284,7 +1391,7 @@
         }
 
 
-        function resetMessages() {
+        function clearAuthMessages() {
 
             authStatus.style.display =
                 "none";
@@ -1296,11 +1403,57 @@
         }
 
 
-        /* =====================================
-           レスポンスJSON化
-           ===================================== */
+        function showPasswordStatus(
+            message
+        ) {
 
-        async function readJson(response) {
+            passwordError.style.display =
+                "none";
+
+
+            passwordStatus.textContent =
+                message;
+
+
+            passwordStatus.style.display =
+                "block";
+
+        }
+
+
+        function showPasswordError(
+            message
+        ) {
+
+            passwordStatus.style.display =
+                "none";
+
+
+            passwordError.textContent =
+                message;
+
+
+            passwordError.style.display =
+                "block";
+
+        }
+
+
+        function clearPasswordMessages() {
+
+            passwordStatus.style.display =
+                "none";
+
+
+            passwordError.style.display =
+                "none";
+
+        }
+
+
+        async function readJson(
+            response
+        ) {
 
             const text =
                 await response.text();
@@ -1315,14 +1468,13 @@
 
             try {
 
-                return JSON.parse(text);
+                return JSON.parse(
+                    text
+                );
 
             } catch {
 
                 return {
-
-                    error:
-                        "invalid_response",
 
                     error_description:
                         text
@@ -1335,8 +1487,7 @@
 
 
         /* =====================================
-           1段階目
-           ID / PW をAuth0へ送る
+           ID / PW 認証
            ===================================== */
 
         async function requestPasswordLogin(
@@ -1362,8 +1513,14 @@
                     realm:
                         AUTH0_REALM,
 
+                    /*
+                       ★重要
+                    */
+                    audience:
+                        API_AUDIENCE,
+
                     scope:
-                        "openid profile email"
+                        "openid profile"
 
                 });
 
@@ -1407,7 +1564,7 @@
 
 
         /* =====================================
-           登録済みMFA取得
+           MFA
            ===================================== */
 
         async function getAuthenticators(
@@ -1456,10 +1613,6 @@
 
         }
 
-
-        /* =====================================
-           GuardianへPush通知
-           ===================================== */
 
         async function requestPushChallenge(
             mfaToken,
@@ -1529,10 +1682,6 @@
         }
 
 
-        /* =====================================
-           Guardian初回登録
-           ===================================== */
-
         async function associateGuardian(
             mfaToken
         ) {
@@ -1559,9 +1708,6 @@
 
                         body:
                             JSON.stringify({
-
-                                client_id:
-                                    AUTH0_CLIENT_ID,
 
                                 authenticator_types:
                                     ["oob"],
@@ -1599,10 +1745,6 @@
 
         }
 
-
-        /* =====================================
-           Guardian認証結果確認
-           ===================================== */
 
         async function verifyOob(
             mfaToken,
@@ -1665,7 +1807,9 @@
         }
 
 
-        function wait(milliseconds) {
+        function wait(
+            milliseconds
+        ) {
 
             return new Promise(
 
@@ -1679,10 +1823,6 @@
 
         }
 
-
-        /* =====================================
-           スマホ承認を待つ
-           ===================================== */
 
         async function pollGuardian(
             mfaToken,
@@ -1703,7 +1843,9 @@
                 attempt++
             ) {
 
-                if (pollingStopped) {
+                if (
+                    pollingStopped
+                ) {
 
                     return;
 
@@ -1731,7 +1873,7 @@
                     data.access_token
                 ) {
 
-                    await finishLogin(
+                    finishLogin(
                         data
                     );
 
@@ -1767,18 +1909,6 @@
                 }
 
 
-                if (
-                    data.error ===
-                    "invalid_grant"
-                ) {
-
-                    throw new Error(
-                        "Guardianで認証が拒否されたか、認証の有効時間が切れました。"
-                    );
-
-                }
-
-
                 throw new Error(
 
                     data.error_description
@@ -1791,15 +1921,11 @@
 
 
             throw new Error(
-                "認証待ちがタイムアウトしました。もう一度ログインしてください。"
+                "認証待ちがタイムアウトしました。"
             );
 
         }
 
-
-        /* =====================================
-           初回Guardian登録画面
-           ===================================== */
 
         function showGuardianEnrollment(
             data
@@ -1811,6 +1937,17 @@
 
             guardianQr.innerHTML =
                 "";
+
+
+            if (
+                !data.barcode_uri
+            ) {
+
+                throw new Error(
+                    "Guardian登録用QRコードを取得できませんでした。"
+                );
+
+            }
 
 
             new QRCode(
@@ -1833,67 +1970,20 @@
             );
 
 
-            recoveryCodes.innerHTML =
-                "";
-
-
-            if (
-                Array.isArray(
-                    data.recovery_codes
-                )
-                &&
-                data.recovery_codes.length
-            ) {
-
-                data.recovery_codes
-                    .forEach(
-
-                        code => {
-
-                            const li =
-                                document.createElement(
-                                    "li"
-                                );
-
-
-                            li.textContent =
-                                code;
-
-
-                            recoveryCodes
-                                .appendChild(
-                                    li
-                                );
-
-                        }
-
-                    );
-
-
-                recoveryBox.style.display =
-                    "block";
-
-            }
-
-
-            showStatus(
-                "GuardianアプリでQRコードを読み取ってください。登録完了を確認しています…"
+            showAuthStatus(
+                "GuardianアプリでQRコードを読み取ってください。"
             );
 
         }
 
 
         /* =====================================
-           認証成功
+           ログイン成功
            ===================================== */
 
-        async function finishLogin(
+        function finishLogin(
             tokenData
         ) {
-
-            currentMfaToken =
-                null;
-
 
             pollingStopped =
                 true;
@@ -1933,69 +2023,23 @@
             );
 
 
-            await showAdmin(
-                tokenData.access_token
+            sessionStorage.setItem(
+
+                "admin_username",
+
+                adminId.value.trim()
+                ||
+                "管理者"
+
             );
 
-        }
 
-
-        /* =====================================
-           ユーザー情報取得
-           ===================================== */
-
-        async function getUserInfo(
-            accessToken
-        ) {
-
-            const response =
-                await fetch(
-
-                    `${AUTH0_BASE}/userinfo`,
-
-                    {
-
-                        headers: {
-
-                            "Authorization":
-                                `Bearer ${accessToken}`
-
-                        }
-
-                    }
-
-                );
-
-
-            const data =
-                await readJson(
-                    response
-                );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "ログイン情報を確認できませんでした。"
-                );
-
-            }
-
-
-            return data;
+            showAdmin();
 
         }
 
 
-        async function showAdmin(
-            accessToken
-        ) {
-
-            const user =
-                await getUserInfo(
-                    accessToken
-                );
-
+        function showAdmin() {
 
             loginSection.style.display =
                 "none";
@@ -2005,22 +2049,36 @@
                 "block";
 
 
-            userEmail.textContent =
-
-                user.email
-                ||
-                user.name
+            userName.textContent =
+                sessionStorage.getItem(
+                    "admin_username"
+                )
                 ||
                 "管理者";
 
         }
 
 
-        /* =====================================
-           再読み込み時のセッション復元
-           ===================================== */
+        function clearSession() {
 
-        async function restoreSession() {
+            sessionStorage.removeItem(
+                "admin_access_token"
+            );
+
+
+            sessionStorage.removeItem(
+                "admin_expires_at"
+            );
+
+
+            sessionStorage.removeItem(
+                "admin_username"
+            );
+
+        }
+
+
+        function restoreSession() {
 
             const token =
                 sessionStorage.getItem(
@@ -2053,37 +2111,13 @@
             }
 
 
-            try {
-
-                await showAdmin(
-                    token
-                );
-
-            } catch {
-
-                clearSession();
-
-            }
-
-        }
-
-
-        function clearSession() {
-
-            sessionStorage.removeItem(
-                "admin_access_token"
-            );
-
-
-            sessionStorage.removeItem(
-                "admin_expires_at"
-            );
+            showAdmin();
 
         }
 
 
         /* =====================================
-           ログインボタン
+           ログイン
            ===================================== */
 
         loginForm.addEventListener(
@@ -2099,14 +2133,10 @@
                     true;
 
 
-                resetMessages();
+                clearAuthMessages();
 
 
                 enrollmentArea.style.display =
-                    "none";
-
-
-                recoveryBox.style.display =
                     "none";
 
 
@@ -2124,7 +2154,7 @@
 
                 try {
 
-                    showStatus(
+                    showAuthStatus(
                         "ID・パスワードを確認しています…"
                     );
 
@@ -2139,17 +2169,13 @@
                         );
 
 
-                    /*
-                       パスワードは
-                       Auth0へ送信後すぐ入力欄から消す
-                    */
                     adminPassword.value =
                         "";
 
 
                     /*
-                       MFAなしでtokenが来た場合は
-                       安全のため管理画面を開かない
+                       MFAなしなら
+                       安全のため止める
                     */
                     if (
                         response.ok
@@ -2158,7 +2184,7 @@
                     ) {
 
                         throw new Error(
-                            "Auth0で二段階認証が要求されませんでした。MFAポリシーが「常に」になっているか確認してください。安全のため管理画面は開きません。"
+                            "Auth0で二段階認証が要求されませんでした。MFAポリシーを確認してください。安全のため管理画面は開きません。"
                         );
 
                     }
@@ -2194,18 +2220,13 @@
                     }
 
 
-                    currentMfaToken =
+                    const mfaToken =
                         data.mfa_token;
-
-
-                    showStatus(
-                        "ID・パスワードを確認しました。Guardianを確認しています…"
-                    );
 
 
                     const authenticators =
                         await getAuthenticators(
-                            currentMfaToken
+                            mfaToken
                         );
 
 
@@ -2229,9 +2250,6 @@
                         );
 
 
-                    /*
-                       Guardian登録済み
-                    */
                     if (
                         pushAuthenticator
                     ) {
@@ -2239,21 +2257,21 @@
                         const challenge =
                             await requestPushChallenge(
 
-                                currentMfaToken,
+                                mfaToken,
 
                                 pushAuthenticator.id
 
                             );
 
 
-                        showStatus(
+                        showAuthStatus(
                             "スマホのAuth0 Guardianに通知を送りました。承認してください。"
                         );
 
 
                         await pollGuardian(
 
-                            currentMfaToken,
+                            mfaToken,
 
                             challenge.oob_code
 
@@ -2266,17 +2284,15 @@
 
 
                     /*
-                       MFAがまだ何も登録されていない
-                       → Guardianの初回登録
+                       Guardian未登録
                     */
                     if (
-                        authenticators.length
-                        === 0
+                        authenticators.length === 0
                     ) {
 
                         const association =
                             await associateGuardian(
-                                currentMfaToken
+                                mfaToken
                             );
 
 
@@ -2287,7 +2303,7 @@
 
                         await pollGuardian(
 
-                            currentMfaToken,
+                            mfaToken,
 
                             association.oob_code
 
@@ -2300,7 +2316,7 @@
 
 
                     throw new Error(
-                        "Guardian Pushが登録されていません。Auth0側のMFA登録状況を確認してください。"
+                        "Guardian Pushが登録されていません。"
                     );
 
 
@@ -2311,7 +2327,7 @@
                     );
 
 
-                    showError(
+                    showAuthError(
 
                         error.message
                         ||
@@ -2333,6 +2349,217 @@
 
 
         /* =====================================
+           パスワード変更
+           ===================================== */
+
+        passwordForm.addEventListener(
+
+            "submit",
+
+            async event => {
+
+                event.preventDefault();
+
+
+                clearPasswordMessages();
+
+
+                const first =
+                    newPassword.value;
+
+
+                const second =
+                    newPasswordConfirm.value;
+
+
+                if (
+                    first !== second
+                ) {
+
+                    showPasswordError(
+                        "確認用パスワードが一致しません。"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    first.length < 12
+                    ||
+                    first.length > 128
+                    ||
+                    !/[A-Z]/.test(first)
+                    ||
+                    !/[a-z]/.test(first)
+                    ||
+                    !/[0-9]/.test(first)
+                    ||
+                    !/[^A-Za-z0-9]/.test(first)
+                ) {
+
+                    showPasswordError(
+                        "12文字以上で、大文字・小文字・数字・記号をそれぞれ1文字以上含めてください。"
+                    );
+
+                    return;
+
+                }
+
+
+                const token =
+                    sessionStorage.getItem(
+                        "admin_access_token"
+                    );
+
+
+                if (
+                    !token
+                ) {
+
+                    clearSession();
+
+
+                    adminContent.style.display =
+                        "none";
+
+
+                    loginSection.style.display =
+                        "block";
+
+
+                    showAuthError(
+                        "ログイン情報の有効期限が切れました。もう一度ログインしてください。"
+                    );
+
+
+                    return;
+
+                }
+
+
+                passwordButton.disabled =
+                    true;
+
+
+                showPasswordStatus(
+                    "パスワードを変更しています…"
+                );
+
+
+                try {
+
+                    const response =
+                        await fetch(
+
+                            `${WORKER_URL}/change-password`,
+
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers: {
+
+                                    "Authorization":
+                                        `Bearer ${token}`,
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        newPassword:
+                                            first
+
+                                    })
+
+                            }
+
+                        );
+
+
+                    const data =
+                        await readJson(
+                            response
+                        );
+
+
+                    if (
+                        !response.ok
+                    ) {
+
+                        throw new Error(
+
+                            data.error
+                            ||
+                            "パスワードを変更できませんでした。"
+
+                        );
+
+                    }
+
+
+                    newPassword.value =
+                        "";
+
+
+                    newPasswordConfirm.value =
+                        "";
+
+
+                    clearSession();
+
+
+                    adminContent.style.display =
+                        "none";
+
+
+                    loginSection.style.display =
+                        "block";
+
+
+                    clearAuthMessages();
+
+
+                    showAuthStatus(
+                        "パスワードを変更しました。新しいパスワードで再ログインしてください。"
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    showPasswordError(
+
+                        error.message
+                        ||
+                        "パスワード変更中にエラーが発生しました。"
+
+                    );
+
+
+                } finally {
+
+                    passwordButton.disabled =
+                        false;
+
+                }
+
+            }
+
+        );
+
+
+        /* =====================================
            ログアウト
            ===================================== */
 
@@ -2344,10 +2571,6 @@
 
                 pollingStopped =
                     true;
-
-
-                currentMfaToken =
-                    null;
 
 
                 clearSession();
@@ -2373,7 +2596,9 @@
                     "none";
 
 
-                resetMessages();
+                clearAuthMessages();
+
+                clearPasswordMessages();
 
             }
 
