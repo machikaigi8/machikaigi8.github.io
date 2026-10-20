@@ -823,25 +823,100 @@ function finishLogin(
 }
 
 
-function showAdmin() {
+function finishLogin(
+  tokenData
+) {
 
-  loginSection.style.display =
-    "none";
-
-  adminContent.style.display =
-    "block";
-
-  loggedInTopbar.style.display =
-    "flex";
-
-  pageSubtitle.style.display =
-    "none";
+  pollingStopped = true;
 
 
-  userName.textContent =
-    sessionStorage.getItem(
-      "admin_username"
-    ) || "管理者";
+  const expiresAt =
+    Date.now() +
+    (
+      Number(
+        tokenData.expires_in || 600
+      ) * 1000
+    );
+
+
+  let displayName =
+    adminId.value.trim() ||
+    "管理者";
+
+
+  if (tokenData.id_token) {
+
+    try {
+
+      const payloadPart =
+        tokenData.id_token.split(".")[1];
+
+      const normalized =
+        payloadPart
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+
+      const padded =
+        normalized +
+        "=".repeat(
+          (4 - normalized.length % 4) % 4
+        );
+
+      const claims =
+        JSON.parse(
+          decodeURIComponent(
+            Array.from(
+              atob(padded)
+            )
+              .map(
+                character =>
+                  "%" +
+                  character
+                    .charCodeAt(0)
+                    .toString(16)
+                    .padStart(2, "0")
+              )
+              .join("")
+          )
+        );
+
+
+      displayName =
+        claims.name ||
+        claims.nickname ||
+        displayName;
+
+    } catch (error) {
+
+      console.error(
+        "ID token profile decode error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  sessionStorage.setItem(
+    "admin_access_token",
+    tokenData.access_token
+  );
+
+
+  sessionStorage.setItem(
+    "admin_expires_at",
+    String(expiresAt)
+  );
+
+
+  sessionStorage.setItem(
+    "admin_username",
+    displayName
+  );
+
+
+  showAdmin();
 
 }
 
