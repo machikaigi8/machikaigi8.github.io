@@ -20,6 +20,10 @@
             overflow-x: hidden;
         }
 
+        /* =========================
+           共通：黄色帯アニメーション
+           ========================= */
+
         @keyframes yellowSlideIn {
             from {
                 transform: translateX(-100%);
@@ -62,6 +66,10 @@
                 0.85s
                 forwards;
         }
+
+        /* =========================
+           黄色帯
+           ========================= */
 
         .top-space {
             height: 8px;
@@ -158,6 +166,10 @@
                 serif;
         }
 
+        /* =========================
+           お問い合わせ
+           ========================= */
+
         .contact-main {
             width: min(920px, calc(100% - 48px));
             margin: 0 auto;
@@ -191,6 +203,7 @@
                 sans-serif;
         }
 
+        /* フォーム全体の外枠なし */
         .contact-form {
             padding: 0;
             border: none;
@@ -274,9 +287,7 @@
 
         .form-textarea {
             min-height: 190px;
-
             padding: 13px 14px;
-
             line-height: 1.7;
             resize: vertical;
         }
@@ -288,14 +299,16 @@
             border-color: #145E20;
         }
 
+        /* =========================
+           送信・管理者ボタン
+           ========================= */
+
         .form-actions {
             display: grid;
             grid-template-columns: 1fr auto 1fr;
-
             align-items: center;
 
             gap: 16px;
-
             margin-top: 34px;
         }
 
@@ -304,7 +317,6 @@
             justify-self: center;
 
             min-width: 170px;
-
             padding: 13px 28px;
 
             border: 2px solid #145E20;
@@ -334,6 +346,7 @@
             background-color: #0F4D19;
         }
 
+        /* 管理者画面 */
         .admin-button {
             grid-column: 3;
             justify-self: end;
@@ -344,12 +357,14 @@
 
             padding: 10px 18px;
 
-            border: 1.5px solid #777777;
-            border-radius: 999px;
+            /* 四角・濃いグレー */
+            border: 2px solid #4A4A4A;
+            border-radius: 0;
 
+            /* 塗りつぶしなし */
             background-color: transparent;
-            color: #555555;
 
+            color: #4A4A4A;
             text-decoration: none;
 
             font-family:
@@ -361,54 +376,97 @@
             font-size: 14px;
             font-weight: 700;
 
+            /* 右へ35px、下へ65px */
+            transform: translate(35px, 65px);
+
             transition:
-                background-color 0.2s,
-                color 0.2s;
+                opacity 0.2s;
         }
 
-        .admin-button {
-    grid-column: 3;
-    justify-self: end;
+        .admin-button:hover {
+            background-color: transparent;
+            color: #4A4A4A;
+            opacity: 0.6;
+        }
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+        /* =========================
+           スマホ
+           ========================= */
 
-    padding: 10px 18px;
+        @media (max-width: 768px) {
 
-    /* 四角＋濃いグレーの枠線 */
-    border: 2px solid #4A4A4A;
-    border-radius: 0;
+            .header {
+                padding: 16px 24px 12px 24px;
+                display: block;
+            }
 
-    /* 塗りつぶしなし */
-    background-color: transparent;
+            .title {
+                font-size: 32px;
+            }
 
-    /* 文字も濃いグレー */
-    color: #4A4A4A;
+            .nav-menu {
+                margin-top: 14px;
+                gap: 14px;
+                flex-wrap: wrap;
+            }
 
-    text-decoration: none;
+            .nav-menu a {
+                font-size: 12px;
+            }
 
-    font-family:
-        "Yu Gothic",
-        "Hiragino Kaku Gothic ProN",
-        "Meiryo",
-        sans-serif;
+            .subtitle-line {
+                padding: 0 24px 8px 24px;
+            }
 
-    font-size: 14px;
-    font-weight: 700;
+            .subtitle {
+                font-size: 13px;
+            }
 
-    /* 右へ35px、下へ65px */
-    transform: translate(35px, 65px);
+            .contact-main {
+                width: calc(100% - 28px);
+                padding: 38px 0 90px 0;
+            }
 
-    transition:
-        opacity 0.2s;
-}
+            .contact-heading {
+                font-size: 32px;
+            }
 
-.admin-button:hover {
-    background-color: transparent;
-    color: #4A4A4A;
-    opacity: 0.6;
-}
+            .contact-lead {
+                margin-bottom: 28px;
+                font-size: 15px;
+                text-align: left;
+            }
+
+            .form-label {
+                font-size: 16px;
+            }
+
+            .form-actions {
+                grid-template-columns: 1fr auto 1fr;
+                gap: 8px;
+            }
+
+            .submit-button {
+                min-width: 138px;
+                padding: 11px 18px;
+                font-size: 15px;
+            }
+
+            .admin-button {
+                padding: 8px 10px;
+                font-size: 11px;
+
+                /*
+                   スマホでは右へはみ出さないように
+                   横移動だけ解除
+                */
+                transform: translate(0, 55px);
+            }
+        }
+
+        /* =========================
+           動きを減らす設定
+           ========================= */
 
         @media (prefers-reduced-motion: reduce) {
 
@@ -502,6 +560,7 @@
                 autocomplete="off"
             >
 
+            <!-- お名前 -->
             <div class="form-row">
 
                 <label
@@ -526,6 +585,7 @@
 
             </div>
 
+            <!-- メールアドレス -->
             <div class="form-row">
 
                 <label
@@ -550,6 +610,7 @@
 
             </div>
 
+            <!-- 都道府県 -->
             <div class="form-row">
 
                 <label
@@ -630,6 +691,7 @@
 
             </div>
 
+            <!-- 市区町村 -->
             <div class="form-row">
 
                 <label
@@ -654,6 +716,7 @@
 
             </div>
 
+            <!-- 性別 -->
             <div class="form-row">
 
                 <label
@@ -689,6 +752,7 @@
 
             </div>
 
+            <!-- 年代 -->
             <div class="form-row">
 
                 <label
@@ -728,6 +792,7 @@
 
             </div>
 
+            <!-- 職業 -->
             <div class="form-row">
 
                 <label
@@ -751,6 +816,7 @@
 
             </div>
 
+            <!-- 内容 -->
             <div class="form-row">
 
                 <label
@@ -773,6 +839,7 @@
 
             </div>
 
+            <!-- 最下部 -->
             <div class="form-actions">
 
                 <button
@@ -804,6 +871,8 @@
             document.querySelector(".subtitle-line");
 
 
+        /* 下側の黄色帯が
+           固定ヘッダーの上へ重ならないようにする */
         function clipUnderHeader(element) {
 
             const headerBottom =
