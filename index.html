@@ -43,11 +43,6 @@
             }
         }
 
-        /*
-           黄色帯は先に左からスライドイン。
-           その後、帯の中の文字をフェードイン。
-           他ページでもこの設定を共通で使用。
-        */
         .top-space,
         .header,
         .subtitle-line {
@@ -70,10 +65,6 @@
                 0.85s
                 forwards;
         }
-
-        /* =========================
-           フェード後の強調アニメーション
-           ========================= */
 
         @keyframes nameEmphasis {
             0%,
@@ -112,20 +103,12 @@
             }
         }
 
-        /* =========================
-           最上部 8px
-           ========================= */
-
         .top-space {
             height: 8px;
             background-color: rgba(255, 220, 100, 0.80);
             position: relative;
             z-index: 10;
         }
-
-        /* =========================
-           固定ヘッダー
-           ========================= */
 
         .header {
             position: sticky;
@@ -155,10 +138,6 @@
             white-space: nowrap;
         }
 
-        /* =========================
-           ナビゲーション
-           ========================= */
-
         .nav-menu {
             display: flex;
             gap: 30px;
@@ -182,10 +161,6 @@
         .nav-menu a:hover {
             opacity: 0.55;
         }
-
-        /* =========================
-           サブタイトル
-           ========================= */
 
         .subtitle-line {
             width: 100%;
@@ -213,17 +188,9 @@
                 serif;
         }
 
-        /* =========================
-           メイン
-           ========================= */
-
         .main {
             min-height: 0;
         }
-
-        /* =========================
-           メッセージ
-           ========================= */
 
         .message {
             width: 45%;
@@ -288,11 +255,6 @@
 
             transform-origin: center;
 
-            /*
-               0.85秒の黄色帯
-               ＋ 0.5秒の文字フェード
-               ＝ 1.35秒後から強調
-            */
             animation:
                 nameEmphasis
                 0.85s
@@ -300,10 +262,6 @@
                 1.35s
                 2;
         }
-
-        /* =========================
-           紹介文
-           ========================= */
 
         .message-copy {
             margin: 15px 0 0 0;
@@ -327,10 +285,6 @@
             margin-left: 18px;
             font-size: 22px;
         }
-
-        /* =========================
-           左下の日程ボタン
-           ========================= */
 
         .schedule-jump-button {
             position: fixed;
@@ -393,10 +347,6 @@
             pointer-events: none;
         }
 
-        /* =========================
-           写真
-           ========================= */
-
         .photo {
             position: absolute;
             top: 0;
@@ -432,10 +382,6 @@
                     black 100%
                 );
         }
-
-        /* =========================
-           次回まち会議
-           ========================= */
 
         .next-meeting-section {
             width: 100%;
@@ -521,10 +467,6 @@
             margin-top: 8px;
         }
 
-        /* =========================
-           地図
-           ========================= */
-
         .meeting-map {
             width: 38%;
             min-width: 340px;
@@ -542,10 +484,6 @@
             display: block;
             border: 0;
         }
-
-        /* =========================
-           スマホ
-           ========================= */
 
         @media (max-width: 768px) {
             .top-space {
@@ -674,10 +612,6 @@
             }
         }
 
-        /* =========================
-           動きを減らす設定
-           ========================= */
-
         @media (prefers-reduced-motion: reduce) {
             .top-space,
             .header,
@@ -802,14 +736,22 @@
                     次回まち会議は
                 </p>
 
-                <p class="meeting-date">
+                <p
+                    class="meeting-date"
+                    id="meeting-date-text"
+                    data-fallback-date="2026-12-12"
+                    data-fallback-start="13:00"
+                >
                     12/12(土) 13:00〜
                 </p>
 
                 <p class="meeting-place">
-                    ＠長池公園自然館レクチャールーム
+                    ＠<span id="meeting-place-name">長池公園自然館レクチャールーム</span>
                     <br>
-                    <span class="meeting-note">
+                    <span
+                        class="meeting-note"
+                        id="meeting-note-text"
+                    >
                         予約不要　資料代300円（学生無料）
                     </span>
                 </p>
@@ -817,6 +759,7 @@
 
             <div class="meeting-map">
                 <iframe
+                    id="meeting-map-frame"
                     src="https://www.google.com/maps?q=%E9%95%B7%E6%B1%A0%E5%85%AC%E5%9C%92%E8%87%AA%E7%84%B6%E9%A4%A8&output=embed&z=15"
                     loading="lazy"
                     allowfullscreen=""
@@ -846,6 +789,194 @@
 
         const scheduleJumpButton =
             document.querySelector(".schedule-jump-button");
+
+        const meetingDateText =
+            document.getElementById("meeting-date-text");
+
+        const meetingPlaceName =
+            document.getElementById("meeting-place-name");
+
+        const meetingNoteText =
+            document.getElementById("meeting-note-text");
+
+        const meetingMapFrame =
+            document.getElementById("meeting-map-frame");
+
+        const MEETING_API_URL =
+            "https://machikaigi-admin-api.taka-souda516.workers.dev/meeting-public";
+
+
+        function meetingStartDate(date, startTime) {
+            if (
+                !/^\d{4}-\d{2}-\d{2}$/.test(date || "") ||
+                !/^\d{2}:\d{2}$/.test(startTime || "")
+            ) {
+                return null;
+            }
+
+            const value =
+                new Date(
+                    `${date}T${startTime}:00+09:00`
+                );
+
+            return Number.isNaN(value.getTime())
+                ? null
+                : value;
+        }
+
+
+        function formatMeetingDate(meeting) {
+            const [year, month, day] =
+                meeting.date
+                    .split("-")
+                    .map(Number);
+
+            const date =
+                new Date(
+                    Date.UTC(
+                        year,
+                        month - 1,
+                        day
+                    )
+                );
+
+            const weekdays = [
+                "日",
+                "月",
+                "火",
+                "水",
+                "木",
+                "金",
+                "土"
+            ];
+
+            const weekday =
+                weekdays[
+                    date.getUTCDay()
+                ];
+
+            const timeText =
+                meeting.endTime
+                    ? `${meeting.startTime}〜${meeting.endTime}`
+                    : `${meeting.startTime}〜`;
+
+            return `${month}/${day}(${weekday}) ${timeText}`;
+        }
+
+
+        function showMeetingUndecided() {
+            meetingDateText.textContent =
+                "未定";
+
+            meetingPlaceName.textContent =
+                "会場未定";
+
+            meetingNoteText.textContent =
+                "";
+
+            meetingMapFrame.src =
+                "https://www.google.com/maps?q=%E5%85%AB%E7%8E%8B%E5%AD%90%E5%B8%82&output=embed&z=12";
+
+            meetingMapFrame.title =
+                "八王子市の地図";
+        }
+
+
+        function showMeeting(meeting) {
+            meetingDateText.textContent =
+                formatMeetingDate(meeting);
+
+            meetingPlaceName.textContent =
+                meeting.place;
+
+            meetingNoteText.textContent =
+                meeting.note || "";
+
+            meetingMapFrame.src =
+                `https://www.google.com/maps?q=${encodeURIComponent(meeting.place)}&output=embed&z=15`;
+
+            meetingMapFrame.title =
+                `${meeting.place}の地図`;
+        }
+
+
+        function applyFallbackExpiry() {
+            const fallbackStart =
+                meetingStartDate(
+                    meetingDateText.dataset.fallbackDate,
+                    meetingDateText.dataset.fallbackStart
+                );
+
+            if (
+                fallbackStart &&
+                Date.now() >= fallbackStart.getTime()
+            ) {
+                showMeetingUndecided();
+            }
+        }
+
+
+        async function loadMeetingSettings() {
+            applyFallbackExpiry();
+
+            try {
+                const response =
+                    await fetch(
+                        MEETING_API_URL,
+                        {
+                            method: "POST",
+                            mode: "cors",
+                            credentials: "omit",
+                            headers: {
+                                "Content-Type":
+                                    "text/plain;charset=UTF-8"
+                            },
+                            body:
+                                JSON.stringify({})
+                        }
+                    );
+
+                const data =
+                    await response.json();
+
+                if (
+                    !response.ok ||
+                    !data.ok
+                ) {
+                    throw new Error(
+                        data.error ||
+                        "次回まち会議情報を取得できませんでした。"
+                    );
+                }
+
+                if (!data.meeting) {
+                    return;
+                }
+
+                const startsAt =
+                    meetingStartDate(
+                        data.meeting.date,
+                        data.meeting.startTime
+                    );
+
+                if (
+                    !startsAt ||
+                    Date.now() >= startsAt.getTime()
+                ) {
+                    showMeetingUndecided();
+                    return;
+                }
+
+                showMeeting(
+                    data.meeting
+                );
+            } catch (error) {
+                console.error(
+                    "Meeting settings load error",
+                    error
+                );
+            }
+        }
 
 
         function clipUnderHeader(element) {
@@ -932,6 +1063,7 @@
             updateLayout
         );
 
+        loadMeetingSettings();
         updateLayout();
     </script>
 
