@@ -87,6 +87,28 @@ textarea{
   margin:auto;
 }
 
+.form-two-column{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.form-two-column .row{
+  margin-bottom:20px;
+}
+
+.required-mark{
+  display:none;
+  margin-left:6px;
+  color:var(--danger);
+  font-size:12px;
+  font-weight:700;
+}
+
+.required-mark.active{
+  display:inline;
+}
+
 .login-method-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -158,15 +180,6 @@ textarea{
 
 .create-method input{
   margin:0 0 2px;
-}
-
-.passkey-note{
-  display:none;
-  margin-top:14px;
-  padding:12px;
-  border-left:4px solid var(--navy);
-  background:#EDF3FA;
-  line-height:1.7;
 }
 
 .selected-id{
@@ -422,6 +435,11 @@ textarea:disabled{
 
   .menu-grid{
     grid-template-columns:1fr;
+  }
+
+  .form-two-column{
+    grid-template-columns:1fr;
+    gap:0;
   }
 
   .login-method-grid,
@@ -1307,73 +1325,149 @@ textarea:disabled{
           class="form"
         >
 
-          <div class="row">
+          <div class="form-two-column">
 
-            <label class="label">
-              氏名
-            </label>
+            <div class="row">
 
-            <input
-              id="create-name"
-              class="input"
-              maxlength="100"
-              required
-            >
+              <label
+                class="label"
+                for="create-name"
+              >
+                氏名
+              </label>
+
+              <input
+                id="create-name"
+                class="input"
+                maxlength="100"
+                required
+              >
+
+            </div>
+
+            <div class="row">
+
+              <label
+                class="label"
+                for="create-year"
+              >
+                生年
+              </label>
+
+              <input
+                id="create-year"
+                class="input"
+                type="number"
+                min="1900"
+                max="2100"
+                placeholder="例：2005"
+                required
+              >
+
+            </div>
+
+          </div>
+
+          <div class="form-two-column">
+
+            <div class="row">
+
+              <label
+                class="label"
+                for="create-last"
+              >
+                姓（ローマ字）
+              </label>
+
+              <input
+                id="create-last"
+                class="input"
+                placeholder="例：Souda"
+                required
+              >
+
+            </div>
+
+            <div class="row">
+
+              <label
+                class="label"
+                for="create-first"
+              >
+                名（ローマ字）
+              </label>
+
+              <input
+                id="create-first"
+                class="input"
+                placeholder="例：Takaaki"
+                required
+              >
+
+            </div>
 
           </div>
 
           <div class="row">
 
             <label class="label">
-              姓のローマ字
+              認証方法
             </label>
 
-            <input
-              id="create-last"
-              class="input"
-              placeholder="例：Souda"
-              required
-            >
+            <div class="create-method-grid">
+
+              <label class="create-method">
+                <img src="passkey.webp" alt="Passkey">
+
+                <input
+                  id="create-passkey"
+                  type="checkbox"
+                  checked
+                >
+
+                <span>Passkey</span>
+              </label>
+
+              <label class="create-method">
+                <img src="mail.png" alt="メール認証">
+
+                <input
+                  id="create-email-check"
+                  type="checkbox"
+                >
+
+                <span>メール認証</span>
+              </label>
+
+              <label class="create-method">
+                <img src="guardian.jpg" alt="アプリ認証">
+
+                <input
+                  id="create-app"
+                  type="checkbox"
+                >
+
+                <span>アプリ認証</span>
+              </label>
+
+            </div>
 
           </div>
 
           <div class="row">
 
-            <label class="label">
-              名のローマ字
-            </label>
-
-            <input
-              id="create-first"
-              class="input"
-              placeholder="例：Takaaki"
-              required
+            <label
+              class="label"
+              for="create-email"
             >
-
-          </div>
-
-          <div class="row">
-
-            <label class="label">
-              生年
-            </label>
-
-            <input
-              id="create-year"
-              class="input"
-              type="number"
-              min="1900"
-              max="2100"
-              placeholder="例：2005"
-              required
-            >
-
-          </div>
-
-          <div class="row">
-
-            <label class="label">
               メールアドレス
+
+              <span
+                id="create-email-required"
+                class="required-mark"
+              >
+                必須
+              </span>
             </label>
 
             <input
@@ -1383,55 +1477,7 @@ textarea:disabled{
               placeholder="例：user@example.com"
             >
 
-            <p class="hint">
-              Passkeyまたはメール認証を選ぶ場合は必須です。
-            </p>
-
           </div>
-
-          <div class="row">
-
-            <label class="label">
-              認証方法（複数選択可）
-            </label>
-
-            <div class="create-method-grid">
-
-              <label class="create-method">
-                <img src="passkey.webp" alt="Passkey">
-                <input
-                  id="create-passkey"
-                  type="checkbox"
-                  checked
-                >
-                <span>Passkey</span>
-              </label>
-
-              <label class="create-method">
-                <img src="mail.png" alt="メール認証">
-                <input
-                  id="create-email-check"
-                  type="checkbox"
-                >
-                <span>メール認証</span>
-              </label>
-
-              <label class="create-method">
-                <img src="guardian.jpg" alt="アプリ認証">
-                <input
-                  id="create-app"
-                  type="checkbox"
-                >
-                <span>アプリ認証</span>
-              </label>
-
-            </div>
-
-          </div>
-
-          <p class="hint">
-            複数選択できます。Passkeyはアカウント発行後、本人が初回ログイン時に自分の端末へ登録します。
-          </p>
 
           <button
             id="create-button"
@@ -1555,13 +1601,6 @@ textarea:disabled{
             認証方法：
             <span id="result-mfa"></span>
           </p>
-
-          <div
-            id="result-passkey-note"
-            class="passkey-note"
-          >
-            Passkeyは本人の端末で作成します。初回は発行されたID・初期パスワードでAuth0に入り、表示されるPasskey登録案内から設定してください。
-          </div>
 
         </div>
 
@@ -1823,6 +1862,9 @@ const ui = {
   createEmail:
     $("create-email"),
 
+  createEmailRequired:
+    $("create-email-required"),
+
   createPasskey:
     $("create-passkey"),
 
@@ -1879,9 +1921,6 @@ const ui = {
 
   resultMfa:
     $("result-mfa"),
-
-  resultPasskeyNote:
-    $("result-passkey-note"),
 
   copyId:
     $("copy-id"),
@@ -4446,12 +4485,22 @@ function updateCreateRequirements() {
   const methods =
     selectedCreateMethods();
 
-  ui.createEmail.required =
+  const emailRequired =
     methods.includes(
       "passkey"
     ) ||
     methods.includes(
       "email"
+    );
+
+  ui.createEmail.required =
+    emailRequired;
+
+  ui.createEmailRequired
+    .classList
+    .toggle(
+      "active",
+      emailRequired
     );
 }
 
@@ -4623,7 +4672,7 @@ async function prepareAccountFactor() {
     "passkey"
   ) {
     ui.accountMessage.textContent =
-      "Passkeyはアカウント発行後、本人が初回ログイン時に登録します。";
+      "";
 
     account.verifiedMethods = [
       ...(account.verifiedMethods || []),
@@ -5005,13 +5054,6 @@ async function finalizeAccount() {
         " / "
       );
 
-  ui.resultPasskeyNote.style.display =
-    account.mfaMethods.includes(
-      "passkey"
-    )
-      ? "block"
-      : "none";
-
   ui.accountResult.style.display =
     "block";
 
@@ -5093,7 +5135,7 @@ ui.createForm.addEventListener(
       !email
     ) {
       return accountError(
-        "Passkeyまたはメール認証を選ぶ場合はメールアドレスを入力してください。"
+        "メールアドレスを入力してください。"
       );
     }
 
