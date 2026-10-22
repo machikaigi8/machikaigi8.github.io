@@ -431,6 +431,170 @@ textarea:disabled{
   white-space:pre-wrap;
 }
 
+.login-settings-list{
+  display:grid;
+  gap:12px;
+  margin-top:18px;
+}
+
+.login-setting-row{
+  display:grid;
+  grid-template-columns:56px 1fr auto;
+  align-items:center;
+  gap:14px;
+  padding:16px;
+  border:1px solid #A0ACBC;
+  background:#fff;
+}
+
+.login-setting-icon{
+  width:46px;
+  height:46px;
+  object-fit:cover;
+}
+
+.login-setting-name{
+  color:var(--navy);
+  font-weight:700;
+  margin-bottom:5px;
+}
+
+.login-setting-detail{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.login-setting-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.method-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:70px;
+  padding:5px 9px;
+  border:1px solid #7B8CA2;
+  font-size:12px;
+  font-weight:700;
+  background:#F4F6F9;
+  color:var(--muted);
+}
+
+.method-chip.enabled{
+  border-color:#496A58;
+  background:#EDF6F0;
+  color:#31563F;
+}
+
+.method-action{
+  min-width:72px;
+  padding:8px 12px;
+  border:2px solid var(--navy);
+  background:var(--navy);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.method-action.remove{
+  border-color:#8A2E2E;
+  background:#fff;
+  color:#8A2E2E;
+}
+
+.login-settings-divider{
+  margin:28px 0 22px;
+  border:0;
+  border-top:1px solid #AAB5C4;
+}
+
+.settings-enroll-box{
+  display:none;
+  margin-top:20px;
+  padding:18px;
+  border:1px solid #A0ACBC;
+  background:#fff;
+}
+
+.settings-enroll-box.active{
+  display:block;
+}
+
+.settings-password-area{
+  display:none;
+  margin-top:20px;
+  padding-top:20px;
+  border-top:1px solid #AAB5C4;
+}
+
+.settings-password-area.active{
+  display:block;
+}
+
+.admin-user-editor{
+  display:none;
+  margin-top:26px;
+  padding:22px;
+  border:2px solid var(--navy);
+  background:#F8FAFD;
+}
+
+.admin-user-editor.active{
+  display:block;
+}
+
+.admin-user-editor-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+.admin-user-editor-head h3{
+  margin:0;
+  color:var(--navy);
+}
+
+.admin-user-editor-section{
+  margin-top:24px;
+  padding-top:20px;
+  border-top:1px solid #AAB5C4;
+}
+
+.admin-user-editor-section h4{
+  margin:0 0 12px;
+  color:var(--navy);
+}
+
+.admin-user-coadmin{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+.admin-user-coadmin .choice{
+  font-weight:700;
+  color:var(--navy);
+}
+
+.admin-password-result{
+  display:none;
+  margin-top:16px;
+}
+
+.admin-password-result.active{
+  display:block;
+}
+
 .result{
   display:none;
   margin-top:20px;
@@ -523,6 +687,15 @@ textarea:disabled{
   .create-method img{
     width:46px;
     height:46px;
+  }
+
+  .login-setting-row{
+    grid-template-columns:46px 1fr;
+  }
+
+  .login-setting-actions{
+    grid-column:1 / -1;
+    justify-content:flex-start;
   }
 }
 </style>
@@ -863,9 +1036,9 @@ textarea:disabled{
 
         <button
           class="menu"
-          data-view="password"
+          data-view="login-settings"
         >
-          <span>パスワード変更</span>
+          <span>ログイン設定</span>
           <span>›</span>
         </button>
 
@@ -1072,68 +1245,304 @@ textarea:disabled{
     </section>
 
     <section
-      id="view-password"
+      id="view-login-settings"
       class="view"
     >
       <div class="card">
 
-        <form
-          id="password-form"
-          class="form"
-        >
-
-          <p class="hint">
-            8文字以上、半角英字と半角数字を含めてください。
-          </p>
-
-          <div class="row">
-
-            <label class="label">
-              新しいパスワード
-            </label>
-
-            <input
-              id="new-password"
-              class="input"
-              type="password"
-              required
-            >
-
-          </div>
-
-          <div class="row">
-
-            <label class="label">
-              新しいパスワード（確認）
-            </label>
-
-            <input
-              id="new-password-confirm"
-              class="input"
-              type="password"
-              required
-            >
-
-          </div>
-
-          <button
-            id="password-button"
-            class="button"
-          >
-            パスワードを変更
-          </button>
-
-        </form>
+        <p class="hint">
+          このアカウントで利用するログイン方法を管理できます。ログイン方法は最低1つ必要です。
+        </p>
 
         <div
-          id="password-status"
+          id="login-settings-loading"
+          class="hint"
+        >
+          読み込み中...
+        </div>
+
+        <div
+          id="login-settings-list"
+          class="login-settings-list"
+        >
+
+          <div class="login-setting-row">
+            <img
+              class="login-setting-icon"
+              src="passkey.webp"
+              alt="パスキー"
+            >
+
+            <div>
+              <div class="login-setting-name">パスキー</div>
+              <div
+                id="settings-passkey-detail"
+                class="login-setting-detail"
+              >
+                状態を確認しています...
+              </div>
+            </div>
+
+            <div class="login-setting-actions">
+              <span
+                id="settings-passkey-chip"
+                class="method-chip"
+              >
+                確認中
+              </span>
+
+              <button
+                id="settings-passkey-action"
+                class="method-action"
+                type="button"
+                disabled
+              >
+                追加
+              </button>
+            </div>
+          </div>
+
+          <div class="login-setting-row">
+            <img
+              class="login-setting-icon"
+              src="mail.png"
+              alt="メール認証"
+            >
+
+            <div>
+              <div class="login-setting-name">メール認証</div>
+              <div
+                id="settings-email-detail"
+                class="login-setting-detail"
+              >
+                状態を確認しています...
+              </div>
+            </div>
+
+            <div class="login-setting-actions">
+              <span
+                id="settings-email-chip"
+                class="method-chip"
+              >
+                確認中
+              </span>
+
+              <button
+                id="settings-email-action"
+                class="method-action"
+                type="button"
+                disabled
+              >
+                追加
+              </button>
+            </div>
+          </div>
+
+          <div class="login-setting-row">
+            <img
+              class="login-setting-icon"
+              src="guardian.jpg"
+              alt="アプリ認証"
+            >
+
+            <div>
+              <div class="login-setting-name">アプリ認証</div>
+              <div
+                id="settings-app-detail"
+                class="login-setting-detail"
+              >
+                状態を確認しています...
+              </div>
+            </div>
+
+            <div class="login-setting-actions">
+              <span
+                id="settings-app-chip"
+                class="method-chip"
+              >
+                確認中
+              </span>
+
+              <button
+                id="settings-app-action"
+                class="method-action"
+                type="button"
+                disabled
+              >
+                追加
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <div
+          id="settings-email-enroll"
+          class="settings-enroll-box"
+        >
+          <h3>メール認証を追加</h3>
+
+          <p
+            id="settings-email-message"
+            class="hint"
+          ></p>
+
+          <form
+            id="settings-email-form"
+            class="form"
+          >
+            <div class="row">
+              <label
+                class="label"
+                for="settings-email-code"
+              >
+                認証コード
+              </label>
+
+              <input
+                id="settings-email-code"
+                class="input"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                required
+              >
+            </div>
+
+            <button
+              id="settings-email-verify"
+              class="button"
+            >
+              メール認証を登録
+            </button>
+          </form>
+        </div>
+
+        <div
+          id="settings-app-enroll"
+          class="settings-enroll-box"
+        >
+          <h3>アプリ認証を追加</h3>
+
+          <p class="hint">
+            2FAS Authなどの認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。
+          </p>
+
+          <div
+            id="settings-app-qr"
+            class="qr"
+          ></div>
+
+          <form
+            id="settings-app-form"
+            class="form"
+          >
+            <div class="row">
+              <label
+                class="label"
+                for="settings-app-code"
+              >
+                認証コード
+              </label>
+
+              <input
+                id="settings-app-code"
+                class="input"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="6"
+                required
+              >
+            </div>
+
+            <button
+              id="settings-app-verify"
+              class="button"
+            >
+              アプリ認証を登録
+            </button>
+          </form>
+        </div>
+
+        <div
+          id="login-settings-status"
           class="status"
         ></div>
 
         <div
-          id="password-error"
+          id="login-settings-error"
           class="error"
         ></div>
+
+        <hr class="login-settings-divider">
+
+        <div style="text-align:center">
+          <button
+            id="password-toggle"
+            class="sub"
+            type="button"
+          >
+            パスワードを変更
+          </button>
+        </div>
+
+        <div
+          id="settings-password-area"
+          class="settings-password-area"
+        >
+          <form
+            id="password-form"
+            class="form"
+          >
+
+            <p class="hint">
+              8文字以上、半角英字と半角数字を含めてください。
+            </p>
+
+            <div class="row">
+              <label class="label">
+                新しいパスワード
+              </label>
+
+              <input
+                id="new-password"
+                class="input"
+                type="password"
+                required
+              >
+            </div>
+
+            <div class="row">
+              <label class="label">
+                新しいパスワード（確認）
+              </label>
+
+              <input
+                id="new-password-confirm"
+                class="input"
+                type="password"
+                required
+              >
+            </div>
+
+            <button
+              id="password-button"
+              class="button"
+            >
+              パスワードを変更
+            </button>
+          </form>
+
+          <div
+            id="password-status"
+            class="status"
+          ></div>
+
+          <div
+            id="password-error"
+            class="error"
+          ></div>
+        </div>
 
       </div>
 
@@ -1358,6 +1767,104 @@ textarea:disabled{
 
           </table>
 
+        </div>
+
+        <div id="admin-user-editor" class="admin-user-editor">
+          <div class="admin-user-editor-head">
+            <div>
+              <h3>アカウント編集</h3>
+              <div id="admin-edit-user-label" class="hint"></div>
+            </div>
+          </div>
+
+          <p class="hint">
+            ログイン方法は最低1つ必要です。パスキーを新しく追加する場合は、次回ログイン時に本人へパスキー登録を要求します。
+          </p>
+
+          <div class="login-settings-list">
+            <div class="login-setting-row">
+              <img class="login-setting-icon" src="passkey.webp" alt="パスキー">
+              <div>
+                <div class="login-setting-name">パスキー</div>
+                <div id="admin-edit-passkey-detail" class="login-setting-detail">状態を確認しています...</div>
+              </div>
+              <div class="login-setting-actions">
+                <span id="admin-edit-passkey-chip" class="method-chip">確認中</span>
+                <button id="admin-edit-passkey-action" class="method-action" type="button" disabled>追加</button>
+              </div>
+            </div>
+
+            <div class="login-setting-row">
+              <img class="login-setting-icon" src="mail.png" alt="メール認証">
+              <div>
+                <div class="login-setting-name">メール認証</div>
+                <div id="admin-edit-email-detail" class="login-setting-detail">状態を確認しています...</div>
+              </div>
+              <div class="login-setting-actions">
+                <span id="admin-edit-email-chip" class="method-chip">確認中</span>
+                <button id="admin-edit-email-action" class="method-action" type="button" disabled>追加</button>
+              </div>
+            </div>
+
+            <div class="login-setting-row">
+              <img class="login-setting-icon" src="guardian.jpg" alt="アプリ認証">
+              <div>
+                <div class="login-setting-name">アプリ認証</div>
+                <div id="admin-edit-app-detail" class="login-setting-detail">状態を確認しています...</div>
+              </div>
+              <div class="login-setting-actions">
+                <span id="admin-edit-app-chip" class="method-chip">確認中</span>
+                <button id="admin-edit-app-action" class="method-action" type="button" disabled>追加</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="admin-edit-app-enroll" class="settings-enroll-box">
+            <h4>アプリ認証を追加</h4>
+            <p class="hint">
+              対象ユーザーの認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。
+            </p>
+            <div id="admin-edit-app-qr" class="qr"></div>
+            <form id="admin-edit-app-form" class="form">
+              <div class="row">
+                <label class="label" for="admin-edit-app-code">認証コード</label>
+                <input id="admin-edit-app-code" class="input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+              </div>
+              <button id="admin-edit-app-verify" class="button">アプリ認証を登録</button>
+            </form>
+          </div>
+
+          <div id="admin-edit-status" class="status"></div>
+          <div id="admin-edit-error" class="error"></div>
+
+          <div class="admin-user-editor-section">
+            <h4>共同管理者設定</h4>
+            <div class="admin-user-coadmin">
+              <label class="choice">
+                <input id="admin-edit-coadmin" type="checkbox">
+                共同管理者モードを有効にする
+              </label>
+              <button id="admin-edit-coadmin-save" class="sub" type="button">設定を保存</button>
+            </div>
+          </div>
+
+          <div class="admin-user-editor-section">
+            <h4>パスワード再発行</h4>
+            <p class="hint">
+              新しいランダムパスワードを発行し、現在のパスワードを無効にします。発行後のパスワードは対象ユーザーへ安全な方法で伝えてください。
+            </p>
+            <button id="admin-edit-password-reissue" class="sub" type="button">パスワードを再発行</button>
+
+            <div id="admin-edit-password-result" class="admin-password-result">
+              <p class="hint">再発行したパスワード</p>
+              <div id="admin-edit-password-value" class="code"></div>
+              <button id="admin-edit-password-copy" class="sub" type="button" style="margin-top:10px">パスワードをコピー</button>
+            </div>
+          </div>
+
+          <div class="bottom-nav">
+            <button id="admin-edit-close" class="sub" type="button">← 編集を閉じる</button>
+          </div>
         </div>
 
       </div>
@@ -1731,6 +2238,31 @@ const ui = {
   passwordButton: $("password-button"),
   passwordStatus: $("password-status"),
   passwordError: $("password-error"),
+  loginSettingsLoading: $("login-settings-loading"),
+  loginSettingsList: $("login-settings-list"),
+  loginSettingsStatus: $("login-settings-status"),
+  loginSettingsError: $("login-settings-error"),
+  settingsPasskeyDetail: $("settings-passkey-detail"),
+  settingsPasskeyChip: $("settings-passkey-chip"),
+  settingsPasskeyAction: $("settings-passkey-action"),
+  settingsEmailDetail: $("settings-email-detail"),
+  settingsEmailChip: $("settings-email-chip"),
+  settingsEmailAction: $("settings-email-action"),
+  settingsAppDetail: $("settings-app-detail"),
+  settingsAppChip: $("settings-app-chip"),
+  settingsAppAction: $("settings-app-action"),
+  settingsEmailEnroll: $("settings-email-enroll"),
+  settingsEmailMessage: $("settings-email-message"),
+  settingsEmailForm: $("settings-email-form"),
+  settingsEmailCode: $("settings-email-code"),
+  settingsEmailVerify: $("settings-email-verify"),
+  settingsAppEnroll: $("settings-app-enroll"),
+  settingsAppQr: $("settings-app-qr"),
+  settingsAppForm: $("settings-app-form"),
+  settingsAppCode: $("settings-app-code"),
+  settingsAppVerify: $("settings-app-verify"),
+  passwordToggle: $("password-toggle"),
+  settingsPasswordArea: $("settings-password-area"),
   requestForm: $("request-form"),
   requestSubject: $("request-subject"),
   requestBody: $("request-body"),
@@ -1742,6 +2274,31 @@ const ui = {
   allRequests: $("all-requests"),
   usersStatus: $("users-status"),
   usersBody: $("users-body"),
+  adminUserEditor: $("admin-user-editor"),
+  adminEditUserLabel: $("admin-edit-user-label"),
+  adminEditPasskeyDetail: $("admin-edit-passkey-detail"),
+  adminEditPasskeyChip: $("admin-edit-passkey-chip"),
+  adminEditPasskeyAction: $("admin-edit-passkey-action"),
+  adminEditEmailDetail: $("admin-edit-email-detail"),
+  adminEditEmailChip: $("admin-edit-email-chip"),
+  adminEditEmailAction: $("admin-edit-email-action"),
+  adminEditAppDetail: $("admin-edit-app-detail"),
+  adminEditAppChip: $("admin-edit-app-chip"),
+  adminEditAppAction: $("admin-edit-app-action"),
+  adminEditAppEnroll: $("admin-edit-app-enroll"),
+  adminEditAppQr: $("admin-edit-app-qr"),
+  adminEditAppForm: $("admin-edit-app-form"),
+  adminEditAppCode: $("admin-edit-app-code"),
+  adminEditAppVerify: $("admin-edit-app-verify"),
+  adminEditStatus: $("admin-edit-status"),
+  adminEditError: $("admin-edit-error"),
+  adminEditCoadmin: $("admin-edit-coadmin"),
+  adminEditCoadminSave: $("admin-edit-coadmin-save"),
+  adminEditPasswordReissue: $("admin-edit-password-reissue"),
+  adminEditPasswordResult: $("admin-edit-password-result"),
+  adminEditPasswordValue: $("admin-edit-password-value"),
+  adminEditPasswordCopy: $("admin-edit-password-copy"),
+  adminEditClose: $("admin-edit-close"),
   createForm: $("create-form"),
   createName: $("create-name"),
   createLast: $("create-last"),
@@ -1777,6 +2334,10 @@ let selectedLoginMethod = "";
 let loginAuth0Token = "";
 let loginChallengeId = "";
 let pendingAccount = null;
+let loginSettingsState = null;
+let settingsEmailChallengeId = "";
+let adminEditUserId = "";
+let adminEditUserState = null;
 
 const show = (element, message) => {
   element.textContent = message;
@@ -1879,11 +2440,9 @@ async function workerPost(path, body = {}, token = "") {
     });
   } catch (error) {
     console.error("Worker fetch failed:", error);
-
-    const detail =
-      error?.message
-        ? `（${error.message}）`
-        : "";
+    const detail = error?.message
+      ? `（${error.message}）`
+      : "";
 
     throw new Error(
       `管理APIに接続できませんでした。${detail}`
@@ -1897,18 +2456,9 @@ async function workerPost(path, body = {}, token = "") {
 }
 
 function methodLabel(method) {
-  if (method === "passkey") {
-    return "パスキー";
-  }
-
-  if (method === "email") {
-    return "メール認証";
-  }
-
-  if (method === "app") {
-    return "アプリ認証";
-  }
-
+  if (method === "passkey") return "パスキー";
+  if (method === "email") return "メール認証";
+  if (method === "app") return "アプリ認証";
   return method;
 }
 
@@ -2086,13 +2636,6 @@ async function startPasskeyUniversalLogin() {
     username
   );
 
-  /*
-    重要：
-    login_hint は入れない。
-
-    Identifier First画面をAuth0側で表示させ、
-    Auth0の「パスキーで続行」入口を使えるようにする。
-  */
   await auth0Client.loginWithRedirect({
     appState: {
       returnTo:
@@ -2599,6 +3142,13 @@ document
   });
 
 function showView(name) {
+  if (
+    name === "password"
+  ) {
+    name =
+      "login-settings";
+  }
+
   const sub =
     sessionStorage.getItem(
       "admin_sub"
@@ -2628,7 +3178,10 @@ function showView(name) {
       "ニュース追加",
 
     password:
-      "パスワード変更",
+      "ログイン設定",
+
+    "login-settings":
+      "ログイン設定",
 
     inquiries:
       "お問い合わせ一覧",
@@ -2696,6 +3249,13 @@ function showView(name) {
     loadUsers();
   }
 
+  if (
+    name ===
+    "login-settings"
+  ) {
+    loadLoginSettings();
+  }
+
   window.scrollTo({
     top: 0,
     behavior: "smooth",
@@ -2727,6 +3287,22 @@ function setReadOnly(readOnly) {
           readOnly;
       });
   });
+
+  if (readOnly) {
+    [
+      ui.settingsPasskeyAction,
+      ui.settingsEmailAction,
+      ui.settingsAppAction,
+      ui.passwordToggle,
+      ui.settingsEmailVerify,
+      ui.settingsAppVerify,
+    ].forEach(button => {
+      if (button) {
+        button.disabled =
+          true;
+      }
+    });
+  }
 }
 
 function showAdmin() {
@@ -2846,6 +3422,7 @@ function clearSession() {
     "admin_auth_mode",
     "pending_admin_id",
     "passkey_flow_stage",
+    "login_settings_passkey_add",
   ].forEach(key =>
     sessionStorage.removeItem(
       key
@@ -3056,6 +3633,15 @@ async function initAuth() {
         `${window.location.pathname}${window.location.hash}`
       );
 
+      if (
+        sessionStorage.getItem(
+          "login_settings_passkey_add"
+        ) === "1"
+      ) {
+        await finishLoginSettingsPasskeyAdd();
+        return;
+      }
+
       await finishPasskeyLogin();
 
       return;
@@ -3078,6 +3664,47 @@ async function initAuth() {
         document.title,
         `${window.location.pathname}${window.location.hash}`
       );
+
+      if (
+        sessionStorage.getItem(
+          "login_settings_passkey_add"
+        ) === "1"
+      ) {
+        sessionStorage.removeItem(
+          "login_settings_passkey_add"
+        );
+
+        sessionStorage.setItem(
+          "admin_current_view",
+          "login-settings"
+        );
+
+        restore();
+
+        if (
+          sessionStorage.getItem(
+            "admin_access_token"
+          )
+        ) {
+          showView(
+            "login-settings"
+          );
+
+          loginSettingsMessage(
+            description,
+            true
+          );
+
+        } else {
+          showLogin();
+
+          authError(
+            description
+          );
+        }
+
+        return;
+      }
 
       showLogin();
 
@@ -3104,7 +3731,9 @@ async function initAuth() {
     restore();
 
   } catch (error) {
-    console.error(error);
+    console.error(
+      error
+    );
 
     showLogin();
 
@@ -3143,6 +3772,835 @@ ui.newsForm.addEventListener(
         ui.newsStatus,
         "画面は完成しています。実際のニュース保存先は次に接続します。"
       );
+    }
+  }
+);
+
+function loginSettingsMessage(
+  message,
+  isError = false
+) {
+  hide(
+    ui.loginSettingsStatus
+  );
+
+  hide(
+    ui.loginSettingsError
+  );
+
+  if (
+    !message
+  ) {
+    return;
+  }
+
+  show(
+    isError
+      ? ui.loginSettingsError
+      : ui.loginSettingsStatus,
+    message
+  );
+}
+
+function closeLoginSettingsEnrollBoxes() {
+  ui.settingsEmailEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.settingsAppEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  settingsEmailChallengeId =
+    "";
+
+  ui.settingsEmailCode.value =
+    "";
+
+  ui.settingsAppCode.value =
+    "";
+
+  ui.settingsAppQr.innerHTML =
+    "";
+}
+
+function renderLoginMethod(
+  method,
+  data
+) {
+  const map = {
+    passkey: {
+      chip:
+        ui.settingsPasskeyChip,
+
+      detail:
+        ui.settingsPasskeyDetail,
+
+      action:
+        ui.settingsPasskeyAction,
+    },
+
+    email: {
+      chip:
+        ui.settingsEmailChip,
+
+      detail:
+        ui.settingsEmailDetail,
+
+      action:
+        ui.settingsEmailAction,
+    },
+
+    app: {
+      chip:
+        ui.settingsAppChip,
+
+      detail:
+        ui.settingsAppDetail,
+
+      action:
+        ui.settingsAppAction,
+    },
+  };
+
+  const target =
+    map[method];
+
+  const enabled =
+    !!data?.enabled;
+
+  target.chip.textContent =
+    enabled
+      ? "登録済み"
+      : "未登録";
+
+  target.chip
+    .classList
+    .toggle(
+      "enabled",
+      enabled
+    );
+
+  target.action.textContent =
+    enabled
+      ? "削除"
+      : "追加";
+
+  target.action
+    .classList
+    .toggle(
+      "remove",
+      enabled
+    );
+
+  target.action.dataset.enabled =
+    enabled
+      ? "1"
+      : "0";
+
+  target.action.disabled =
+    isDummy();
+
+  if (
+    method === "passkey"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
+        : data?.enrolled
+          ? "パスキーはAuth0に存在しますが、このログイン方法は現在無効です。"
+          : "パスキーは登録されていません。";
+
+  } else if (
+    method === "email"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.destination || "登録メールアドレス"} を使用します。`
+        : data?.available
+          ? `${data.destination || "登録メールアドレス"} に認証コードを送って追加できます。`
+          : "利用できるメールアドレスが登録されていません。";
+
+  } else {
+    target.detail.textContent =
+      enabled
+        ? "認証アプリの6桁コードを使用します。"
+        : "2FAS Authなどの認証アプリを追加できます。";
+  }
+}
+
+async function loadLoginSettings() {
+  if (
+    !sessionStorage.getItem(
+      "admin_access_token"
+    )
+  ) {
+    return;
+  }
+
+  ui.loginSettingsLoading.textContent =
+    "読み込み中...";
+
+  loginSettingsMessage(
+    ""
+  );
+
+  closeLoginSettingsEnrollBoxes();
+
+  try {
+    const {
+      response,
+      data,
+    } = await workerPost(
+      "/login-settings",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "ログイン設定を取得できませんでした。"
+      );
+    }
+
+    loginSettingsState =
+      data;
+
+    ui.loginSettingsLoading.textContent =
+      "";
+
+    renderLoginMethod(
+      "passkey",
+      data.methods?.passkey
+    );
+
+    renderLoginMethod(
+      "email",
+      data.methods?.email
+    );
+
+    renderLoginMethod(
+      "app",
+      data.methods?.app
+    );
+
+    if (
+      isDummy()
+    ) {
+      loginSettingsMessage(
+        "閲覧専用アカウントではログイン設定を変更できません。"
+      );
+    }
+
+  } catch (error) {
+    ui.loginSettingsLoading.textContent =
+      "";
+
+    loginSettingsMessage(
+      error.message ||
+      "ログイン設定を取得できませんでした。",
+      true
+    );
+  }
+}
+
+async function deleteLoginMethod(
+  method
+) {
+  if (
+    !loginSettingsState
+      ?.methods
+      ?.[method]
+      ?.enabled
+  ) {
+    return;
+  }
+
+  const label =
+    methodLabel(
+      method
+    );
+
+  const confirmed =
+    window.confirm(
+      `${label}を削除しますか？\nログイン方法は最低1つ必要です。`
+    );
+
+  if (
+    !confirmed
+  ) {
+    return;
+  }
+
+  loginSettingsMessage(
+    `${label}を削除しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/login-settings-method-delete",
+    {
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${label}を削除できませんでした。`
+    );
+  }
+
+  await loadLoginSettings();
+
+  loginSettingsMessage(
+    `${label}を削除しました。`
+  );
+}
+
+async function startPasskeyAddFromSettings() {
+  loginSettingsMessage(
+    "パスキーの状態を確認しています…"
+  );
+
+  const result =
+    await workerPost(
+      "/login-settings-passkey-enable",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+  if (
+    result.response.ok
+  ) {
+    await loadLoginSettings();
+
+    loginSettingsMessage(
+      "既存のパスキーをログイン方法として有効にしました。"
+    );
+
+    return;
+  }
+
+  if (
+    result.data.code !==
+    "PASSKEY_ENROLLMENT_REQUIRED"
+  ) {
+    throw new Error(
+      result.data.error ||
+      "パスキーを追加できませんでした。"
+    );
+  }
+
+  sessionStorage.setItem(
+    "login_settings_passkey_add",
+    "1"
+  );
+
+  sessionStorage.setItem(
+    "admin_current_view",
+    "login-settings"
+  );
+
+  await auth0Client.loginWithRedirect({
+    appState: {
+      returnTo:
+        window.location.pathname,
+    },
+
+    authorizationParams: {
+      audience:
+        API_AUDIENCE,
+
+      scope:
+        "openid profile",
+
+      redirect_uri:
+        AUTH0_REDIRECT_URI,
+
+      connection:
+        AUTH0_REALM,
+
+      prompt:
+        "login",
+    },
+  });
+}
+
+async function finishLoginSettingsPasskeyAdd() {
+  try {
+    const token =
+      await auth0Client.getTokenSilently({
+        detailedResponse: true,
+      });
+
+    if (
+      !token?.access_token
+    ) {
+      throw new Error(
+        "Auth0のログイン情報を取得できませんでした。"
+      );
+    }
+
+    const result =
+      await workerPost(
+        "/login-settings-passkey-complete",
+        {},
+        token.access_token
+      );
+
+    sessionStorage.removeItem(
+      "login_settings_passkey_add"
+    );
+
+    sessionStorage.setItem(
+      "admin_current_view",
+      "login-settings"
+    );
+
+    if (
+      !result.response.ok
+    ) {
+      showAdmin();
+
+      await loadLoginSettings();
+
+      loginSettingsMessage(
+        result.data.error ||
+        "パスキーの登録を確認できませんでした。",
+        true
+      );
+
+      return;
+    }
+
+    showAdmin();
+
+    await loadLoginSettings();
+
+    loginSettingsMessage(
+      "パスキーを追加しました。"
+    );
+
+  } catch (error) {
+    sessionStorage.removeItem(
+      "login_settings_passkey_add"
+    );
+
+    showAdmin();
+
+    showView(
+      "login-settings"
+    );
+
+    loginSettingsMessage(
+      error.message ||
+      "パスキーを追加できませんでした。",
+      true
+    );
+  }
+}
+
+ui.settingsPasskeyAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsPasskeyAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.settingsPasskeyAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "passkey"
+        );
+
+      } else {
+        await startPasskeyAddFromSettings();
+      }
+
+    } catch (error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsPasskeyAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsEmailAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsEmailAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.settingsEmailAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "email"
+        );
+
+        return;
+      }
+
+      closeLoginSettingsEnrollBoxes();
+
+      loginSettingsMessage(
+        "認証コードを送信しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-email-start",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "認証メールを送信できませんでした。"
+        );
+      }
+
+      settingsEmailChallengeId =
+        data.challengeId ||
+        "";
+
+      ui.settingsEmailMessage.textContent =
+        `${
+          data.destination ||
+          "登録メールアドレス"
+        } に届いた6桁の認証コードを入力してください。`;
+
+      ui.settingsEmailEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      loginSettingsMessage(
+        ""
+      );
+
+      ui.settingsEmailCode.focus();
+
+    } catch (error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsEmailAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsEmailForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.settingsEmailCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return loginSettingsMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.settingsEmailVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-email-complete",
+        {
+          code,
+          challengeId:
+            settingsEmailChallengeId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "メール認証を追加できませんでした。"
+        );
+      }
+
+      await loadLoginSettings();
+
+      loginSettingsMessage(
+        "メール認証を追加しました。"
+      );
+
+    } catch (error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsEmailVerify.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsAppAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsAppAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.settingsAppAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "app"
+        );
+
+        return;
+      }
+
+      closeLoginSettingsEnrollBoxes();
+
+      loginSettingsMessage(
+        "アプリ認証を準備しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-app-start",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を準備できませんでした。"
+        );
+      }
+
+      if (
+        !data.barcodeUri
+      ) {
+        throw new Error(
+          "認証アプリ登録用のQRコードを取得できませんでした。"
+        );
+      }
+
+      ui.settingsAppQr.innerHTML =
+        "";
+
+      new QRCode(
+        ui.settingsAppQr,
+        {
+          text:
+            data.barcodeUri,
+
+          width:
+            200,
+
+          height:
+            200,
+        }
+      );
+
+      ui.settingsAppEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      loginSettingsMessage(
+        ""
+      );
+
+      ui.settingsAppCode.focus();
+
+    } catch (error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsAppAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsAppForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.settingsAppCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return loginSettingsMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.settingsAppVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-app-complete",
+        {
+          code,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を追加できませんでした。"
+        );
+      }
+
+      await loadLoginSettings();
+
+      loginSettingsMessage(
+        "アプリ認証を追加しました。"
+      );
+
+    } catch (error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsAppVerify.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.passwordToggle.addEventListener(
+  "click",
+  () => {
+    const open =
+      ui.settingsPasswordArea
+        .classList
+        .toggle(
+          "active"
+        );
+
+    ui.passwordToggle.textContent =
+      open
+        ? "パスワード変更を閉じる"
+        : "パスワードを変更";
+
+    hide(
+      ui.passwordStatus
+    );
+
+    hide(
+      ui.passwordError
+    );
+
+    if (
+      open
+    ) {
+      ui.newPassword.focus();
     }
   }
 );
@@ -3240,7 +4698,9 @@ ui.passwordForm.addEventListener(
 );
 
 function formatDate(value) {
-  if (!value) {
+  if (
+    !value
+  ) {
     return "";
   }
 
@@ -3270,7 +4730,10 @@ function formatDate(value) {
       ).format(date);
 }
 
-function requestCard(item, owner) {
+function requestCard(
+  item,
+  owner
+) {
   const card =
     document.createElement(
       "article"
@@ -3335,7 +4798,9 @@ function requestCard(item, owner) {
     body
   );
 
-  if (owner) {
+  if (
+    owner
+  ) {
     const textarea =
       document.createElement(
         "textarea"
@@ -3616,12 +5081,914 @@ ui.requestForm.addEventListener(
   }
 );
 
-async function loadUsers() {
+function adminEditMessage(
+  message,
+  isError = false
+) {
+  hide(
+    ui.adminEditStatus
+  );
+
+  hide(
+    ui.adminEditError
+  );
+
+  if (
+    !message
+  ) {
+    return;
+  }
+
+  show(
+    isError
+      ? ui.adminEditError
+      : ui.adminEditStatus,
+    message
+  );
+}
+
+function closeAdminEditAppEnroll() {
+  ui.adminEditAppEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.adminEditAppQr.innerHTML =
+    "";
+
+  ui.adminEditAppCode.value =
+    "";
+}
+
+function renderAdminEditMethod(
+  method,
+  data,
+  enabledCount
+) {
+  const map = {
+    passkey: {
+      chip:
+        ui.adminEditPasskeyChip,
+
+      detail:
+        ui.adminEditPasskeyDetail,
+
+      action:
+        ui.adminEditPasskeyAction,
+    },
+
+    email: {
+      chip:
+        ui.adminEditEmailChip,
+
+      detail:
+        ui.adminEditEmailDetail,
+
+      action:
+        ui.adminEditEmailAction,
+    },
+
+    app: {
+      chip:
+        ui.adminEditAppChip,
+
+      detail:
+        ui.adminEditAppDetail,
+
+      action:
+        ui.adminEditAppAction,
+    },
+  };
+
+  const target =
+    map[method];
+
+  const enabled =
+    !!data?.enabled;
+
+  const selected =
+    !!data?.selected;
+
+  const pending =
+    !!data?.pending ||
+    (
+      selected &&
+      !enabled
+    );
+
+  target.chip.textContent =
+    enabled
+      ? "登録済み"
+      : pending
+        ? "登録待ち"
+        : "未登録";
+
+  target.chip
+    .classList
+    .toggle(
+      "enabled",
+      enabled
+    );
+
+  target.action.textContent =
+    enabled
+      ? "削除"
+      : pending
+        ? "取消"
+        : "追加";
+
+  target.action
+    .classList
+    .toggle(
+      "remove",
+      enabled ||
+      pending
+    );
+
+  target.action.dataset.enabled =
+    enabled
+      ? "1"
+      : "0";
+
+  target.action.dataset.selected =
+    selected
+      ? "1"
+      : "0";
+
+  target.action.disabled =
+    enabled &&
+    enabledCount <= 1;
+
+  target.action.title =
+    enabled &&
+    enabledCount <= 1
+      ? "ログイン方法は最低1つ必要です。"
+      : "";
+
+  if (
+    method === "passkey"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
+        : pending
+          ? "次回ログイン時に本人へパスキー登録を要求します。"
+          : data?.enrolled
+            ? "Auth0にパスキーはあります。追加するとこのログイン方法を有効化します。"
+            : "追加すると、次回ログイン時に本人へパスキー登録を要求します。";
+
+  } else if (
+    method === "email"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.destination || "登録メールアドレス"} を使用します。`
+        : data?.available
+          ? `${data.destination || "登録メールアドレス"} をログイン方法として追加できます。`
+          : "利用できるメールアドレスが登録されていません。";
+
+  } else {
+    target.detail.textContent =
+      enabled
+        ? "認証アプリの6桁コードを使用します。"
+        : "追加時にQRコードを表示し、対象ユーザーの認証アプリで登録します。";
+  }
+}
+
+async function loadAdminUserEditor(
+  userId,
+  scroll = false
+) {
+  adminEditUserId =
+    userId;
+
+  adminEditUserState =
+    null;
+
+  adminEditMessage(
+    "読み込み中…"
+  );
+
+  closeAdminEditAppEnroll();
+
+  ui.adminEditPasswordResult
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.adminEditPasswordValue.textContent =
+    "";
+
+  ui.adminUserEditor
+    .classList
+    .add(
+      "active"
+    );
+
+  try {
+    const {
+      response,
+      data,
+    } = await workerPost(
+      "/admin-user-settings",
+      {
+        userId,
+      },
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "アカウント設定を取得できませんでした。"
+      );
+    }
+
+    adminEditUserState =
+      data;
+
+    ui.adminEditUserLabel.textContent =
+      `${
+        data.user?.name ||
+        "—"
+      } / ${
+        data.user?.username ||
+        "—"
+      }`;
+
+    ui.adminEditCoadmin.checked =
+      !!data.user?.coAdmin;
+
+    renderAdminEditMethod(
+      "passkey",
+      data.methods?.passkey,
+      data.enabledCount ||
+      0
+    );
+
+    renderAdminEditMethod(
+      "email",
+      data.methods?.email,
+      data.enabledCount ||
+      0
+    );
+
+    renderAdminEditMethod(
+      "app",
+      data.methods?.app,
+      data.enabledCount ||
+      0
+    );
+
+    adminEditMessage(
+      ""
+    );
+
+    if (
+      scroll
+    ) {
+      ui.adminUserEditor.scrollIntoView({
+        behavior:
+          "smooth",
+
+        block:
+          "start",
+      });
+    }
+
+  } catch (error) {
+    adminEditMessage(
+      error.message ||
+      "アカウント設定を取得できませんでした。",
+      true
+    );
+  }
+}
+
+async function adminDeleteLoginMethod(
+  method
+) {
+  const methodState =
+    adminEditUserState
+      ?.methods
+      ?.[method];
+
+  if (
+    !adminEditUserId ||
+    (
+      !methodState?.enabled &&
+      !methodState?.selected
+    )
+  ) {
+    return;
+  }
+
+  const label =
+    methodLabel(
+      method
+    );
+
+  const confirmed =
+    window.confirm(
+      `${
+        adminEditUserState.user?.username ||
+        "このアカウント"
+      } の${label}を削除しますか？\nログイン方法は最低1つ必要です。`
+    );
+
+  if (
+    !confirmed
+  ) {
+    return;
+  }
+
+  adminEditMessage(
+    `${label}を削除しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/admin-user-method-delete",
+    {
+      userId:
+        adminEditUserId,
+
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${label}を削除できませんでした。`
+    );
+  }
+
+  await loadAdminUserEditor(
+    adminEditUserId
+  );
+
+  adminEditMessage(
+    `${label}を削除しました。`
+  );
+}
+
+ui.adminEditPasskeyAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditPasskeyAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.adminEditPasskeyAction.dataset.enabled ===
+        "1" ||
+        ui.adminEditPasskeyAction.dataset.selected ===
+        "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "passkey"
+        );
+
+        return;
+      }
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-passkey-enable",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "パスキーを追加できませんでした。"
+        );
+      }
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        data.enrollmentRequired
+          ? "パスキーをログイン方法に追加しました。次回ログイン時に本人へパスキー登録を要求します。"
+          : "既存のパスキーをログイン方法として有効にしました。"
+      );
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditPasskeyAction.dataset.enabled !==
+        "1"
+      ) {
+        ui.adminEditPasskeyAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditEmailAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditEmailAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.adminEditEmailAction.dataset.enabled ===
+        "1" ||
+        ui.adminEditEmailAction.dataset.selected ===
+        "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "email"
+        );
+
+        return;
+      }
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-email-enable",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "メール認証を追加できませんでした。"
+        );
+      }
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        `メール認証を追加しました。${
+          data.destination
+            ? `（${data.destination}）`
+            : ""
+        }`
+      );
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditEmailAction.dataset.enabled !==
+        "1"
+      ) {
+        ui.adminEditEmailAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditAppAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditAppAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.adminEditAppAction.dataset.enabled ===
+        "1" ||
+        ui.adminEditAppAction.dataset.selected ===
+        "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "app"
+        );
+
+        return;
+      }
+
+      closeAdminEditAppEnroll();
+
+      adminEditMessage(
+        "アプリ認証を準備しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-app-start",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を準備できませんでした。"
+        );
+      }
+
+      ui.adminEditAppQr.innerHTML =
+        "";
+
+      new QRCode(
+        ui.adminEditAppQr,
+        {
+          text:
+            data.barcodeUri,
+
+          width:
+            200,
+
+          height:
+            200,
+        }
+      );
+
+      ui.adminEditAppEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      adminEditMessage(
+        ""
+      );
+
+      ui.adminEditAppCode.focus();
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditAppAction.dataset.enabled !==
+        "1"
+      ) {
+        ui.adminEditAppAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditAppForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.adminEditAppCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return adminEditMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.adminEditAppVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-app-complete",
+        {
+          userId:
+            adminEditUserId,
+
+          code,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を追加できませんでした。"
+        );
+      }
+
+      closeAdminEditAppEnroll();
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        "アプリ認証を追加しました。"
+      );
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      ui.adminEditAppVerify.disabled =
+        false;
+    }
+  }
+);
+
+ui.adminEditCoadminSave.addEventListener(
+  "click",
+  async () => {
+    if (
+      !adminEditUserId
+    ) {
+      return;
+    }
+
+    ui.adminEditCoadminSave.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/set-co-admin",
+        {
+          userId:
+            adminEditUserId,
+
+          enabled:
+            ui.adminEditCoadmin.checked,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "共同管理者設定を変更できませんでした。"
+        );
+      }
+
+      adminEditUserState.user.coAdmin =
+        ui.adminEditCoadmin.checked;
+
+      await loadUsers(
+        false
+      );
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        "共同管理者設定を保存しました。"
+      );
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      ui.adminEditCoadminSave.disabled =
+        false;
+    }
+  }
+);
+
+ui.adminEditPasswordReissue.addEventListener(
+  "click",
+  async () => {
+    if (
+      !adminEditUserId
+    ) {
+      return;
+    }
+
+    const label =
+      adminEditUserState
+        ?.user
+        ?.username ||
+      "このアカウント";
+
+    const confirmed =
+      window.confirm(
+        `「${label}」のパスワードを再発行しますか？\n現在のパスワードは使用できなくなります。`
+      );
+
+    if (
+      !confirmed
+    ) {
+      return;
+    }
+
+    ui.adminEditPasswordReissue.disabled =
+      true;
+
+    ui.adminEditPasswordResult
+      .classList
+      .remove(
+        "active"
+      );
+
+    adminEditMessage(
+      "パスワードを再発行しています…"
+    );
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-password-reissue",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "パスワードを再発行できませんでした。"
+        );
+      }
+
+      ui.adminEditPasswordValue.textContent =
+        data.password ||
+        "";
+
+      ui.adminEditPasswordResult
+        .classList
+        .add(
+          "active"
+        );
+
+      adminEditMessage(
+        "パスワードを再発行しました。表示中のパスワードを対象ユーザーへ安全に伝えてください。"
+      );
+
+    } catch (error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      ui.adminEditPasswordReissue.disabled =
+        false;
+    }
+  }
+);
+
+ui.adminEditPasswordCopy.addEventListener(
+  "click",
+  async () => {
+    const value =
+      ui.adminEditPasswordValue.textContent;
+
+    if (
+      !value
+    ) {
+      return;
+    }
+
+    await navigator.clipboard.writeText(
+      value
+    );
+
+    adminEditMessage(
+      "再発行パスワードをコピーしました。"
+    );
+  }
+);
+
+ui.adminEditClose.addEventListener(
+  "click",
+  () => {
+    adminEditUserId =
+      "";
+
+    adminEditUserState =
+      null;
+
+    closeAdminEditAppEnroll();
+
+    ui.adminEditPasswordResult
+      .classList
+      .remove(
+        "active"
+      );
+
+    ui.adminUserEditor
+      .classList
+      .remove(
+        "active"
+      );
+
+    adminEditMessage(
+      ""
+    );
+  }
+);
+
+async function loadUsers(
+  closeEditor = true
+) {
   ui.usersStatus.textContent =
     "読み込み中...";
 
   ui.usersBody.innerHTML =
     "";
+
+  if (
+    closeEditor
+  ) {
+    adminEditUserId =
+      "";
+
+    adminEditUserState =
+      null;
+
+    ui.adminUserEditor
+      .classList
+      .remove(
+        "active"
+      );
+  }
 
   try {
     const {
@@ -3691,30 +6058,16 @@ async function loadUsers() {
         user.username ||
         "—";
 
-      const check =
-        document.createElement(
-          "input"
-        );
-
-      check.type =
-        "checkbox";
-
-      check.checked =
-        !!user.coAdmin;
-
-      check.disabled =
-        true;
-
-      mode.append(
-        check
-      );
+      mode.textContent =
+        user.isOwner
+          ? "—"
+          : user.coAdmin
+            ? "ON"
+            : "OFF";
 
       if (
         user.isOwner
       ) {
-        mode.textContent =
-          "—";
-
         edit.textContent =
           "—";
 
@@ -3722,14 +6075,6 @@ async function loadUsers() {
           "—";
 
       } else {
-        const actions =
-          document.createElement(
-            "div"
-          );
-
-        actions.className =
-          "edit-actions";
-
         const editButton =
           document.createElement(
             "button"
@@ -3744,154 +6089,18 @@ async function loadUsers() {
         editButton.disabled =
           !!user.isDummy;
 
-        const save =
-          document.createElement(
-            "button"
-          );
-
-        save.className =
-          "mini save hidden";
-
-        save.textContent =
-          "保存";
-
-        const cancel =
-          document.createElement(
-            "button"
-          );
-
-        cancel.className =
-          "mini hidden";
-
-        cancel.textContent =
-          "キャンセル";
-
-        let original =
-          !!user.coAdmin;
-
         editButton.addEventListener(
           "click",
           () => {
-            original =
-              !!user.coAdmin;
-
-            check.disabled =
-              false;
-
-            editButton.classList.add(
-              "hidden"
-            );
-
-            save.classList.remove(
-              "hidden"
-            );
-
-            cancel.classList.remove(
-              "hidden"
+            loadAdminUserEditor(
+              user.userId,
+              true
             );
           }
-        );
-
-        cancel.addEventListener(
-          "click",
-          () => {
-            check.checked =
-              original;
-
-            check.disabled =
-              true;
-
-            save.classList.add(
-              "hidden"
-            );
-
-            cancel.classList.add(
-              "hidden"
-            );
-
-            editButton.classList.remove(
-              "hidden"
-            );
-          }
-        );
-
-        save.addEventListener(
-          "click",
-          async () => {
-            save.disabled =
-              true;
-
-            try {
-              const {
-                response,
-                data,
-              } = await workerPost(
-                "/set-co-admin",
-                {
-                  userId:
-                    user.userId,
-
-                  enabled:
-                    check.checked,
-                },
-                sessionStorage.getItem(
-                  "admin_access_token"
-                )
-              );
-
-              if (
-                !response.ok
-              ) {
-                throw new Error(
-                  data.error ||
-                  "変更できませんでした。"
-                );
-              }
-
-              user.coAdmin =
-                check.checked;
-
-              original =
-                check.checked;
-
-              check.disabled =
-                true;
-
-              save.classList.add(
-                "hidden"
-              );
-
-              cancel.classList.add(
-                "hidden"
-              );
-
-              editButton.classList.remove(
-                "hidden"
-              );
-
-            } catch (error) {
-              check.checked =
-                original;
-
-              alert(
-                error.message
-              );
-
-            } finally {
-              save.disabled =
-                false;
-            }
-          }
-        );
-
-        actions.append(
-          editButton,
-          save,
-          cancel
         );
 
         edit.append(
-          actions
+          editButton
         );
 
         const deleteButton =
@@ -4331,7 +6540,9 @@ async function prepareAccountFactor() {
   ui.accountCode.focus();
 }
 
-async function completeAccountFactor(code) {
+async function completeAccountFactor(
+  code
+) {
   const account =
     pendingAccount;
 
@@ -4581,8 +6792,12 @@ ui.createForm.addEventListener(
 
     if (
       (
-        methods.includes("passkey") ||
-        methods.includes("email")
+        methods.includes(
+          "passkey"
+        ) ||
+        methods.includes(
+          "email"
+        )
       ) &&
       !email
     ) {
