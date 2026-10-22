@@ -640,7 +640,153 @@ textarea:disabled{
   display:block;
 }
 
+.login-loading-screen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  color:var(--navy);
+}
+
+.login-loading-screen.active,
+.auth-callback-loading .login-loading-screen{
+  display:flex;
+}
+
+.auth-callback-loading .page{
+  visibility:hidden;
+}
+
+.login-loading-text{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  font-size:28px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+
+.login-loading-dot{
+  display:inline-block;
+  animation:loginDot 1.2s infinite ease-in-out;
+}
+
+.login-loading-dot:nth-child(2){
+  animation-delay:.15s;
+}
+
+.login-loading-dot:nth-child(3){
+  animation-delay:.30s;
+}
+
+@keyframes loginDot{
+  0%,60%,100%{
+    opacity:.25;
+    transform:translateY(0);
+  }
+  30%{
+    opacity:1;
+    transform:translateY(-4px);
+  }
+}
+
+.app-download-intro{
+  display:none;
+  margin-top:18px;
+  padding:20px;
+  border:1px solid #A0ACBC;
+  background:#fff;
+}
+
+.app-download-intro.active{
+  display:block;
+}
+
+.app-download-intro h4{
+  margin:0 0 8px;
+  text-align:center;
+  color:var(--navy);
+  font-size:20px;
+}
+
+.app-download-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:20px 0;
+}
+
+.app-download-card{
+  min-height:220px;
+  padding:14px;
+  border:1px solid #A0ACBC;
+  background:#F8FAFD;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.app-download-image{
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 10px;
+}
+
+.store-download-qr{
+  width:160px;
+  min-height:160px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 10px;
+  background:#fff;
+}
+
+.store-download-qr img,
+.store-download-qr canvas{
+  width:150px!important;
+  height:150px!important;
+  display:block;
+}
+
+.app-download-label{
+  color:var(--navy);
+  font-weight:700;
+  line-height:1.5;
+}
+
+.app-download-link{
+  margin-top:7px;
+  color:var(--navy);
+  font-size:13px;
+  text-decoration:underline;
+}
+
+.app-download-note{
+  margin:0 auto;
+  max-width:650px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.8;
+  text-align:center;
+}
+
 @media(max-width:700px){
+  .app-download-grid{
+    grid-template-columns:1fr;
+  }
+
+  .login-loading-text{
+    font-size:24px;
+  }
+
   .title{
     font-size:31px;
   }
@@ -699,9 +845,39 @@ textarea:disabled{
   }
 }
 </style>
+
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+
+  const isAuthCallback =
+    (params.has("code") && params.has("state")) ||
+    params.has("error") ||
+    (
+      sessionStorage.getItem("passkey_flow_stage") === "confirm" &&
+      sessionStorage.getItem("pending_admin_id")
+    );
+
+  if (isAuthCallback) {
+    document.documentElement.classList.add("auth-callback-loading");
+  }
+})();
+</script>
 </head>
 
 <body>
+
+<div
+  id="login-loading-screen"
+  class="login-loading-screen"
+  role="status"
+  aria-live="polite"
+  aria-label="ログイン中"
+>
+  <div class="login-loading-text">
+    ログイン中<span class="login-loading-dot">.</span><span class="login-loading-dot">.</span><span class="login-loading-dot">.</span>
+  </div>
+</div>
 
 <main class="page">
 
@@ -1801,64 +1977,173 @@ textarea:disabled{
           </p>
 
           <div class="login-settings-list">
+
             <div class="login-setting-row">
               <img class="login-setting-icon" src="passkey.webp" alt="パスキー">
+
               <div>
                 <div class="login-setting-name">パスキー</div>
-                <div id="admin-edit-passkey-detail" class="login-setting-detail">状態を確認しています...</div>
+                <div
+                  id="admin-edit-passkey-detail"
+                  class="login-setting-detail"
+                >
+                  状態を確認しています...
+                </div>
               </div>
+
               <div class="login-setting-actions">
-                <span id="admin-edit-passkey-chip" class="method-chip">確認中</span>
-                <button id="admin-edit-passkey-action" class="method-action" type="button" disabled>追加</button>
+                <span
+                  id="admin-edit-passkey-chip"
+                  class="method-chip"
+                >
+                  確認中
+                </span>
+
+                <button
+                  id="admin-edit-passkey-action"
+                  class="method-action"
+                  type="button"
+                  disabled
+                >
+                  追加
+                </button>
               </div>
             </div>
 
             <div class="login-setting-row">
               <img class="login-setting-icon" src="mail.png" alt="メール認証">
+
               <div>
                 <div class="login-setting-name">メール認証</div>
-                <div id="admin-edit-email-detail" class="login-setting-detail">状態を確認しています...</div>
+                <div
+                  id="admin-edit-email-detail"
+                  class="login-setting-detail"
+                >
+                  状態を確認しています...
+                </div>
               </div>
+
               <div class="login-setting-actions">
-                <span id="admin-edit-email-chip" class="method-chip">確認中</span>
-                <button id="admin-edit-email-action" class="method-action" type="button" disabled>追加</button>
+                <span
+                  id="admin-edit-email-chip"
+                  class="method-chip"
+                >
+                  確認中
+                </span>
+
+                <button
+                  id="admin-edit-email-action"
+                  class="method-action"
+                  type="button"
+                  disabled
+                >
+                  追加
+                </button>
               </div>
             </div>
 
             <div class="login-setting-row">
               <img class="login-setting-icon" src="guardian.jpg" alt="アプリ認証">
+
               <div>
                 <div class="login-setting-name">アプリ認証</div>
-                <div id="admin-edit-app-detail" class="login-setting-detail">状態を確認しています...</div>
+                <div
+                  id="admin-edit-app-detail"
+                  class="login-setting-detail"
+                >
+                  状態を確認しています...
+                </div>
               </div>
+
               <div class="login-setting-actions">
-                <span id="admin-edit-app-chip" class="method-chip">確認中</span>
-                <button id="admin-edit-app-action" class="method-action" type="button" disabled>追加</button>
+                <span
+                  id="admin-edit-app-chip"
+                  class="method-chip"
+                >
+                  確認中
+                </span>
+
+                <button
+                  id="admin-edit-app-action"
+                  class="method-action"
+                  type="button"
+                  disabled
+                >
+                  追加
+                </button>
               </div>
             </div>
+
           </div>
 
-          <div id="admin-edit-app-enroll" class="settings-enroll-box">
+          <div
+            id="admin-edit-app-enroll"
+            class="settings-enroll-box"
+          >
             <h4>アプリ認証を追加</h4>
+
             <p class="hint">
               対象ユーザーの認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。
             </p>
-            <div id="admin-edit-app-qr" class="qr"></div>
-            <form id="admin-edit-app-form" class="form">
+
+            <div
+              id="admin-edit-app-qr"
+              class="qr"
+            ></div>
+
+            <form
+              id="admin-edit-app-form"
+              class="form"
+            >
+
               <div class="row">
-                <label class="label" for="admin-edit-app-code">認証コード</label>
-                <input id="admin-edit-app-code" class="input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+                <label
+                  class="label"
+                  for="admin-edit-app-code"
+                >
+                  認証コード
+                </label>
+
+                <input
+                  id="admin-edit-app-code"
+                  class="input"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  maxlength="6"
+                  required
+                >
               </div>
-              <button id="admin-edit-app-verify" class="button">アプリ認証を登録</button>
+
+              <button
+                id="admin-edit-app-verify"
+                class="button"
+              >
+                アプリ認証を登録
+              </button>
+
             </form>
           </div>
 
-          <div id="admin-edit-status" class="status"></div>
-          <div id="admin-edit-error" class="error"></div>
+          <div
+            id="admin-edit-status"
+            class="status"
+          ></div>
+
+          <div
+            id="admin-edit-error"
+            class="error"
+          ></div>
 
           <div class="bottom-nav">
-            <button id="admin-edit-close" class="sub" type="button">← 編集を閉じる</button>
+            <button
+              id="admin-edit-close"
+              class="sub"
+              type="button"
+            >
+              ← 編集を閉じる
+            </button>
           </div>
+
         </div>
 
       </div>
@@ -1975,29 +2260,35 @@ textarea:disabled{
 
               <label class="create-method">
                 <img src="passkey.webp" alt="パスキー">
+
                 <input
                   id="create-passkey"
                   type="checkbox"
                   checked
                 >
+
                 <span>パスキー</span>
               </label>
 
               <label class="create-method">
                 <img src="mail.png" alt="メール認証">
+
                 <input
                   id="create-email-check"
                   type="checkbox"
                 >
+
                 <span>メール認証</span>
               </label>
 
               <label class="create-method">
                 <img src="guardian.jpg" alt="アプリ認証">
+
                 <input
                   id="create-app"
                   type="checkbox"
                 >
+
                 <span>アプリ認証</span>
               </label>
 
@@ -2040,6 +2331,86 @@ textarea:disabled{
           <h3>
             入力内容の認証
           </h3>
+
+          <div
+            id="account-app-intro"
+            class="app-download-intro"
+          >
+            <h4>認証アプリを準備してください</h4>
+
+            <p class="app-download-note">
+              アプリ認証には 2FAS Auth を使用します。スマートフォンにまだ入っていない場合は、下のQRコードから先にインストールしてください。インストール後に「認証開始」を押すと、このアカウントを登録するためのQRコードを表示します。
+            </p>
+
+            <div class="app-download-grid">
+
+              <div class="app-download-card">
+                <img
+                  class="app-download-image"
+                  src="2FAS Auth.png"
+                  alt="2FAS Auth"
+                >
+
+                <div class="app-download-label">
+                  2FAS Auth
+                </div>
+              </div>
+
+              <div class="app-download-card">
+
+                <div
+                  id="account-appstore-qr"
+                  class="store-download-qr"
+                  aria-label="App Store ダウンロードQRコード"
+                ></div>
+
+                <div class="app-download-label">
+                  App Store
+                </div>
+
+                <a
+                  class="app-download-link"
+                  href="https://apps.apple.com/jp/app/2fa-authenticator-2fas/id1217793794"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  App Storeを開く
+                </a>
+              </div>
+
+              <div class="app-download-card">
+
+                <div
+                  id="account-googleplay-qr"
+                  class="store-download-qr"
+                  aria-label="Google Play ダウンロードQRコード"
+                ></div>
+
+                <div class="app-download-label">
+                  Google Play
+                </div>
+
+                <a
+                  class="app-download-link"
+                  href="https://play.google.com/store/apps/details?id=com.twofasapp"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Google Playを開く
+                </a>
+              </div>
+
+            </div>
+
+            <button
+              id="account-app-start"
+              class="button"
+              type="button"
+            >
+              認証開始
+            </button>
+
+          </div>
 
           <p
             id="account-progress"
@@ -2176,10 +2547,13 @@ const DUMMY_SUB = "auth0|6ad712865703ba3cd5630025";
 const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
 const AUTH0_REDIRECT_URI = `${window.location.origin}${window.location.pathname}`;
 const PASSKEY_CLAIM = "https://machikaigi8.github.io/auth_method";
+const TWO_FAS_APPSTORE_URL = "https://apps.apple.com/jp/app/2fa-authenticator-2fas/id1217793794";
+const TWO_FAS_GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.twofasapp";
 
 const $ = id => document.getElementById(id);
 
 const ui = {
+  loginLoadingScreen: $("login-loading-screen"),
   topbar: $("topbar"),
   userName: $("user-name"),
   refresh: $("refresh"),
@@ -2299,6 +2673,10 @@ const ui = {
   createEmailCheck: $("create-email-check"),
   createButton: $("create-button"),
   accountVerify: $("account-verify"),
+  accountAppIntro: $("account-app-intro"),
+  accountAppStoreQr: $("account-appstore-qr"),
+  accountGooglePlayQr: $("account-googleplay-qr"),
+  accountAppStart: $("account-app-start"),
   accountProgress: $("account-progress"),
   accountMessage: $("account-message"),
   accountQr: $("account-qr"),
@@ -2326,6 +2704,37 @@ let loginSettingsState = null;
 let settingsEmailChallengeId = "";
 let adminEditUserId = "";
 let adminEditUserState = null;
+let downloadQrsRendered = false;
+
+function showLoginLoading() {
+  ui.loginLoadingScreen.classList.add("active");
+}
+
+function hideLoginLoading() {
+  ui.loginLoadingScreen.classList.remove("active");
+  document.documentElement.classList.remove("auth-callback-loading");
+}
+
+function render2FASDownloadQrs() {
+  if (downloadQrsRendered) return;
+
+  ui.accountAppStoreQr.innerHTML = "";
+  ui.accountGooglePlayQr.innerHTML = "";
+
+  new QRCode(ui.accountAppStoreQr, {
+    text: TWO_FAS_APPSTORE_URL,
+    width: 150,
+    height: 150,
+  });
+
+  new QRCode(ui.accountGooglePlayQr, {
+    text: TWO_FAS_GOOGLE_PLAY_URL,
+    width: 150,
+    height: 150,
+  });
+
+  downloadQrsRendered = true;
+}
 
 const show = (element, message) => {
   element.textContent = message;
@@ -2358,92 +2767,148 @@ const accountError = message => {
 
 async function readJson(response) {
   const text = await response.text();
-  if (!text) return {};
+
+  if (!text) {
+    return {};
+  }
+
   try {
     return JSON.parse(text);
   } catch {
-    return { error_description: text };
+    return {
+      error_description:text,
+    };
   }
 }
 
 function decodeJwt(token) {
   try {
-    let payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    payload += "=".repeat((4 - payload.length % 4) % 4);
-    return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0))));
+    let payload = token
+      .split(".")[1]
+      .replace(/-/g,"+")
+      .replace(/_/g,"/");
+
+    payload += "=".repeat(
+      (4 - payload.length % 4) % 4
+    );
+
+    return JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.from(
+          atob(payload),
+          c => c.charCodeAt(0)
+        )
+      )
+    );
   } catch {
     return {};
   }
 }
 
-async function passwordLogin(username, password) {
+async function passwordLogin(username,password) {
   const body = new URLSearchParams({
-    grant_type: "http://auth0.com/oauth/grant-type/password-realm",
-    client_id: AUTH0_CLIENT_ID,
+    grant_type:"http://auth0.com/oauth/grant-type/password-realm",
+    client_id:AUTH0_CLIENT_ID,
     username,
     password,
-    realm: AUTH0_REALM,
-    audience: API_AUDIENCE,
-    scope: "openid profile",
+    realm:AUTH0_REALM,
+    audience:API_AUDIENCE,
+    scope:"openid profile",
   });
 
-  const response = await fetch(`${AUTH0_BASE}/oauth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body,
-  });
+  const response = await fetch(
+    `${AUTH0_BASE}/oauth/token`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/x-www-form-urlencoded",
+      },
+      body,
+    }
+  );
 
-  return { response, data: await readJson(response) };
+  return {
+    response,
+    data:await readJson(response),
+  };
 }
 
-async function workerPost(path, body = {}, token = "") {
+async function workerPost(path,body={},token="") {
   const envelope = {
-    authToken: token || "",
-    data: body || {},
+    authToken:token || "",
+    data:body || {},
   };
 
   let response;
 
   try {
-    response = await fetch(`${WORKER_URL}${path}`, {
-      method: "POST",
-      mode: "cors",
-      credentials: "omit",
-      headers: {
-        "Content-Type": "text/plain;charset=UTF-8",
-      },
-      body: JSON.stringify(envelope),
-    });
-  } catch (error) {
-    console.error("Worker fetch failed:", error);
-    const detail = error?.message ? `（${error.message}）` : "";
-    throw new Error(`管理APIに接続できませんでした。${detail}`);
+    response = await fetch(
+      `${WORKER_URL}${path}`,
+      {
+        method:"POST",
+        mode:"cors",
+        credentials:"omit",
+        headers:{
+          "Content-Type":"text/plain;charset=UTF-8",
+        },
+        body:JSON.stringify(envelope),
+      }
+    );
+  } catch(error) {
+    console.error("Worker fetch failed:",error);
+
+    const detail = error?.message
+      ? `（${error.message}）`
+      : "";
+
+    throw new Error(
+      `管理APIに接続できませんでした。${detail}`
+    );
   }
 
   return {
     response,
-    data: await readJson(response),
+    data:await readJson(response),
   };
 }
 
 function methodLabel(method) {
-  if (method === "passkey") return "パスキー";
-  if (method === "email") return "メール認証";
-  if (method === "app") return "アプリ認証";
+  if (method === "passkey") {
+    return "パスキー";
+  }
+
+  if (method === "email") {
+    return "メール認証";
+  }
+
+  if (method === "app") {
+    return "アプリ認証";
+  }
+
   return method;
 }
 
 function showLoginStep(step) {
-  [ui.loginMain, ui.loginMethod, ui.loginPassword, ui.loginMfa, ui.passkeyRequired]
-    .forEach(element => element.classList.add("hidden"));
+  [
+    ui.loginMain,
+    ui.loginMethod,
+    ui.loginPassword,
+    ui.loginMfa,
+    ui.passkeyRequired,
+  ].forEach(element => {
+    element.classList.add("hidden");
+  });
+
   step.classList.remove("hidden");
 }
 
 function resetLoginVerification() {
   loginAuth0Token = "";
   loginChallengeId = "";
+
   hide(ui.loginEnroll);
   hide(ui.loginCodeArea);
+
   ui.loginQr.innerHTML = "";
   ui.loginCode.value = "";
   ui.loginMfaMessage.textContent = "";
@@ -2451,48 +2916,122 @@ function resetLoginVerification() {
 }
 
 async function checkPasskeyStatus(auth0Token) {
-  const { response, data } = await workerPost("/passkey-status", {}, auth0Token);
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/passkey-status",
+    {},
+    auth0Token
+  );
+
   if (!response.ok) {
-    throw new Error(data.error || "パスキー登録状態を確認できませんでした。");
+    throw new Error(
+      data.error ||
+      "パスキー登録状態を確認できませんでした。"
+    );
   }
+
   return data;
 }
 
 function showPasskeyRequiredScreen(message) {
   resetLoginVerification();
-  showLoginStep(ui.passkeyRequired);
-  ui.title.textContent = "パスキーの設定";
-  ui.passkeyRequiredMessage.textContent = message;
+
+  showLoginStep(
+    ui.passkeyRequired
+  );
+
+  ui.title.textContent =
+    "パスキーの設定";
+
+  ui.passkeyRequiredMessage.textContent =
+    message;
+
   hide(ui.authStatus);
   hide(ui.authError);
 }
 
 async function requirePasskeyEnrollmentBeforeAlternateLogin(auth0Token) {
-  const status = await checkPasskeyStatus(auth0Token);
-  if (status.required && !status.enrolled) {
-    sessionStorage.setItem("pending_admin_id", ui.adminId.value.trim());
-    sessionStorage.setItem("passkey_flow_stage", "setup");
+  const status =
+    await checkPasskeyStatus(
+      auth0Token
+    );
+
+  if (
+    status.required &&
+    !status.enrolled
+  ) {
+    sessionStorage.setItem(
+      "pending_admin_id",
+      ui.adminId.value.trim()
+    );
+
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      "setup"
+    );
+
     showPasskeyRequiredScreen(
       "このアカウントでは初回ログイン前にパスキー登録が必要です。パスキーで続行し、Auth0で登録してください。"
     );
+
     return false;
   }
+
   return true;
 }
 
-function saveWorkerSession(data, authMode) {
-  if (!data.sessionToken || !data.expiresAt || !data.user?.sub) {
-    throw new Error("管理者セッションを作成できませんでした。");
+function saveWorkerSession(data,authMode) {
+  if (
+    !data.sessionToken ||
+    !data.expiresAt ||
+    !data.user?.sub
+  ) {
+    throw new Error(
+      "管理者セッションを作成できませんでした。"
+    );
   }
 
-  sessionStorage.setItem("admin_access_token", data.sessionToken);
-  sessionStorage.setItem("admin_expires_at", String(data.expiresAt));
-  sessionStorage.setItem("admin_username", data.user.name || data.user.username || "管理者");
-  sessionStorage.setItem("admin_sub", data.user.sub);
-  sessionStorage.setItem("admin_current_view", "home");
-  sessionStorage.setItem("admin_auth_mode", authMode);
-  sessionStorage.removeItem("pending_admin_id");
-  sessionStorage.removeItem("passkey_flow_stage");
+  sessionStorage.setItem(
+    "admin_access_token",
+    data.sessionToken
+  );
+
+  sessionStorage.setItem(
+    "admin_expires_at",
+    String(data.expiresAt)
+  );
+
+  sessionStorage.setItem(
+    "admin_username",
+    data.user.name ||
+    data.user.username ||
+    "管理者"
+  );
+
+  sessionStorage.setItem(
+    "admin_sub",
+    data.user.sub
+  );
+
+  sessionStorage.setItem(
+    "admin_current_view",
+    "home"
+  );
+
+  sessionStorage.setItem(
+    "admin_auth_mode",
+    authMode
+  );
+
+  sessionStorage.removeItem(
+    "pending_admin_id"
+  );
+
+  sessionStorage.removeItem(
+    "passkey_flow_stage"
+  );
 }
 
 async function startPasskeyUniversalLogin() {
@@ -2500,261 +3039,670 @@ async function startPasskeyUniversalLogin() {
   hide(ui.authError);
 
   if (!auth0Client) {
-    throw new Error("パスキー認証を初期化できていません。ページを再読み込みしてください。");
+    throw new Error(
+      "パスキー認証を初期化できていません。ページを再読み込みしてください。"
+    );
   }
 
-  const username = ui.adminId.value.trim() || sessionStorage.getItem("pending_admin_id") || "";
-  if (!username) throw new Error("IDを入力してください。");
+  const username =
+    ui.adminId.value.trim() ||
+    sessionStorage.getItem(
+      "pending_admin_id"
+    ) ||
+    "";
 
-  sessionStorage.setItem("pending_admin_id", username);
+  if (!username) {
+    throw new Error(
+      "IDを入力してください。"
+    );
+  }
+
+  sessionStorage.setItem(
+    "pending_admin_id",
+    username
+  );
 
   await auth0Client.loginWithRedirect({
-    appState: { returnTo: window.location.pathname },
-    authorizationParams: {
-      audience: API_AUDIENCE,
-      scope: "openid profile",
-      redirect_uri: AUTH0_REDIRECT_URI,
-      connection: AUTH0_REALM,
-      prompt: "login",
+    appState:{
+      returnTo:window.location.pathname,
+    },
+    authorizationParams:{
+      audience:API_AUDIENCE,
+      scope:"openid profile",
+      redirect_uri:AUTH0_REDIRECT_URI,
+      connection:AUTH0_REALM,
+      prompt:"login",
     },
   });
 }
 
-ui.loginIdForm.addEventListener("submit", event => {
-  event.preventDefault();
-  hide(ui.authStatus);
-  hide(ui.authError);
-  const username = ui.adminId.value.trim();
-  if (!username) return authError("IDを入力してください。");
-  ui.loginSelectedId.textContent = username;
-  ui.loginPasswordId.textContent = username;
-  selectedLoginMethod = "";
-  resetLoginVerification();
-  showLoginStep(ui.loginMethod);
-});
+ui.loginIdForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
 
-ui.loginMethodBack.addEventListener("click", () => {
-  selectedLoginMethod = "";
-  resetLoginVerification();
-  showLoginStep(ui.loginMain);
-  hide(ui.authStatus);
-  hide(ui.authError);
-  ui.adminId.focus();
-});
+    hide(ui.authStatus);
+    hide(ui.authError);
 
-ui.loginPasswordBack.addEventListener("click", () => {
-  ui.adminPassword.value = "";
-  resetLoginVerification();
-  showLoginStep(ui.loginMethod);
-  hide(ui.authStatus);
-  hide(ui.authError);
-});
+    const username =
+      ui.adminId.value.trim();
 
-ui.loginEmail.addEventListener("click", () => {
-  selectedLoginMethod = "email";
-  ui.loginPasswordTitle.textContent = "メール認証";
-  ui.loginPasswordId.textContent = ui.adminId.value.trim();
-  ui.adminPassword.value = "";
-  showLoginStep(ui.loginPassword);
-  hide(ui.authStatus);
-  hide(ui.authError);
-  ui.adminPassword.focus();
-});
-
-ui.loginApp.addEventListener("click", () => {
-  selectedLoginMethod = "app";
-  ui.loginPasswordTitle.textContent = "アプリ認証";
-  ui.loginPasswordId.textContent = ui.adminId.value.trim();
-  ui.adminPassword.value = "";
-  showLoginStep(ui.loginPassword);
-  hide(ui.authStatus);
-  hide(ui.authError);
-  ui.adminPassword.focus();
-});
-
-ui.loginPasskey.addEventListener("click", async () => {
-  ui.loginPasskey.disabled = true;
-  try {
-    sessionStorage.setItem("passkey_flow_stage", "initial");
-    await startPasskeyUniversalLogin();
-  } catch (error) {
-    authError(error.message || "パスキー認証を開始できませんでした。");
-    ui.loginPasskey.disabled = false;
-  }
-});
-
-ui.passkeyRequiredButton.addEventListener("click", async () => {
-  ui.passkeyRequiredButton.disabled = true;
-  try {
-    if (!sessionStorage.getItem("passkey_flow_stage")) {
-      sessionStorage.setItem("passkey_flow_stage", "setup");
+    if (!username) {
+      return authError(
+        "IDを入力してください。"
+      );
     }
-    await startPasskeyUniversalLogin();
-  } catch (error) {
-    authError(error.message || "パスキー認証を開始できませんでした。");
-    ui.passkeyRequiredButton.disabled = false;
-  }
-});
 
-ui.loginPasswordForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  hide(ui.authStatus);
-  hide(ui.authError);
+    ui.loginSelectedId.textContent =
+      username;
 
-  if (!["email", "app"].includes(selectedLoginMethod)) {
-    return authError("ログイン方法を選び直してください。");
-  }
+    ui.loginPasswordId.textContent =
+      username;
 
-  ui.loginPasswordButton.disabled = true;
+    selectedLoginMethod = "";
 
-  try {
-    const { response, data } = await passwordLogin(
-      ui.adminId.value.trim(),
-      ui.adminPassword.value
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
     );
+  }
+);
+
+ui.loginMethodBack.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod = "";
+
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMain
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminId.focus();
+  }
+);
+
+ui.loginPasswordBack.addEventListener(
+  "click",
+  () => {
     ui.adminPassword.value = "";
 
-    if (!response.ok || !data.access_token) {
-      if (data.error === "invalid_grant") throw new Error("IDまたはパスワードが違います。");
-      throw new Error(data.error_description || data.error || "ログインできませんでした。");
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+  }
+);
+
+ui.loginEmail.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "email";
+
+    ui.loginPasswordTitle.textContent =
+      "メール認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value = "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginApp.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "app";
+
+    ui.loginPasswordTitle.textContent =
+      "アプリ認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value = "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginPasskey.addEventListener(
+  "click",
+  async () => {
+    ui.loginPasskey.disabled =
+      true;
+
+    try {
+      sessionStorage.setItem(
+        "passkey_flow_stage",
+        "initial"
+      );
+
+      await startPasskeyUniversalLogin();
+
+    } catch(error) {
+      authError(
+        error.message ||
+        "パスキー認証を開始できませんでした。"
+      );
+
+      ui.loginPasskey.disabled =
+        false;
     }
+  }
+);
 
-    loginAuth0Token = data.access_token;
+ui.passkeyRequiredButton.addEventListener(
+  "click",
+  async () => {
+    ui.passkeyRequiredButton.disabled =
+      true;
 
-    if (!(await requirePasskeyEnrollmentBeforeAlternateLogin(loginAuth0Token))) return;
-
-    showLoginStep(ui.loginMfa);
-    ui.title.textContent = "認証";
-    hide(ui.loginEnroll);
-    hide(ui.loginCodeArea);
-
-    if (selectedLoginMethod === "email") {
-      authStatus("認証コードを送信しています…");
-      const result = await workerPost("/login-email-start", {}, loginAuth0Token);
-      if (!result.response.ok) {
-        throw new Error(result.data.error || "認証メールを送信できませんでした。");
+    try {
+      if (
+        !sessionStorage.getItem(
+          "passkey_flow_stage"
+        )
+      ) {
+        sessionStorage.setItem(
+          "passkey_flow_stage",
+          "setup"
+        );
       }
 
-      loginChallengeId = result.data.challengeId || "";
-      ui.loginMfaMessage.textContent = "メール認証";
-      ui.loginCodeMessage.textContent = `${result.data.destination || "登録メールアドレス"} に届いた6桁の認証コードを入力してください。`;
-      ui.loginCodeArea.style.display = "block";
-      hide(ui.authStatus);
-      ui.loginCode.focus();
-    } else {
-      ui.loginMfaMessage.textContent = "アプリ認証";
-      ui.loginCodeMessage.textContent = "2FAS Authなどの認証アプリに表示されている6桁のコードを入力してください。";
-      ui.loginCodeArea.style.display = "block";
-      ui.loginCode.focus();
-    }
-  } catch (error) {
-    showLoginStep(ui.loginPassword);
-    authError(error.message || "ログイン処理に失敗しました。");
-  } finally {
-    ui.loginPasswordButton.disabled = false;
-  }
-});
+      await startPasskeyUniversalLogin();
 
-ui.loginBack.addEventListener("click", () => {
-  resetLoginVerification();
-  showLoginStep(ui.loginMethod);
-  ui.title.textContent = "管理者画面";
-  hide(ui.authStatus);
-  hide(ui.authError);
-});
-
-ui.loginCodeForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const code = ui.loginCode.value.trim();
-  if (!/^\d{6}$/.test(code)) return authError("6桁の認証コードを入力してください。");
-  if (!loginAuth0Token) return authError("ログイン情報がありません。最初からやり直してください。");
-
-  ui.loginCodeButton.disabled = true;
-  hide(ui.authError);
-
-  try {
-    let result;
-    if (selectedLoginMethod === "email") {
-      if (!loginChallengeId) throw new Error("メール認証情報がありません。もう一度コードを送信してください。");
-      result = await workerPost(
-        "/login-email-verify",
-        { code, challengeId: loginChallengeId },
-        loginAuth0Token
+    } catch(error) {
+      authError(
+        error.message ||
+        "パスキー認証を開始できませんでした。"
       );
-    } else if (selectedLoginMethod === "app") {
-      result = await workerPost("/login-totp-verify", { code }, loginAuth0Token);
-    } else {
-      throw new Error("ログイン方法を選び直してください。");
-    }
 
-    if (!result.response.ok) {
-      throw new Error(result.data.error || "認証できませんでした。");
+      ui.passkeyRequiredButton.disabled =
+        false;
     }
-
-    saveWorkerSession(result.data, selectedLoginMethod);
-    resetLoginVerification();
-    showAdmin();
-  } catch (error) {
-    authError(error.message || "認証できませんでした。");
-  } finally {
-    ui.loginCodeButton.disabled = false;
   }
-});
+);
 
-const views = document.querySelectorAll(".view");
+ui.loginPasswordForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
 
-document.querySelectorAll("[data-view]").forEach(button => {
-  button.addEventListener("click", () => showView(button.dataset.view));
-});
+    hide(ui.authStatus);
+    hide(ui.authError);
 
-document.querySelectorAll("[data-home]").forEach(button => {
-  button.addEventListener("click", () => showView("home"));
-});
+    if (
+      ![
+        "email",
+        "app",
+      ].includes(
+        selectedLoginMethod
+      )
+    ) {
+      return authError(
+        "ログイン方法を選び直してください。"
+      );
+    }
+
+    ui.loginPasswordButton.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await passwordLogin(
+        ui.adminId.value.trim(),
+        ui.adminPassword.value
+      );
+
+      ui.adminPassword.value = "";
+
+      if (
+        !response.ok ||
+        !data.access_token
+      ) {
+        if (
+          data.error ===
+          "invalid_grant"
+        ) {
+          throw new Error(
+            "IDまたはパスワードが違います。"
+          );
+        }
+
+        throw new Error(
+          data.error_description ||
+          data.error ||
+          "ログインできませんでした。"
+        );
+      }
+
+      loginAuth0Token =
+        data.access_token;
+
+      if (
+        !(
+          await requirePasskeyEnrollmentBeforeAlternateLogin(
+            loginAuth0Token
+          )
+        )
+      ) {
+        return;
+      }
+
+      showLoginStep(
+        ui.loginMfa
+      );
+
+      ui.title.textContent =
+        "認証";
+
+      hide(ui.loginEnroll);
+      hide(ui.loginCodeArea);
+
+      if (
+        selectedLoginMethod ===
+        "email"
+      ) {
+        authStatus(
+          "認証コードを送信しています…"
+        );
+
+        const result =
+          await workerPost(
+            "/login-email-start",
+            {},
+            loginAuth0Token
+          );
+
+        if (
+          !result.response.ok
+        ) {
+          throw new Error(
+            result.data.error ||
+            "認証メールを送信できませんでした。"
+          );
+        }
+
+        loginChallengeId =
+          result.data.challengeId ||
+          "";
+
+        ui.loginMfaMessage.textContent =
+          "メール認証";
+
+        ui.loginCodeMessage.textContent =
+          `${
+            result.data.destination ||
+            "登録メールアドレス"
+          } に届いた6桁の認証コードを入力してください。`;
+
+        ui.loginCodeArea.style.display =
+          "block";
+
+        hide(ui.authStatus);
+
+        ui.loginCode.focus();
+
+      } else {
+        ui.loginMfaMessage.textContent =
+          "アプリ認証";
+
+        ui.loginCodeMessage.textContent =
+          "2FAS Authなどの認証アプリに表示されている6桁のコードを入力してください。";
+
+        ui.loginCodeArea.style.display =
+          "block";
+
+        ui.loginCode.focus();
+      }
+
+    } catch(error) {
+      showLoginStep(
+        ui.loginPassword
+      );
+
+      authError(
+        error.message ||
+        "ログイン処理に失敗しました。"
+      );
+
+    } finally {
+      ui.loginPasswordButton.disabled =
+        false;
+    }
+  }
+);
+
+ui.loginBack.addEventListener(
+  "click",
+  () => {
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
+    );
+
+    ui.title.textContent =
+      "管理者画面";
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+  }
+);
+
+ui.loginCodeForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.loginCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return authError(
+        "6桁の認証コードを入力してください。"
+      );
+    }
+
+    if (!loginAuth0Token) {
+      return authError(
+        "ログイン情報がありません。最初からやり直してください。"
+      );
+    }
+
+    ui.loginCodeButton.disabled =
+      true;
+
+    hide(ui.authError);
+    showLoginLoading();
+
+    try {
+      let result;
+
+      if (
+        selectedLoginMethod ===
+        "email"
+      ) {
+        if (!loginChallengeId) {
+          throw new Error(
+            "メール認証情報がありません。もう一度コードを送信してください。"
+          );
+        }
+
+        result =
+          await workerPost(
+            "/login-email-verify",
+            {
+              code,
+              challengeId:
+                loginChallengeId,
+            },
+            loginAuth0Token
+          );
+
+      } else if (
+        selectedLoginMethod ===
+        "app"
+      ) {
+        result =
+          await workerPost(
+            "/login-totp-verify",
+            {
+              code,
+            },
+            loginAuth0Token
+          );
+
+      } else {
+        throw new Error(
+          "ログイン方法を選び直してください。"
+        );
+      }
+
+      if (
+        !result.response.ok
+      ) {
+        throw new Error(
+          result.data.error ||
+          "認証できませんでした。"
+        );
+      }
+
+      saveWorkerSession(
+        result.data,
+        selectedLoginMethod
+      );
+
+      resetLoginVerification();
+
+      showAdmin();
+
+    } catch(error) {
+      hideLoginLoading();
+
+      authError(
+        error.message ||
+        "認証できませんでした。"
+      );
+
+    } finally {
+      ui.loginCodeButton.disabled =
+        false;
+    }
+  }
+);
+
+const views =
+  document.querySelectorAll(
+    ".view"
+  );
+
+document
+  .querySelectorAll(
+    "[data-view]"
+  )
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () =>
+        showView(
+          button.dataset.view
+        )
+    );
+  });
+
+document
+  .querySelectorAll(
+    "[data-home]"
+  )
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () =>
+        showView(
+          "home"
+        )
+    );
+  });
 
 function showView(name) {
-  if (name === "password") name = "login-settings";
+  if (
+    name === "password"
+  ) {
+    name =
+      "login-settings";
+  }
 
-  const sub = sessionStorage.getItem("admin_sub") || "";
-  if (["developer", "developer-responses", "admin-users", "create-admin"].includes(name) && sub !== OWNER_SUB) {
+  const sub =
+    sessionStorage.getItem(
+      "admin_sub"
+    ) ||
+    "";
+
+  if (
+    [
+      "developer",
+      "developer-responses",
+      "admin-users",
+      "create-admin",
+    ].includes(name) &&
+    sub !== OWNER_SUB
+  ) {
     name = "home";
   }
 
   const titles = {
-    home: "管理者画面",
-    meeting: "次回まち会議日時設定",
-    news: "ニュース追加",
-    password: "ログイン設定",
-    "login-settings": "ログイン設定",
-    inquiries: "お問い合わせ一覧",
-    "developer-request": "デベロッパーへの要望",
-    developer: "デベロッパーメニュー",
-    "developer-responses": "デベロッパーへの要望の回答",
-    "admin-users": "アカウント一覧",
-    "hp-update": "HP更新",
-    "create-admin": "アカウント作成",
+    home:
+      "管理者画面",
+
+    meeting:
+      "次回まち会議日時設定",
+
+    news:
+      "ニュース追加",
+
+    password:
+      "ログイン設定",
+
+    "login-settings":
+      "ログイン設定",
+
+    inquiries:
+      "お問い合わせ一覧",
+
+    "developer-request":
+      "デベロッパーへの要望",
+
+    developer:
+      "デベロッパーメニュー",
+
+    "developer-responses":
+      "デベロッパーへの要望の回答",
+
+    "admin-users":
+      "アカウント一覧",
+
+    "hp-update":
+      "HP更新",
+
+    "create-admin":
+      "アカウント作成",
   };
 
-  ui.title.textContent = titles[name] || "管理者画面";
-  sessionStorage.setItem("admin_current_view", name);
-  views.forEach(view => view.classList.remove("active"));
-  $("view-" + name)?.classList.add("active");
+  ui.title.textContent =
+    titles[name] ||
+    "管理者画面";
 
-  if (name === "developer-request") loadMyRequests();
-  if (name === "developer-responses") loadAllRequests();
-  if (name === "admin-users") loadUsers();
-  if (name === "login-settings") loadLoginSettings();
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  sessionStorage.setItem(
+    "admin_current_view",
+    name
+  );
+
+  views.forEach(view => {
+    view.classList.remove(
+      "active"
+    );
+  });
+
+  $(
+    "view-" +
+    name
+  )?.classList.add(
+    "active"
+  );
+
+  if (
+    name ===
+    "developer-request"
+  ) {
+    loadMyRequests();
+  }
+
+  if (
+    name ===
+    "developer-responses"
+  ) {
+    loadAllRequests();
+  }
+
+  if (
+    name ===
+    "admin-users"
+  ) {
+    loadUsers();
+  }
+
+  if (
+    name ===
+    "login-settings"
+  ) {
+    loadLoginSettings();
+  }
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth",
+  });
 }
 
 function isDummy() {
-  return (sessionStorage.getItem("admin_sub") || "") === DUMMY_SUB;
+  return (
+    sessionStorage.getItem(
+      "admin_sub"
+    ) ||
+    ""
+  ) === DUMMY_SUB;
 }
 
 function setReadOnly(readOnly) {
-  [ui.meetingForm, ui.newsForm, ui.passwordForm, ui.requestForm].forEach(form => {
-    form.querySelectorAll("input,textarea,button").forEach(element => {
-      element.disabled = readOnly;
-    });
+  [
+    ui.meetingForm,
+    ui.newsForm,
+    ui.passwordForm,
+    ui.requestForm,
+  ].forEach(form => {
+    form
+      .querySelectorAll(
+        "input,textarea,button"
+      )
+      .forEach(element => {
+        element.disabled =
+          readOnly;
+      });
   });
 
   if (readOnly) {
@@ -2766,43 +3714,123 @@ function setReadOnly(readOnly) {
       ui.settingsEmailVerify,
       ui.settingsAppVerify,
     ].forEach(button => {
-      if (button) button.disabled = true;
+      if (button) {
+        button.disabled =
+          true;
+      }
     });
   }
 }
 
 function showAdmin() {
-  ui.loginSection.style.display = "none";
-  ui.loginHomeLink.style.display = "none";
-  ui.admin.style.display = "block";
-  ui.topbar.style.display = "flex";
-  ui.subtitle.style.display = "none";
-  ui.userName.textContent = sessionStorage.getItem("admin_username") || "管理者";
+  hideLoginLoading();
 
-  const owner = (sessionStorage.getItem("admin_sub") || "") === OWNER_SUB;
-  ui.developerHome.classList.toggle("hidden", !owner);
-  ui.hpHome.classList.toggle("hidden", owner);
-  setReadOnly(isDummy());
-  showView(sessionStorage.getItem("admin_current_view") || "home");
+  ui.loginSection.style.display =
+    "none";
+
+  ui.loginHomeLink.style.display =
+    "none";
+
+  ui.admin.style.display =
+    "block";
+
+  ui.topbar.style.display =
+    "flex";
+
+  ui.subtitle.style.display =
+    "none";
+
+  ui.userName.textContent =
+    sessionStorage.getItem(
+      "admin_username"
+    ) ||
+    "管理者";
+
+  const owner =
+    (
+      sessionStorage.getItem(
+        "admin_sub"
+      ) ||
+      ""
+    ) === OWNER_SUB;
+
+  ui.developerHome
+    .classList
+    .toggle(
+      "hidden",
+      !owner
+    );
+
+  ui.hpHome
+    .classList
+    .toggle(
+      "hidden",
+      owner
+    );
+
+  setReadOnly(
+    isDummy()
+  );
+
+  showView(
+    sessionStorage.getItem(
+      "admin_current_view"
+    ) ||
+    "home"
+  );
 }
 
 function showLogin() {
-  ui.title.textContent = "管理者画面";
-  ui.subtitle.style.display = "block";
-  ui.loginSection.style.display = "block";
-  ui.loginHomeLink.style.display = "flex";
-  ui.admin.style.display = "none";
-  ui.topbar.style.display = "none";
-  selectedLoginMethod = "";
+  hideLoginLoading();
+
+  ui.title.textContent =
+    "管理者画面";
+
+  ui.subtitle.style.display =
+    "block";
+
+  ui.loginSection.style.display =
+    "block";
+
+  ui.loginHomeLink.style.display =
+    "flex";
+
+  ui.admin.style.display =
+    "none";
+
+  ui.topbar.style.display =
+    "none";
+
+  selectedLoginMethod =
+    "";
+
   resetLoginVerification();
-  showLoginStep(ui.loginMain);
-  ui.adminPassword.value = "";
-  setReadOnly(false);
+
+  showLoginStep(
+    ui.loginMain
+  );
+
+  ui.adminPassword.value =
+    "";
+
+  setReadOnly(
+    false
+  );
 }
 
 function clearAuthenticatedSession() {
-  ["admin_access_token", "admin_expires_at", "admin_username", "admin_sub", "admin_current_view", "admin_auth_mode"]
-    .forEach(key => sessionStorage.removeItem(key));
+  [
+    "admin_access_token",
+    "admin_expires_at",
+    "admin_username",
+    "admin_sub",
+    "admin_current_view",
+    "admin_auth_mode",
+  ].forEach(key => {
+    sessionStorage.removeItem(
+      key
+    );
+  });
 }
 
 function clearSession() {
@@ -2816,1293 +3844,3378 @@ function clearSession() {
     "pending_admin_id",
     "passkey_flow_stage",
     "login_settings_passkey_add",
-  ].forEach(key => sessionStorage.removeItem(key));
+  ].forEach(key => {
+    sessionStorage.removeItem(
+      key
+    );
+  });
 }
 
 function restore() {
-  const token = sessionStorage.getItem("admin_access_token");
-  const expires = Number(sessionStorage.getItem("admin_expires_at") || 0);
-  if (!token || Date.now() >= expires) {
+  const token =
+    sessionStorage.getItem(
+      "admin_access_token"
+    );
+
+  const expires =
+    Number(
+      sessionStorage.getItem(
+        "admin_expires_at"
+      ) ||
+      0
+    );
+
+  if (
+    !token ||
+    Date.now() >= expires
+  ) {
     clearSession();
     showLogin();
+
   } else {
     showAdmin();
   }
 }
 
 async function finishPasskeyLogin() {
-  const token = await auth0Client.getTokenSilently({ detailedResponse: true });
-  const user = await auth0Client.getUser();
-  if (!token?.access_token || !user?.sub) {
-    throw new Error("パスキー認証後のログイン情報を取得できませんでした。");
+  const token =
+    await auth0Client.getTokenSilently({
+      detailedResponse:true,
+    });
+
+  const user =
+    await auth0Client.getUser();
+
+  if (
+    !token?.access_token ||
+    !user?.sub
+  ) {
+    throw new Error(
+      "パスキー認証後のログイン情報を取得できませんでした。"
+    );
   }
 
-  const auth0Token = token.access_token;
-  const accessPayload = decodeJwt(auth0Token);
-  const authMethod = accessPayload[PASSKEY_CLAIM] || "";
-  const status = await checkPasskeyStatus(auth0Token);
-  const stage = sessionStorage.getItem("passkey_flow_stage") || "initial";
+  const auth0Token =
+    token.access_token;
 
-  if (status.required && !status.enrolled) {
+  const accessPayload =
+    decodeJwt(
+      auth0Token
+    );
+
+  const authMethod =
+    accessPayload[
+      PASSKEY_CLAIM
+    ] ||
+    "";
+
+  const status =
+    await checkPasskeyStatus(
+      auth0Token
+    );
+
+  const stage =
+    sessionStorage.getItem(
+      "passkey_flow_stage"
+    ) ||
+    "initial";
+
+  if (
+    status.required &&
+    !status.enrolled
+  ) {
     clearAuthenticatedSession();
+
     showLogin();
-    sessionStorage.setItem("passkey_flow_stage", "setup");
+
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      "setup"
+    );
+
     showPasskeyRequiredScreen(
       "パスキー登録がまだ完了していません。Auth0の案内に従ってパスキーを登録してください。"
     );
+
     return;
   }
 
-  if (status.enrolled && authMethod !== "passkey") {
+  if (
+    status.enrolled &&
+    authMethod !== "passkey"
+  ) {
     clearAuthenticatedSession();
-    sessionStorage.setItem("passkey_flow_stage", "confirm");
+
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      "confirm"
+    );
+
     sessionStorage.setItem(
       "pending_admin_id",
-      sessionStorage.getItem("pending_admin_id") || user.nickname || user.name || ""
+      sessionStorage.getItem(
+        "pending_admin_id"
+      ) ||
+      user.nickname ||
+      user.name ||
+      ""
     );
 
     await startPasskeyUniversalLogin();
+
     return;
   }
 
-  if (authMethod !== "passkey") {
+  if (
+    authMethod !== "passkey"
+  ) {
     clearAuthenticatedSession();
+
     showLogin();
-    sessionStorage.setItem("passkey_flow_stage", stage === "confirm" ? "confirm" : "initial");
+
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      stage === "confirm"
+        ? "confirm"
+        : "initial"
+    );
+
     showPasskeyRequiredScreen(
       stage === "confirm"
         ? "初回設定を完了するには、今登録したパスキーを使ってもう一度ログインしてください。"
         : "パスキーでのログインを確認できませんでした。登録済みのパスキーを使ってログインしてください。"
     );
+
     return;
   }
 
-  const result = await workerPost("/login-passkey-complete", {}, auth0Token);
-  if (!result.response.ok) {
-    throw new Error(result.data.error || "パスキーでログインできませんでした。");
+  const result =
+    await workerPost(
+      "/login-passkey-complete",
+      {},
+      auth0Token
+    );
+
+  if (
+    !result.response.ok
+  ) {
+    throw new Error(
+      result.data.error ||
+      "パスキーでログインできませんでした。"
+    );
   }
 
-  saveWorkerSession(result.data, "passkey");
+  saveWorkerSession(
+    result.data,
+    "passkey"
+  );
+
   showAdmin();
 }
 
 async function initAuth() {
   try {
-    auth0Client = await auth0.createAuth0Client({
-      domain: AUTH0_DOMAIN,
-      clientId: AUTH0_CLIENT_ID,
-      authorizationParams: {
-        audience: API_AUDIENCE,
-        scope: "openid profile",
-        redirect_uri: AUTH0_REDIRECT_URI,
-      },
-    });
+    auth0Client =
+      await auth0.createAuth0Client({
+        domain:AUTH0_DOMAIN,
+        clientId:AUTH0_CLIENT_ID,
+        authorizationParams:{
+          audience:API_AUDIENCE,
+          scope:"openid profile",
+          redirect_uri:AUTH0_REDIRECT_URI,
+        },
+      });
 
-    const params = new URLSearchParams(window.location.search);
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
 
-    if (params.has("code") && params.has("state")) {
-      await auth0Client.handleRedirectCallback();
-      window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
+    if (
+      params.has("code") &&
+      params.has("state")
+    ) {
+      await auth0Client
+        .handleRedirectCallback();
 
-      if (sessionStorage.getItem("login_settings_passkey_add") === "1") {
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${window.location.hash}`
+      );
+
+      if (
+        sessionStorage.getItem(
+          "login_settings_passkey_add"
+        ) === "1"
+      ) {
         await finishLoginSettingsPasskeyAdd();
+
         return;
       }
 
       await finishPasskeyLogin();
-      return;
-    }
 
-    if (params.has("error")) {
-      const description = params.get("error_description") || params.get("error") || "パスキー認証を完了できませんでした。";
-      window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
-
-      if (sessionStorage.getItem("login_settings_passkey_add") === "1") {
-        sessionStorage.removeItem("login_settings_passkey_add");
-        sessionStorage.setItem("admin_current_view", "login-settings");
-        restore();
-        if (sessionStorage.getItem("admin_access_token")) {
-          showView("login-settings");
-          loginSettingsMessage(description, true);
-        } else {
-          showLogin();
-          authError(description);
-        }
-        return;
-      }
-
-      showLogin();
-      authError(description);
       return;
     }
 
     if (
-      sessionStorage.getItem("passkey_flow_stage") === "confirm" &&
-      sessionStorage.getItem("pending_admin_id")
+      params.has("error")
+    ) {
+      const description =
+        params.get(
+          "error_description"
+        ) ||
+        params.get(
+          "error"
+        ) ||
+        "パスキー認証を完了できませんでした。";
+
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${window.location.hash}`
+      );
+
+      if (
+        sessionStorage.getItem(
+          "login_settings_passkey_add"
+        ) === "1"
+      ) {
+        sessionStorage.removeItem(
+          "login_settings_passkey_add"
+        );
+
+        sessionStorage.setItem(
+          "admin_current_view",
+          "login-settings"
+        );
+
+        restore();
+
+        if (
+          sessionStorage.getItem(
+            "admin_access_token"
+          )
+        ) {
+          showView(
+            "login-settings"
+          );
+
+          loginSettingsMessage(
+            description,
+            true
+          );
+
+        } else {
+          showLogin();
+
+          authError(
+            description
+          );
+        }
+
+        return;
+      }
+
+      showLogin();
+
+      authError(
+        description
+      );
+
+      return;
+    }
+
+    if (
+      sessionStorage.getItem(
+        "passkey_flow_stage"
+      ) === "confirm" &&
+      sessionStorage.getItem(
+        "pending_admin_id"
+      )
     ) {
       await startPasskeyUniversalLogin();
+
       return;
     }
 
     restore();
-  } catch (error) {
-    console.error(error);
+
+  } catch(error) {
+    console.error(
+      error
+    );
+
     showLogin();
-    authError(error.message || "認証機能を初期化できませんでした。");
+
+    authError(
+      error.message ||
+      "認証機能を初期化できませんでした。"
+    );
   }
 }
 
-ui.meetingForm.addEventListener("submit", event => {
-  event.preventDefault();
-  if (!isDummy()) show(ui.meetingStatus, "画面は完成しています。実際の保存先は次に接続します。");
-});
+ui.meetingForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
 
-ui.newsForm.addEventListener("submit", event => {
-  event.preventDefault();
-  if (!isDummy()) show(ui.newsStatus, "画面は完成しています。実際のニュース保存先は次に接続します。");
-});
+    if (
+      !isDummy()
+    ) {
+      show(
+        ui.meetingStatus,
+        "画面は完成しています。実際の保存先は次に接続します。"
+      );
+    }
+  }
+);
 
-function loginSettingsMessage(message, isError = false) {
-  hide(ui.loginSettingsStatus);
-  hide(ui.loginSettingsError);
+ui.newsForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
 
-  if (!message) return;
-  show(isError ? ui.loginSettingsError : ui.loginSettingsStatus, message);
+    if (
+      !isDummy()
+    ) {
+      show(
+        ui.newsStatus,
+        "画面は完成しています。実際のニュース保存先は次に接続します。"
+      );
+    }
+  }
+);
+
+function loginSettingsMessage(
+  message,
+  isError=false
+) {
+  hide(
+    ui.loginSettingsStatus
+  );
+
+  hide(
+    ui.loginSettingsError
+  );
+
+  if (!message) {
+    return;
+  }
+
+  show(
+    isError
+      ? ui.loginSettingsError
+      : ui.loginSettingsStatus,
+    message
+  );
 }
 
 function closeLoginSettingsEnrollBoxes() {
-  ui.settingsEmailEnroll.classList.remove("active");
-  ui.settingsAppEnroll.classList.remove("active");
-  settingsEmailChallengeId = "";
-  ui.settingsEmailCode.value = "";
-  ui.settingsAppCode.value = "";
-  ui.settingsAppQr.innerHTML = "";
+  ui.settingsEmailEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.settingsAppEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  settingsEmailChallengeId =
+    "";
+
+  ui.settingsEmailCode.value =
+    "";
+
+  ui.settingsAppCode.value =
+    "";
+
+  ui.settingsAppQr.innerHTML =
+    "";
 }
 
-function renderLoginMethod(method, data) {
+function renderLoginMethod(
+  method,
+  data
+) {
   const map = {
-    passkey: {
-      chip: ui.settingsPasskeyChip,
-      detail: ui.settingsPasskeyDetail,
-      action: ui.settingsPasskeyAction,
+    passkey:{
+      chip:ui.settingsPasskeyChip,
+      detail:ui.settingsPasskeyDetail,
+      action:ui.settingsPasskeyAction,
     },
-    email: {
-      chip: ui.settingsEmailChip,
-      detail: ui.settingsEmailDetail,
-      action: ui.settingsEmailAction,
+
+    email:{
+      chip:ui.settingsEmailChip,
+      detail:ui.settingsEmailDetail,
+      action:ui.settingsEmailAction,
     },
-    app: {
-      chip: ui.settingsAppChip,
-      detail: ui.settingsAppDetail,
-      action: ui.settingsAppAction,
+
+    app:{
+      chip:ui.settingsAppChip,
+      detail:ui.settingsAppDetail,
+      action:ui.settingsAppAction,
     },
   };
 
-  const target = map[method];
-  const enabled = !!data?.enabled;
+  const target =
+    map[method];
 
-  target.chip.textContent = enabled ? "登録済み" : "未登録";
-  target.chip.classList.toggle("enabled", enabled);
-  target.action.textContent = enabled ? "削除" : "追加";
-  target.action.classList.toggle("remove", enabled);
-  target.action.dataset.enabled = enabled ? "1" : "0";
-  target.action.disabled = isDummy();
+  const enabled =
+    !!data?.enabled;
 
-  if (method === "passkey") {
-    target.detail.textContent = enabled
-      ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
-      : data?.enrolled
-        ? "パスキーはAuth0に存在しますが、このログイン方法は現在無効です。"
-        : "パスキーは登録されていません。";
-  } else if (method === "email") {
-    target.detail.textContent = enabled
-      ? `${data.destination || "登録メールアドレス"} を使用します。`
-      : data?.available
-        ? `${data.destination || "登録メールアドレス"} に認証コードを送って追加できます。`
-        : "利用できるメールアドレスが登録されていません。";
+  target.chip.textContent =
+    enabled
+      ? "登録済み"
+      : "未登録";
+
+  target.chip
+    .classList
+    .toggle(
+      "enabled",
+      enabled
+    );
+
+  target.action.textContent =
+    enabled
+      ? "削除"
+      : "追加";
+
+  target.action
+    .classList
+    .toggle(
+      "remove",
+      enabled
+    );
+
+  target.action.dataset.enabled =
+    enabled
+      ? "1"
+      : "0";
+
+  target.action.disabled =
+    isDummy();
+
+  if (
+    method === "passkey"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
+        : data?.enrolled
+          ? "パスキーはAuth0に存在しますが、このログイン方法は現在無効です。"
+          : "パスキーは登録されていません。";
+
+  } else if (
+    method === "email"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.destination || "登録メールアドレス"} を使用します。`
+        : data?.available
+          ? `${data.destination || "登録メールアドレス"} に認証コードを送って追加できます。`
+          : "利用できるメールアドレスが登録されていません。";
+
   } else {
-    target.detail.textContent = enabled
-      ? "認証アプリの6桁コードを使用します。"
-      : "2FAS Authなどの認証アプリを追加できます。";
+    target.detail.textContent =
+      enabled
+        ? "認証アプリの6桁コードを使用します。"
+        : "2FAS Authなどの認証アプリを追加できます。";
   }
 }
 
 async function loadLoginSettings() {
-  if (!sessionStorage.getItem("admin_access_token")) return;
+  if (
+    !sessionStorage.getItem(
+      "admin_access_token"
+    )
+  ) {
+    return;
+  }
 
-  ui.loginSettingsLoading.textContent = "読み込み中...";
-  loginSettingsMessage("");
+  ui.loginSettingsLoading.textContent =
+    "読み込み中...";
+
+  loginSettingsMessage(
+    ""
+  );
+
   closeLoginSettingsEnrollBoxes();
 
   try {
-    const { response, data } = await workerPost(
+    const {
+      response,
+      data,
+    } = await workerPost(
       "/login-settings",
       {},
-      sessionStorage.getItem("admin_access_token")
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
     );
 
-    if (!response.ok) {
-      throw new Error(data.error || "ログイン設定を取得できませんでした。");
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "ログイン設定を取得できませんでした。"
+      );
     }
 
-    loginSettingsState = data;
-    ui.loginSettingsLoading.textContent = "";
-    renderLoginMethod("passkey", data.methods?.passkey);
-    renderLoginMethod("email", data.methods?.email);
-    renderLoginMethod("app", data.methods?.app);
+    loginSettingsState =
+      data;
 
-    if (isDummy()) {
-      loginSettingsMessage("閲覧専用アカウントではログイン設定を変更できません。");
+    ui.loginSettingsLoading.textContent =
+      "";
+
+    renderLoginMethod(
+      "passkey",
+      data.methods?.passkey
+    );
+
+    renderLoginMethod(
+      "email",
+      data.methods?.email
+    );
+
+    renderLoginMethod(
+      "app",
+      data.methods?.app
+    );
+
+    if (
+      isDummy()
+    ) {
+      loginSettingsMessage(
+        "閲覧専用アカウントではログイン設定を変更できません。"
+      );
     }
-  } catch (error) {
-    ui.loginSettingsLoading.textContent = "";
-    loginSettingsMessage(error.message || "ログイン設定を取得できませんでした。", true);
+
+  } catch(error) {
+    ui.loginSettingsLoading.textContent =
+      "";
+
+    loginSettingsMessage(
+      error.message ||
+      "ログイン設定を取得できませんでした。",
+      true
+    );
   }
 }
 
 async function deleteLoginMethod(method) {
-  if (!loginSettingsState?.methods?.[method]?.enabled) return;
-
-  const label = methodLabel(method);
-  const confirmed = window.confirm(
-    `${label}を削除しますか？\nログイン方法は最低1つ必要です。`
-  );
-  if (!confirmed) return;
-
-  loginSettingsMessage(`${label}を削除しています…`);
-
-  const { response, data } = await workerPost(
-    "/login-settings-method-delete",
-    { method },
-    sessionStorage.getItem("admin_access_token")
-  );
-
-  if (!response.ok) {
-    throw new Error(data.error || `${label}を削除できませんでした。`);
-  }
-
-  await loadLoginSettings();
-  loginSettingsMessage(`${label}を削除しました。`);
-}
-
-async function startPasskeyAddFromSettings() {
-  loginSettingsMessage("パスキーの状態を確認しています…");
-
-  const result = await workerPost(
-    "/login-settings-passkey-enable",
-    {},
-    sessionStorage.getItem("admin_access_token")
-  );
-
-  if (result.response.ok) {
-    await loadLoginSettings();
-    loginSettingsMessage("既存のパスキーをログイン方法として有効にしました。");
+  if (
+    !loginSettingsState
+      ?.methods
+      ?.[method]
+      ?.enabled
+  ) {
     return;
   }
 
-  if (result.data.code !== "PASSKEY_ENROLLMENT_REQUIRED") {
-    throw new Error(result.data.error || "パスキーを追加できませんでした。");
+  const label =
+    methodLabel(
+      method
+    );
+
+  const confirmed =
+    window.confirm(
+      `${label}を削除しますか？\nログイン方法は最低1つ必要です。`
+    );
+
+  if (!confirmed) {
+    return;
   }
 
-  sessionStorage.setItem("login_settings_passkey_add", "1");
-  sessionStorage.setItem("admin_current_view", "login-settings");
+  loginSettingsMessage(
+    `${label}を削除しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/login-settings-method-delete",
+    {
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${label}を削除できませんでした。`
+    );
+  }
+
+  await loadLoginSettings();
+
+  loginSettingsMessage(
+    `${label}を削除しました。`
+  );
+}
+
+async function startPasskeyAddFromSettings() {
+  loginSettingsMessage(
+    "パスキーの状態を確認しています…"
+  );
+
+  const result =
+    await workerPost(
+      "/login-settings-passkey-enable",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+  if (
+    result.response.ok
+  ) {
+    await loadLoginSettings();
+
+    loginSettingsMessage(
+      "既存のパスキーをログイン方法として有効にしました。"
+    );
+
+    return;
+  }
+
+  if (
+    result.data.code !==
+    "PASSKEY_ENROLLMENT_REQUIRED"
+  ) {
+    throw new Error(
+      result.data.error ||
+      "パスキーを追加できませんでした。"
+    );
+  }
+
+  sessionStorage.setItem(
+    "login_settings_passkey_add",
+    "1"
+  );
+
+  sessionStorage.setItem(
+    "admin_current_view",
+    "login-settings"
+  );
 
   await auth0Client.loginWithRedirect({
-    appState: {
-      returnTo: window.location.pathname,
+    appState:{
+      returnTo:window.location.pathname,
     },
-    authorizationParams: {
-      audience: API_AUDIENCE,
-      scope: "openid profile",
-      redirect_uri: AUTH0_REDIRECT_URI,
-      connection: AUTH0_REALM,
-      prompt: "login",
+    authorizationParams:{
+      audience:API_AUDIENCE,
+      scope:"openid profile",
+      redirect_uri:AUTH0_REDIRECT_URI,
+      connection:AUTH0_REALM,
+      prompt:"login",
     },
   });
 }
 
 async function finishLoginSettingsPasskeyAdd() {
   try {
-    const token = await auth0Client.getTokenSilently({ detailedResponse: true });
-    if (!token?.access_token) {
-      throw new Error("Auth0のログイン情報を取得できませんでした。");
+    const token =
+      await auth0Client.getTokenSilently({
+        detailedResponse:true,
+      });
+
+    if (
+      !token?.access_token
+    ) {
+      throw new Error(
+        "Auth0のログイン情報を取得できませんでした。"
+      );
     }
 
-    const result = await workerPost(
-      "/login-settings-passkey-complete",
-      {},
-      token.access_token
+    const result =
+      await workerPost(
+        "/login-settings-passkey-complete",
+        {},
+        token.access_token
+      );
+
+    sessionStorage.removeItem(
+      "login_settings_passkey_add"
     );
 
-    sessionStorage.removeItem("login_settings_passkey_add");
-    sessionStorage.setItem("admin_current_view", "login-settings");
+    sessionStorage.setItem(
+      "admin_current_view",
+      "login-settings"
+    );
 
-    if (!result.response.ok) {
+    if (
+      !result.response.ok
+    ) {
       showAdmin();
+
       await loadLoginSettings();
+
       loginSettingsMessage(
-        result.data.error || "パスキーの登録を確認できませんでした。",
+        result.data.error ||
+        "パスキーの登録を確認できませんでした。",
         true
       );
+
       return;
     }
 
     showAdmin();
+
     await loadLoginSettings();
-    loginSettingsMessage("パスキーを追加しました。");
-  } catch (error) {
-    sessionStorage.removeItem("login_settings_passkey_add");
+
+    loginSettingsMessage(
+      "パスキーを追加しました。"
+    );
+
+  } catch(error) {
+    sessionStorage.removeItem(
+      "login_settings_passkey_add"
+    );
+
     showAdmin();
-    showView("login-settings");
-    loginSettingsMessage(error.message || "パスキーを追加できませんでした。", true);
+
+    showView(
+      "login-settings"
+    );
+
+    loginSettingsMessage(
+      error.message ||
+      "パスキーを追加できませんでした。",
+      true
+    );
   }
 }
 
-ui.settingsPasskeyAction.addEventListener("click", async () => {
-  ui.settingsPasskeyAction.disabled = true;
-  try {
-    if (ui.settingsPasskeyAction.dataset.enabled === "1") {
-      await deleteLoginMethod("passkey");
-    } else {
-      await startPasskeyAddFromSettings();
-    }
-  } catch (error) {
-    loginSettingsMessage(error.message, true);
-  } finally {
-    if (!isDummy()) ui.settingsPasskeyAction.disabled = false;
-  }
-});
+ui.settingsPasskeyAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsPasskeyAction.disabled =
+      true;
 
-ui.settingsEmailAction.addEventListener("click", async () => {
-  ui.settingsEmailAction.disabled = true;
-  try {
-    if (ui.settingsEmailAction.dataset.enabled === "1") {
-      await deleteLoginMethod("email");
+    try {
+      if (
+        ui.settingsPasskeyAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "passkey"
+        );
+
+      } else {
+        await startPasskeyAddFromSettings();
+      }
+
+    } catch(error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsPasskeyAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsEmailAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsEmailAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.settingsEmailAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "email"
+        );
+
+        return;
+      }
+
+      closeLoginSettingsEnrollBoxes();
+
+      loginSettingsMessage(
+        "認証コードを送信しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-email-start",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "認証メールを送信できませんでした。"
+        );
+      }
+
+      settingsEmailChallengeId =
+        data.challengeId ||
+        "";
+
+      ui.settingsEmailMessage.textContent =
+        `${
+          data.destination ||
+          "登録メールアドレス"
+        } に届いた6桁の認証コードを入力してください。`;
+
+      ui.settingsEmailEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      loginSettingsMessage(
+        ""
+      );
+
+      ui.settingsEmailCode.focus();
+
+    } catch(error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsEmailAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsEmailForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.settingsEmailCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return loginSettingsMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.settingsEmailVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-email-complete",
+        {
+          code,
+          challengeId:
+            settingsEmailChallengeId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "メール認証を追加できませんでした。"
+        );
+      }
+
+      await loadLoginSettings();
+
+      loginSettingsMessage(
+        "メール認証を追加しました。"
+      );
+
+    } catch(error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsEmailVerify.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsAppAction.addEventListener(
+  "click",
+  async () => {
+    ui.settingsAppAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.settingsAppAction.dataset.enabled ===
+        "1"
+      ) {
+        await deleteLoginMethod(
+          "app"
+        );
+
+        return;
+      }
+
+      closeLoginSettingsEnrollBoxes();
+
+      loginSettingsMessage(
+        "アプリ認証を準備しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-app-start",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を準備できませんでした。"
+        );
+      }
+
+      if (
+        !data.barcodeUri
+      ) {
+        throw new Error(
+          "認証アプリ登録用のQRコードを取得できませんでした。"
+        );
+      }
+
+      ui.settingsAppQr.innerHTML =
+        "";
+
+      new QRCode(
+        ui.settingsAppQr,
+        {
+          text:data.barcodeUri,
+          width:200,
+          height:200,
+        }
+      );
+
+      ui.settingsAppEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      loginSettingsMessage(
+        ""
+      );
+
+      ui.settingsAppCode.focus();
+
+    } catch(error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsAppAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.settingsAppForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.settingsAppCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return loginSettingsMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.settingsAppVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/login-settings-app-complete",
+        {
+          code,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を追加できませんでした。"
+        );
+      }
+
+      await loadLoginSettings();
+
+      loginSettingsMessage(
+        "アプリ認証を追加しました。"
+      );
+
+    } catch(error) {
+      loginSettingsMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        !isDummy()
+      ) {
+        ui.settingsAppVerify.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.passwordToggle.addEventListener(
+  "click",
+  () => {
+    const open =
+      ui.settingsPasswordArea
+        .classList
+        .toggle(
+          "active"
+        );
+
+    ui.passwordToggle.textContent =
+      open
+        ? "閉じる"
+        : "変更";
+
+    hide(
+      ui.passwordStatus
+    );
+
+    hide(
+      ui.passwordError
+    );
+
+    if (
+      open
+    ) {
+      ui.newPassword.focus();
+    }
+  }
+);
+
+ui.passwordForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    hide(
+      ui.passwordStatus
+    );
+
+    hide(
+      ui.passwordError
+    );
+
+    if (
+      isDummy()
+    ) {
       return;
     }
 
-    closeLoginSettingsEnrollBoxes();
-    loginSettingsMessage("認証コードを送信しています…");
+    const password =
+      ui.newPassword.value;
 
-    const { response, data } = await workerPost(
-      "/login-settings-email-start",
-      {},
-      sessionStorage.getItem("admin_access_token")
-    );
+    const confirm =
+      ui.newPasswordConfirm.value;
 
-    if (!response.ok) {
-      throw new Error(data.error || "認証メールを送信できませんでした。");
+    if (
+      password !== confirm
+    ) {
+      return show(
+        ui.passwordError,
+        "確認用パスワードが一致しません。"
+      );
     }
 
-    settingsEmailChallengeId = data.challengeId || "";
-    ui.settingsEmailMessage.textContent =
-      `${data.destination || "登録メールアドレス"} に届いた6桁の認証コードを入力してください。`;
-    ui.settingsEmailEnroll.classList.add("active");
-    loginSettingsMessage("");
-    ui.settingsEmailCode.focus();
-  } catch (error) {
-    loginSettingsMessage(error.message, true);
-  } finally {
-    if (!isDummy()) ui.settingsEmailAction.disabled = false;
-  }
-});
-
-ui.settingsEmailForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const code = ui.settingsEmailCode.value.trim();
-  if (!/^\d{6}$/.test(code)) {
-    return loginSettingsMessage("6桁の認証コードを入力してください。", true);
-  }
-
-  ui.settingsEmailVerify.disabled = true;
-  try {
-    const { response, data } = await workerPost(
-      "/login-settings-email-complete",
-      { code, challengeId: settingsEmailChallengeId },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "メール認証を追加できませんでした。");
+    if (
+      password.length < 8 ||
+      !/[A-Za-z]/.test(
+        password
+      ) ||
+      !/[0-9]/.test(
+        password
+      )
+    ) {
+      return show(
+        ui.passwordError,
+        "8文字以上で、半角英字と半角数字を含めてください。"
+      );
     }
 
-    await loadLoginSettings();
-    loginSettingsMessage("メール認証を追加しました。");
-  } catch (error) {
-    loginSettingsMessage(error.message, true);
-  } finally {
-    if (!isDummy()) ui.settingsEmailVerify.disabled = false;
-  }
-});
+    ui.passwordButton.disabled =
+      true;
 
-ui.settingsAppAction.addEventListener("click", async () => {
-  ui.settingsAppAction.disabled = true;
-  try {
-    if (ui.settingsAppAction.dataset.enabled === "1") {
-      await deleteLoginMethod("app");
-      return;
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/change-password",
+        {
+          newPassword:password,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "パスワードを変更できませんでした。"
+        );
+      }
+
+      clearSession();
+
+      showLogin();
+
+      authStatus(
+        "パスワードを変更しました。新しいパスワードでログインしてください。"
+      );
+
+    } catch(error) {
+      show(
+        ui.passwordError,
+        error.message
+      );
+
+    } finally {
+      ui.passwordButton.disabled =
+        false;
     }
-
-    closeLoginSettingsEnrollBoxes();
-    loginSettingsMessage("アプリ認証を準備しています…");
-
-    const { response, data } = await workerPost(
-      "/login-settings-app-start",
-      {},
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "アプリ認証を準備できませんでした。");
-    }
-
-    if (!data.barcodeUri) {
-      throw new Error("認証アプリ登録用のQRコードを取得できませんでした。");
-    }
-
-    ui.settingsAppQr.innerHTML = "";
-    new QRCode(ui.settingsAppQr, {
-      text: data.barcodeUri,
-      width: 200,
-      height: 200,
-    });
-
-    ui.settingsAppEnroll.classList.add("active");
-    loginSettingsMessage("");
-    ui.settingsAppCode.focus();
-  } catch (error) {
-    loginSettingsMessage(error.message, true);
-  } finally {
-    if (!isDummy()) ui.settingsAppAction.disabled = false;
   }
-});
-
-ui.settingsAppForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const code = ui.settingsAppCode.value.trim();
-  if (!/^\d{6}$/.test(code)) {
-    return loginSettingsMessage("6桁の認証コードを入力してください。", true);
-  }
-
-  ui.settingsAppVerify.disabled = true;
-  try {
-    const { response, data } = await workerPost(
-      "/login-settings-app-complete",
-      { code },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "アプリ認証を追加できませんでした。");
-    }
-
-    await loadLoginSettings();
-    loginSettingsMessage("アプリ認証を追加しました。");
-  } catch (error) {
-    loginSettingsMessage(error.message, true);
-  } finally {
-    if (!isDummy()) ui.settingsAppVerify.disabled = false;
-  }
-});
-
-ui.passwordToggle.addEventListener("click", () => {
-  const open = ui.settingsPasswordArea.classList.toggle("active");
-  ui.passwordToggle.textContent = open ? "閉じる" : "変更";
-  hide(ui.passwordStatus);
-  hide(ui.passwordError);
-  if (open) ui.newPassword.focus();
-});
-
-ui.passwordForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  hide(ui.passwordStatus);
-  hide(ui.passwordError);
-  if (isDummy()) return;
-
-  const password = ui.newPassword.value;
-  const confirm = ui.newPasswordConfirm.value;
-  if (password !== confirm) return show(ui.passwordError, "確認用パスワードが一致しません。");
-  if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
-    return show(ui.passwordError, "8文字以上で、半角英字と半角数字を含めてください。");
-  }
-
-  ui.passwordButton.disabled = true;
-  try {
-    const { response, data } = await workerPost(
-      "/change-password",
-      { newPassword: password },
-      sessionStorage.getItem("admin_access_token")
-    );
-    if (!response.ok) throw new Error(data.error || "パスワードを変更できませんでした。");
-    clearSession();
-    showLogin();
-    authStatus("パスワードを変更しました。新しいパスワードでログインしてください。");
-  } catch (error) {
-    show(ui.passwordError, error.message);
-  } finally {
-    ui.passwordButton.disabled = false;
-  }
-});
+);
 
 function formatDate(value) {
-  if (!value) return "";
-  const date = new Date(value.endsWith("Z") ? value : value + "Z");
-  return Number.isNaN(date.getTime())
+  if (
+    !value
+  ) {
+    return "";
+  }
+
+  const date =
+    new Date(
+      value.endsWith("Z")
+        ? value
+        : value + "Z"
+    );
+
+  return Number.isNaN(
+    date.getTime()
+  )
     ? value
-    : new Intl.DateTimeFormat("ja-JP", {
-        dateStyle: "medium",
-        timeStyle: "short",
-        timeZone: "Asia/Tokyo",
-      }).format(date);
+    : new Intl.DateTimeFormat(
+        "ja-JP",
+        {
+          dateStyle:"medium",
+          timeStyle:"short",
+          timeZone:"Asia/Tokyo",
+        }
+      ).format(date);
 }
 
-function requestCard(item, owner) {
-  const card = document.createElement("article");
-  card.className = "request-card";
+function requestCard(
+  item,
+  owner
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
 
-  const heading = document.createElement("h3");
-  heading.textContent = item.subject || "（件名なし）";
-  card.append(heading);
+  card.className =
+    "request-card";
 
-  const meta = document.createElement("div");
-  meta.className = "hint";
-  meta.textContent = owner
-    ? `${item.requesterName || "—"} / ${item.requesterUsername || "—"}　${formatDate(item.createdAt)}`
-    : `送信日時：${formatDate(item.createdAt)}`;
-  card.append(meta);
+  const heading =
+    document.createElement(
+      "h3"
+    );
 
-  const body = document.createElement("div");
-  body.style.whiteSpace = "pre-wrap";
-  body.textContent = item.body || "";
-  card.append(body);
+  heading.textContent =
+    item.subject ||
+    "（件名なし）";
 
-  if (owner) {
-    const textarea = document.createElement("textarea");
-    textarea.className = "textarea";
-    textarea.value = item.response || "";
+  card.append(
+    heading
+  );
 
-    const button = document.createElement("button");
-    button.className = "button";
-    button.type = "button";
-    button.textContent = item.response ? "回答を更新" : "回答を保存";
+  const meta =
+    document.createElement(
+      "div"
+    );
 
-    button.addEventListener("click", async () => {
-      if (!textarea.value.trim()) return alert("回答を入力してください。");
-      button.disabled = true;
-      try {
-        const { response, data } = await workerPost(
-          "/developer-request-answer",
-          { id: item.id, response: textarea.value.trim() },
-          sessionStorage.getItem("admin_access_token")
-        );
-        if (!response.ok) throw new Error(data.error || "回答を保存できませんでした。");
-        await loadAllRequests();
-      } catch (error) {
-        alert(error.message);
-      } finally {
-        button.disabled = false;
+  meta.className =
+    "hint";
+
+  meta.textContent =
+    owner
+      ? `${
+          item.requesterName ||
+          "—"
+        } / ${
+          item.requesterUsername ||
+          "—"
+        }　${formatDate(
+          item.createdAt
+        )}`
+      : `送信日時：${formatDate(
+          item.createdAt
+        )}`;
+
+  card.append(
+    meta
+  );
+
+  const body =
+    document.createElement(
+      "div"
+    );
+
+  body.style.whiteSpace =
+    "pre-wrap";
+
+  body.textContent =
+    item.body ||
+    "";
+
+  card.append(
+    body
+  );
+
+  if (
+    owner
+  ) {
+    const textarea =
+      document.createElement(
+        "textarea"
+      );
+
+    textarea.className =
+      "textarea";
+
+    textarea.value =
+      item.response ||
+      "";
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.className =
+      "button";
+
+    button.type =
+      "button";
+
+    button.textContent =
+      item.response
+        ? "回答を更新"
+        : "回答を保存";
+
+    button.addEventListener(
+      "click",
+      async () => {
+        if (
+          !textarea.value.trim()
+        ) {
+          return alert(
+            "回答を入力してください。"
+          );
+        }
+
+        button.disabled =
+          true;
+
+        try {
+          const {
+            response,
+            data,
+          } = await workerPost(
+            "/developer-request-answer",
+            {
+              id:item.id,
+              response:textarea.value.trim(),
+            },
+            sessionStorage.getItem(
+              "admin_access_token"
+            )
+          );
+
+          if (
+            !response.ok
+          ) {
+            throw new Error(
+              data.error ||
+              "回答を保存できませんでした。"
+            );
+          }
+
+          await loadAllRequests();
+
+        } catch(error) {
+          alert(
+            error.message
+          );
+
+        } finally {
+          button.disabled =
+            false;
+        }
       }
-    });
+    );
 
-    card.append(textarea, button);
+    card.append(
+      textarea,
+      button
+    );
+
   } else {
-    const answer = document.createElement("div");
-    answer.className = "request-answer";
-    answer.textContent = item.response ? `回答\n${item.response}` : "回答待ち";
-    card.append(answer);
+    const answer =
+      document.createElement(
+        "div"
+      );
+
+    answer.className =
+      "request-answer";
+
+    answer.textContent =
+      item.response
+        ? `回答\n${item.response}`
+        : "回答待ち";
+
+    card.append(
+      answer
+    );
   }
 
   return card;
 }
 
 async function loadMyRequests() {
-  ui.myRequestsStatus.textContent = "読み込み中...";
-  ui.myRequests.innerHTML = "";
+  ui.myRequestsStatus.textContent =
+    "読み込み中...";
+
+  ui.myRequests.innerHTML =
+    "";
+
   try {
-    const { response, data } = await workerPost(
+    const {
+      response,
+      data,
+    } = await workerPost(
       "/developer-request-mine",
       {},
-      sessionStorage.getItem("admin_access_token")
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
     );
-    if (!response.ok) throw new Error(data.error || "要望一覧を取得できませんでした。");
-    ui.myRequestsStatus.textContent = data.requests?.length ? "" : "送信済みの要望はありません。";
-    (data.requests || []).forEach(item => ui.myRequests.append(requestCard(item, false)));
-  } catch (error) {
-    ui.myRequestsStatus.textContent = error.message;
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "要望一覧を取得できませんでした。"
+      );
+    }
+
+    ui.myRequestsStatus.textContent =
+      data.requests?.length
+        ? ""
+        : "送信済みの要望はありません。";
+
+    (
+      data.requests ||
+      []
+    ).forEach(item => {
+      ui.myRequests.append(
+        requestCard(
+          item,
+          false
+        )
+      );
+    });
+
+  } catch(error) {
+    ui.myRequestsStatus.textContent =
+      error.message;
   }
 }
 
 async function loadAllRequests() {
-  ui.allRequestsStatus.textContent = "読み込み中...";
-  ui.allRequests.innerHTML = "";
+  ui.allRequestsStatus.textContent =
+    "読み込み中...";
+
+  ui.allRequests.innerHTML =
+    "";
+
   try {
-    const { response, data } = await workerPost(
+    const {
+      response,
+      data,
+    } = await workerPost(
       "/developer-requests-admin",
       {},
-      sessionStorage.getItem("admin_access_token")
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
     );
-    if (!response.ok) throw new Error(data.error || "要望一覧を取得できませんでした。");
-    ui.allRequestsStatus.textContent = data.requests?.length ? "" : "届いている要望はありません。";
-    (data.requests || []).forEach(item => ui.allRequests.append(requestCard(item, true)));
-  } catch (error) {
-    ui.allRequestsStatus.textContent = error.message;
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "要望一覧を取得できませんでした。"
+      );
+    }
+
+    ui.allRequestsStatus.textContent =
+      data.requests?.length
+        ? ""
+        : "届いている要望はありません。";
+
+    (
+      data.requests ||
+      []
+    ).forEach(item => {
+      ui.allRequests.append(
+        requestCard(
+          item,
+          true
+        )
+      );
+    });
+
+  } catch(error) {
+    ui.allRequestsStatus.textContent =
+      error.message;
   }
 }
 
-ui.requestForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  if (isDummy()) return;
-  ui.requestSend.disabled = true;
-  show(ui.requestStatus, "送信しています…");
-  try {
-    const { response, data } = await workerPost(
-      "/developer-request-create",
-      { subject: ui.requestSubject.value.trim(), body: ui.requestBody.value.trim() },
-      sessionStorage.getItem("admin_access_token")
-    );
-    if (!response.ok) throw new Error(data.error || "送信できませんでした。");
-    ui.requestForm.reset();
-    show(ui.requestStatus, "要望を送信しました。");
-    await loadMyRequests();
-  } catch (error) {
-    show(ui.requestStatus, error.message);
-  } finally {
-    ui.requestSend.disabled = false;
-  }
-});
+ui.requestForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
 
-function adminEditMessage(message, isError = false) {
-  hide(ui.adminEditStatus);
-  hide(ui.adminEditError);
-  if (!message) return;
-  show(isError ? ui.adminEditError : ui.adminEditStatus, message);
+    if (
+      isDummy()
+    ) {
+      return;
+    }
+
+    ui.requestSend.disabled =
+      true;
+
+    show(
+      ui.requestStatus,
+      "送信しています…"
+    );
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/developer-request-create",
+        {
+          subject:ui.requestSubject.value.trim(),
+          body:ui.requestBody.value.trim(),
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "送信できませんでした。"
+        );
+      }
+
+      ui.requestForm.reset();
+
+      show(
+        ui.requestStatus,
+        "要望を送信しました。"
+      );
+
+      await loadMyRequests();
+
+    } catch(error) {
+      show(
+        ui.requestStatus,
+        error.message
+      );
+
+    } finally {
+      ui.requestSend.disabled =
+        false;
+    }
+  }
+);
+
+function adminEditMessage(
+  message,
+  isError=false
+) {
+  hide(
+    ui.adminEditStatus
+  );
+
+  hide(
+    ui.adminEditError
+  );
+
+  if (!message) {
+    return;
+  }
+
+  show(
+    isError
+      ? ui.adminEditError
+      : ui.adminEditStatus,
+    message
+  );
 }
 
 function closeAdminEditAppEnroll() {
-  ui.adminEditAppEnroll.classList.remove("active");
-  ui.adminEditAppQr.innerHTML = "";
-  ui.adminEditAppCode.value = "";
+  ui.adminEditAppEnroll
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.adminEditAppQr.innerHTML =
+    "";
+
+  ui.adminEditAppCode.value =
+    "";
 }
 
-function renderAdminEditMethod(method, data, enabledCount) {
+function renderAdminEditMethod(
+  method,
+  data,
+  enabledCount
+) {
   const map = {
-    passkey: {
-      chip: ui.adminEditPasskeyChip,
-      detail: ui.adminEditPasskeyDetail,
-      action: ui.adminEditPasskeyAction,
+    passkey:{
+      chip:ui.adminEditPasskeyChip,
+      detail:ui.adminEditPasskeyDetail,
+      action:ui.adminEditPasskeyAction,
     },
-    email: {
-      chip: ui.adminEditEmailChip,
-      detail: ui.adminEditEmailDetail,
-      action: ui.adminEditEmailAction,
+
+    email:{
+      chip:ui.adminEditEmailChip,
+      detail:ui.adminEditEmailDetail,
+      action:ui.adminEditEmailAction,
     },
-    app: {
-      chip: ui.adminEditAppChip,
-      detail: ui.adminEditAppDetail,
-      action: ui.adminEditAppAction,
+
+    app:{
+      chip:ui.adminEditAppChip,
+      detail:ui.adminEditAppDetail,
+      action:ui.adminEditAppAction,
     },
   };
 
-  const target = map[method];
-  const enabled = !!data?.enabled;
-  const selected = !!data?.selected;
-  const pending = !!data?.pending || (selected && !enabled);
+  const target =
+    map[method];
 
-  target.chip.textContent = enabled ? "登録済み" : pending ? "登録待ち" : "未登録";
-  target.chip.classList.toggle("enabled", enabled);
-  target.action.textContent = enabled ? "削除" : pending ? "取消" : "追加";
-  target.action.classList.toggle("remove", enabled || pending);
-  target.action.dataset.enabled = enabled ? "1" : "0";
-  target.action.dataset.selected = selected ? "1" : "0";
-  target.action.disabled = enabled && enabledCount <= 1;
-  target.action.title = enabled && enabledCount <= 1
-    ? "ログイン方法は最低1つ必要です。"
-    : "";
+  const enabled =
+    !!data?.enabled;
 
-  if (method === "passkey") {
-    target.detail.textContent = enabled
-      ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
+  const selected =
+    !!data?.selected;
+
+  const pending =
+    !!data?.pending ||
+    (
+      selected &&
+      !enabled
+    );
+
+  target.chip.textContent =
+    enabled
+      ? "登録済み"
       : pending
-        ? "次回ログイン時に本人へパスキー登録を要求します。"
-        : data?.enrolled
-          ? "Auth0にパスキーはあります。追加するとこのログイン方法を有効化します。"
-          : "追加すると、次回ログイン時に本人へパスキー登録を要求します。";
-  } else if (method === "email") {
-    target.detail.textContent = enabled
-      ? `${data.destination || "登録メールアドレス"} を使用します。`
-      : data?.available
-        ? `${data.destination || "登録メールアドレス"} をログイン方法として追加できます。`
-        : "利用できるメールアドレスが登録されていません。";
+        ? "登録待ち"
+        : "未登録";
+
+  target.chip
+    .classList
+    .toggle(
+      "enabled",
+      enabled
+    );
+
+  target.action.textContent =
+    enabled
+      ? "削除"
+      : pending
+        ? "取消"
+        : "追加";
+
+  target.action
+    .classList
+    .toggle(
+      "remove",
+      enabled ||
+      pending
+    );
+
+  target.action.dataset.enabled =
+    enabled
+      ? "1"
+      : "0";
+
+  target.action.dataset.selected =
+    selected
+      ? "1"
+      : "0";
+
+  target.action.disabled =
+    enabled &&
+    enabledCount <= 1;
+
+  target.action.title =
+    enabled &&
+    enabledCount <= 1
+      ? "ログイン方法は最低1つ必要です。"
+      : "";
+
+  if (
+    method === "passkey"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.count || 1}件のパスキーがAuth0に登録されています。`
+        : pending
+          ? "次回ログイン時に本人へパスキー登録を要求します。"
+          : data?.enrolled
+            ? "Auth0にパスキーはあります。追加するとこのログイン方法を有効化します。"
+            : "追加すると、次回ログイン時に本人へパスキー登録を要求します。";
+
+  } else if (
+    method === "email"
+  ) {
+    target.detail.textContent =
+      enabled
+        ? `${data.destination || "登録メールアドレス"} を使用します。`
+        : data?.available
+          ? `${data.destination || "登録メールアドレス"} をログイン方法として追加できます。`
+          : "利用できるメールアドレスが登録されていません。";
+
   } else {
-    target.detail.textContent = enabled
-      ? "認証アプリの6桁コードを使用します。"
-      : "追加時にQRコードを表示し、対象ユーザーの認証アプリで登録します。";
+    target.detail.textContent =
+      enabled
+        ? "認証アプリの6桁コードを使用します。"
+        : "追加時にQRコードを表示し、対象ユーザーの認証アプリで登録します。";
   }
 }
 
-async function loadAdminUserEditor(userId, scroll = false) {
-  adminEditUserId = userId;
-  adminEditUserState = null;
-  adminEditMessage("読み込み中…");
-  closeAdminEditAppEnroll();
-  ui.adminUserEditor.classList.add("active");
+async function loadAdminUserEditor(
+  userId,
+  scroll=false
+) {
+  adminEditUserId =
+    userId;
 
-  try {
-    const { response, data } = await workerPost(
-      "/admin-user-settings",
-      { userId },
-      sessionStorage.getItem("admin_access_token")
+  adminEditUserState =
+    null;
+
+  adminEditMessage(
+    "読み込み中…"
+  );
+
+  closeAdminEditAppEnroll();
+
+  ui.adminUserEditor
+    .classList
+    .add(
+      "active"
     );
 
-    if (!response.ok) {
-      throw new Error(data.error || "アカウント設定を取得できませんでした。");
+  try {
+    const {
+      response,
+      data,
+    } = await workerPost(
+      "/admin-user-settings",
+      {
+        userId,
+      },
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "アカウント設定を取得できませんでした。"
+      );
     }
 
-    adminEditUserState = data;
-    ui.adminEditUserLabel.textContent = `${data.user?.name || "—"} / ${data.user?.username || "—"}`;
-    renderAdminEditMethod("passkey", data.methods?.passkey, data.enabledCount || 0);
-    renderAdminEditMethod("email", data.methods?.email, data.enabledCount || 0);
-    renderAdminEditMethod("app", data.methods?.app, data.enabledCount || 0);
-    adminEditMessage("");
+    adminEditUserState =
+      data;
 
-    if (scroll) {
-      ui.adminUserEditor.scrollIntoView({ behavior: "smooth", block: "start" });
+    ui.adminEditUserLabel.textContent =
+      `${
+        data.user?.name ||
+        "—"
+      } / ${
+        data.user?.username ||
+        "—"
+      }`;
+
+    renderAdminEditMethod(
+      "passkey",
+      data.methods?.passkey,
+      data.enabledCount ||
+      0
+    );
+
+    renderAdminEditMethod(
+      "email",
+      data.methods?.email,
+      data.enabledCount ||
+      0
+    );
+
+    renderAdminEditMethod(
+      "app",
+      data.methods?.app,
+      data.enabledCount ||
+      0
+    );
+
+    adminEditMessage(
+      ""
+    );
+
+    if (
+      scroll
+    ) {
+      ui.adminUserEditor.scrollIntoView({
+        behavior:"smooth",
+        block:"start",
+      });
     }
-  } catch (error) {
-    adminEditMessage(error.message || "アカウント設定を取得できませんでした。", true);
+
+  } catch(error) {
+    adminEditMessage(
+      error.message ||
+      "アカウント設定を取得できませんでした。",
+      true
+    );
   }
 }
 
 async function adminDeleteLoginMethod(method) {
-  const methodState = adminEditUserState?.methods?.[method];
-  if (!adminEditUserId || (!methodState?.enabled && !methodState?.selected)) return;
-  const label = methodLabel(method);
-  const confirmed = window.confirm(
-    `${adminEditUserState.user?.username || "このアカウント"} の${label}を削除しますか？\nログイン方法は最低1つ必要です。`
-  );
-  if (!confirmed) return;
+  const methodState =
+    adminEditUserState
+      ?.methods
+      ?.[method];
 
-  adminEditMessage(`${label}を削除しています…`);
-  const { response, data } = await workerPost(
-    "/admin-user-method-delete",
-    { userId: adminEditUserId, method },
-    sessionStorage.getItem("admin_access_token")
-  );
-
-  if (!response.ok) {
-    throw new Error(data.error || `${label}を削除できませんでした。`);
+  if (
+    !adminEditUserId ||
+    (
+      !methodState?.enabled &&
+      !methodState?.selected
+    )
+  ) {
+    return;
   }
 
-  await loadAdminUserEditor(adminEditUserId);
-  adminEditMessage(`${label}を削除しました。`);
+  const label =
+    methodLabel(
+      method
+    );
+
+  const confirmed =
+    window.confirm(
+      `${
+        adminEditUserState.user?.username ||
+        "このアカウント"
+      } の${label}を削除しますか？\nログイン方法は最低1つ必要です。`
+    );
+
+  if (
+    !confirmed
+  ) {
+    return;
+  }
+
+  adminEditMessage(
+    `${label}を削除しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/admin-user-method-delete",
+    {
+      userId:adminEditUserId,
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${label}を削除できませんでした。`
+    );
+  }
+
+  await loadAdminUserEditor(
+    adminEditUserId
+  );
+
+  adminEditMessage(
+    `${label}を削除しました。`
+  );
 }
 
-ui.adminEditPasskeyAction.addEventListener("click", async () => {
-  ui.adminEditPasskeyAction.disabled = true;
-  try {
-    if (ui.adminEditPasskeyAction.dataset.enabled === "1" || ui.adminEditPasskeyAction.dataset.selected === "1") {
-      await adminDeleteLoginMethod("passkey");
-      return;
-    }
+ui.adminEditPasskeyAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditPasskeyAction.disabled =
+      true;
 
-    const { response, data } = await workerPost(
-      "/admin-user-method-passkey-enable",
-      { userId: adminEditUserId },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "パスキーを追加できませんでした。");
-    }
-
-    await loadAdminUserEditor(adminEditUserId);
-    adminEditMessage(
-      data.enrollmentRequired
-        ? "パスキーをログイン方法に追加しました。次回ログイン時に本人へパスキー登録を要求します。"
-        : "既存のパスキーをログイン方法として有効にしました。"
-    );
-  } catch (error) {
-    adminEditMessage(error.message, true);
-  } finally {
-    if (ui.adminEditPasskeyAction.dataset.enabled !== "1") {
-      ui.adminEditPasskeyAction.disabled = false;
-    }
-  }
-});
-
-ui.adminEditEmailAction.addEventListener("click", async () => {
-  ui.adminEditEmailAction.disabled = true;
-  try {
-    if (ui.adminEditEmailAction.dataset.enabled === "1" || ui.adminEditEmailAction.dataset.selected === "1") {
-      await adminDeleteLoginMethod("email");
-      return;
-    }
-
-    const { response, data } = await workerPost(
-      "/admin-user-method-email-enable",
-      { userId: adminEditUserId },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "メール認証を追加できませんでした。");
-    }
-
-    await loadAdminUserEditor(adminEditUserId);
-    adminEditMessage(`メール認証を追加しました。${data.destination ? `（${data.destination}）` : ""}`);
-  } catch (error) {
-    adminEditMessage(error.message, true);
-  } finally {
-    if (ui.adminEditEmailAction.dataset.enabled !== "1") {
-      ui.adminEditEmailAction.disabled = false;
-    }
-  }
-});
-
-ui.adminEditAppAction.addEventListener("click", async () => {
-  ui.adminEditAppAction.disabled = true;
-  try {
-    if (ui.adminEditAppAction.dataset.enabled === "1" || ui.adminEditAppAction.dataset.selected === "1") {
-      await adminDeleteLoginMethod("app");
-      return;
-    }
-
-    closeAdminEditAppEnroll();
-    adminEditMessage("アプリ認証を準備しています…");
-
-    const { response, data } = await workerPost(
-      "/admin-user-method-app-start",
-      { userId: adminEditUserId },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "アプリ認証を準備できませんでした。");
-    }
-
-    ui.adminEditAppQr.innerHTML = "";
-    new QRCode(ui.adminEditAppQr, {
-      text: data.barcodeUri,
-      width: 200,
-      height: 200,
-    });
-    ui.adminEditAppEnroll.classList.add("active");
-    adminEditMessage("");
-    ui.adminEditAppCode.focus();
-  } catch (error) {
-    adminEditMessage(error.message, true);
-  } finally {
-    if (ui.adminEditAppAction.dataset.enabled !== "1") {
-      ui.adminEditAppAction.disabled = false;
-    }
-  }
-});
-
-ui.adminEditAppForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const code = ui.adminEditAppCode.value.trim();
-  if (!/^\d{6}$/.test(code)) {
-    return adminEditMessage("6桁の認証コードを入力してください。", true);
-  }
-
-  ui.adminEditAppVerify.disabled = true;
-  try {
-    const { response, data } = await workerPost(
-      "/admin-user-method-app-complete",
-      { userId: adminEditUserId, code },
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "アプリ認証を追加できませんでした。");
-    }
-
-    closeAdminEditAppEnroll();
-    await loadAdminUserEditor(adminEditUserId);
-    adminEditMessage("アプリ認証を追加しました。");
-  } catch (error) {
-    adminEditMessage(error.message, true);
-  } finally {
-    ui.adminEditAppVerify.disabled = false;
-  }
-});
-
-ui.adminEditClose.addEventListener("click", () => {
-  adminEditUserId = "";
-  adminEditUserState = null;
-  closeAdminEditAppEnroll();
-  ui.adminUserEditor.classList.remove("active");
-  adminEditMessage("");
-});
-
-async function loadUsers(closeEditor = true) {
-  ui.usersStatus.textContent = "読み込み中...";
-  ui.usersBody.innerHTML = "";
-
-  if (closeEditor) {
-    adminEditUserId = "";
-    adminEditUserState = null;
-    ui.adminUserEditor.classList.remove("active");
-  }
-
-  try {
-    const { response, data } = await workerPost(
-      "/admin-users",
-      {},
-      sessionStorage.getItem("admin_access_token")
-    );
-
-    if (!response.ok) {
-      throw new Error(data.error || "アカウント一覧を取得できませんでした。");
-    }
-
-    ui.usersStatus.textContent = data.users?.length
-      ? ""
-      : "表示できるアカウントがありません。";
-
-    (data.users || []).forEach(user => {
-      const row = document.createElement("tr");
-      const name = document.createElement("td");
-      const id = document.createElement("td");
-      const mode = document.createElement("td");
-      const edit = document.createElement("td");
-      const remove = document.createElement("td");
-
-      name.textContent = user.name || "—";
-      id.textContent = user.username || "—";
-      mode.textContent = user.isOwner ? "—" : user.coAdmin ? "ON" : "OFF";
-
-      const editButton = document.createElement("button");
-      editButton.className = "mini";
-      editButton.textContent = "編集";
-      editButton.addEventListener("click", () => {
-        loadAdminUserEditor(user.userId, true);
-      });
-      edit.append(editButton);
-
-      if (user.isOwner) {
-        remove.textContent = "—";
-      } else {
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "delete-icon-button";
-        deleteButton.setAttribute(
-          "aria-label",
-          `${user.username || user.name || "アカウント"}を削除`
+    try {
+      if (
+        ui.adminEditPasskeyAction.dataset.enabled === "1" ||
+        ui.adminEditPasskeyAction.dataset.selected === "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "passkey"
         );
-        deleteButton.title = "アカウントを削除";
-        deleteButton.innerHTML = `
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
-          </svg>
-        `;
 
-        deleteButton.addEventListener("click", async () => {
-          const label = user.username || user.name || "このアカウント";
-          const confirmed = window.confirm(
-            `「${label}」を削除しますか？\nこの操作は取り消せません。`
-          );
-          if (!confirmed) return;
-
-          deleteButton.disabled = true;
-          try {
-            const { response, data } = await workerPost(
-              "/delete-admin",
-              { userId: user.userId },
-              sessionStorage.getItem("admin_access_token")
-            );
-
-            if (!response.ok) {
-              throw new Error(data.error || "アカウントを削除できませんでした。");
-            }
-
-            await loadUsers();
-          } catch (error) {
-            alert(error.message);
-            deleteButton.disabled = false;
-          }
-        });
-
-        remove.append(deleteButton);
+        return;
       }
 
-      row.append(name, id, mode, edit, remove);
-      ui.usersBody.append(row);
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-passkey-enable",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "パスキーを追加できませんでした。"
+        );
+      }
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        data.enrollmentRequired
+          ? "パスキーをログイン方法に追加しました。次回ログイン時に本人へパスキー登録を要求します。"
+          : "既存のパスキーをログイン方法として有効にしました。"
+      );
+
+    } catch(error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditPasskeyAction.dataset.enabled !== "1"
+      ) {
+        ui.adminEditPasskeyAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditEmailAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditEmailAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.adminEditEmailAction.dataset.enabled === "1" ||
+        ui.adminEditEmailAction.dataset.selected === "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "email"
+        );
+
+        return;
+      }
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-email-enable",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "メール認証を追加できませんでした。"
+        );
+      }
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        `メール認証を追加しました。${
+          data.destination
+            ? `（${data.destination}）`
+            : ""
+        }`
+      );
+
+    } catch(error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditEmailAction.dataset.enabled !== "1"
+      ) {
+        ui.adminEditEmailAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditAppAction.addEventListener(
+  "click",
+  async () => {
+    ui.adminEditAppAction.disabled =
+      true;
+
+    try {
+      if (
+        ui.adminEditAppAction.dataset.enabled === "1" ||
+        ui.adminEditAppAction.dataset.selected === "1"
+      ) {
+        await adminDeleteLoginMethod(
+          "app"
+        );
+
+        return;
+      }
+
+      closeAdminEditAppEnroll();
+
+      adminEditMessage(
+        "アプリ認証を準備しています…"
+      );
+
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-app-start",
+        {
+          userId:
+            adminEditUserId,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を準備できませんでした。"
+        );
+      }
+
+      ui.adminEditAppQr.innerHTML =
+        "";
+
+      new QRCode(
+        ui.adminEditAppQr,
+        {
+          text:
+            data.barcodeUri,
+          width:200,
+          height:200,
+        }
+      );
+
+      ui.adminEditAppEnroll
+        .classList
+        .add(
+          "active"
+        );
+
+      adminEditMessage(
+        ""
+      );
+
+      ui.adminEditAppCode.focus();
+
+    } catch(error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      if (
+        ui.adminEditAppAction.dataset.enabled !== "1"
+      ) {
+        ui.adminEditAppAction.disabled =
+          false;
+      }
+    }
+  }
+);
+
+ui.adminEditAppForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    const code =
+      ui.adminEditAppCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return adminEditMessage(
+        "6桁の認証コードを入力してください。",
+        true
+      );
+    }
+
+    ui.adminEditAppVerify.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/admin-user-method-app-complete",
+        {
+          userId:
+            adminEditUserId,
+          code,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "アプリ認証を追加できませんでした。"
+        );
+      }
+
+      closeAdminEditAppEnroll();
+
+      await loadAdminUserEditor(
+        adminEditUserId
+      );
+
+      adminEditMessage(
+        "アプリ認証を追加しました。"
+      );
+
+    } catch(error) {
+      adminEditMessage(
+        error.message,
+        true
+      );
+
+    } finally {
+      ui.adminEditAppVerify.disabled =
+        false;
+    }
+  }
+);
+
+ui.adminEditClose.addEventListener(
+  "click",
+  () => {
+    adminEditUserId =
+      "";
+
+    adminEditUserState =
+      null;
+
+    closeAdminEditAppEnroll();
+
+    ui.adminUserEditor
+      .classList
+      .remove(
+        "active"
+      );
+
+    adminEditMessage(
+      ""
+    );
+  }
+);
+
+async function loadUsers(
+  closeEditor=true
+) {
+  ui.usersStatus.textContent =
+    "読み込み中...";
+
+  ui.usersBody.innerHTML =
+    "";
+
+  if (
+    closeEditor
+  ) {
+    adminEditUserId =
+      "";
+
+    adminEditUserState =
+      null;
+
+    ui.adminUserEditor
+      .classList
+      .remove(
+        "active"
+      );
+  }
+
+  try {
+    const {
+      response,
+      data,
+    } = await workerPost(
+      "/admin-users",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "アカウント一覧を取得できませんでした。"
+      );
+    }
+
+    const visibleUsers =
+      (
+        data.users ||
+        []
+      ).filter(user =>
+        String(
+          user.username ||
+          ""
+        ).startsWith(
+          "mach_"
+        )
+      );
+
+    ui.usersStatus.textContent =
+      visibleUsers.length
+        ? ""
+        : "表示できるアカウントがありません。";
+
+    visibleUsers.forEach(user => {
+      const row =
+        document.createElement(
+          "tr"
+        );
+
+      const name =
+        document.createElement(
+          "td"
+        );
+
+      const id =
+        document.createElement(
+          "td"
+        );
+
+      const mode =
+        document.createElement(
+          "td"
+        );
+
+      const edit =
+        document.createElement(
+          "td"
+        );
+
+      const remove =
+        document.createElement(
+          "td"
+        );
+
+      name.textContent =
+        user.name ||
+        "—";
+
+      id.textContent =
+        user.username ||
+        "—";
+
+      mode.textContent =
+        user.isOwner
+          ? "—"
+          : user.coAdmin
+            ? "ON"
+            : "OFF";
+
+      const editButton =
+        document.createElement(
+          "button"
+        );
+
+      editButton.className =
+        "mini";
+
+      editButton.textContent =
+        "編集";
+
+      editButton.addEventListener(
+        "click",
+        () => {
+          loadAdminUserEditor(
+            user.userId,
+            true
+          );
+        }
+      );
+
+      edit.append(
+        editButton
+      );
+
+      if (
+        user.isOwner
+      ) {
+        remove.textContent =
+          "—";
+
+      } else {
+        const deleteButton =
+          document.createElement(
+            "button"
+          );
+
+        deleteButton.type =
+          "button";
+
+        deleteButton.className =
+          "delete-icon-button";
+
+        deleteButton.setAttribute(
+          "aria-label",
+          `${
+            user.username ||
+            user.name ||
+            "アカウント"
+          }を削除`
+        );
+
+        deleteButton.title =
+          "アカウントを削除";
+
+        deleteButton.innerHTML =
+          `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
+            </svg>
+          `;
+
+        deleteButton.addEventListener(
+          "click",
+          async () => {
+            const label =
+              user.username ||
+              user.name ||
+              "このアカウント";
+
+            const confirmed =
+              window.confirm(
+                `「${label}」を削除しますか？\nこの操作は取り消せません。`
+              );
+
+            if (
+              !confirmed
+            ) {
+              return;
+            }
+
+            deleteButton.disabled =
+              true;
+
+            try {
+              const {
+                response,
+                data,
+              } = await workerPost(
+                "/delete-admin",
+                {
+                  userId:
+                    user.userId,
+                },
+                sessionStorage.getItem(
+                  "admin_access_token"
+                )
+              );
+
+              if (
+                !response.ok
+              ) {
+                throw new Error(
+                  data.error ||
+                  "アカウントを削除できませんでした。"
+                );
+              }
+
+              await loadUsers();
+
+            } catch(error) {
+              alert(
+                error.message
+              );
+
+              deleteButton.disabled =
+                false;
+            }
+          }
+        );
+
+        remove.append(
+          deleteButton
+        );
+      }
+
+      row.append(
+        name,
+        id,
+        mode,
+        edit,
+        remove
+      );
+
+      ui.usersBody.append(
+        row
+      );
     });
-  } catch (error) {
-    ui.usersStatus.textContent = error.message;
+
+  } catch(error) {
+    ui.usersStatus.textContent =
+      error.message;
   }
 }
 
 function selectedCreateMethods() {
-  const methods = [];
-  if (ui.createPasskey.checked) methods.push("passkey");
-  if (ui.createEmailCheck.checked) methods.push("email");
-  if (ui.createApp.checked) methods.push("app");
+  const methods =
+    [];
+
+  if (
+    ui.createPasskey.checked
+  ) {
+    methods.push(
+      "passkey"
+    );
+  }
+
+  if (
+    ui.createEmailCheck.checked
+  ) {
+    methods.push(
+      "email"
+    );
+  }
+
+  if (
+    ui.createApp.checked
+  ) {
+    methods.push(
+      "app"
+    );
+  }
+
   return methods;
 }
 
 function updateCreateRequirements() {
-  const methods = selectedCreateMethods();
-  const emailRequired = methods.includes("passkey") || methods.includes("email");
-  ui.createEmail.required = emailRequired;
-  ui.createEmailRequired.classList.toggle("active", emailRequired);
+  const methods =
+    selectedCreateMethods();
+
+  const emailRequired =
+    methods.includes(
+      "passkey"
+    ) ||
+    methods.includes(
+      "email"
+    );
+
+  ui.createEmail.required =
+    emailRequired;
+
+  ui.createEmailRequired
+    .classList
+    .toggle(
+      "active",
+      emailRequired
+    );
 }
 
-[ui.createPasskey, ui.createEmailCheck, ui.createApp].forEach(element => {
-  element.addEventListener("change", updateCreateRequirements);
+[
+  ui.createPasskey,
+  ui.createEmailCheck,
+  ui.createApp,
+].forEach(element => {
+  element.addEventListener(
+    "change",
+    updateCreateRequirements
+  );
 });
+
 updateCreateRequirements();
 
 function setCreateDisabled(value) {
-  ui.createForm.querySelectorAll("input,button").forEach(element => {
-    element.disabled = value;
-  });
+  ui.createForm
+    .querySelectorAll(
+      "input,button"
+    )
+    .forEach(element => {
+      element.disabled =
+        value;
+    });
 }
 
 function resetAccountVerification() {
-  pendingAccount = null;
-  hide(ui.accountVerify);
-  ui.accountProgress.textContent = "";
-  ui.accountMessage.textContent = "";
-  ui.accountQr.classList.add("hidden");
-  ui.accountQr.innerHTML = "";
-  ui.accountCodeForm.classList.add("hidden");
-  ui.accountCode.value = "";
+  pendingAccount =
+    null;
+
+  hide(
+    ui.accountVerify
+  );
+
+  ui.accountAppIntro
+    .classList
+    .remove(
+      "active"
+    );
+
+  ui.accountProgress.textContent =
+    "";
+
+  ui.accountMessage.textContent =
+    "";
+
+  ui.accountQr
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountQr.innerHTML =
+    "";
+
+  ui.accountCodeForm
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountCode.value =
+    "";
 }
 
 function updateProgress() {
-  if (!pendingAccount) return;
-  const done = new Set(pendingAccount.verifiedMethods || []);
-  const current = pendingAccount.mfaMethods[pendingAccount.currentIndex] || "";
-  ui.accountProgress.textContent = pendingAccount.mfaMethods
-    .map(method => {
-      if (method === "passkey") return `○ ${methodLabel(method)}`;
-      return `${done.has(method) ? "✓" : method === current ? "●" : "○"} ${methodLabel(method)}`;
-    })
-    .join("　");
-}
-
-async function prepareAccountFactor() {
-  const account = pendingAccount;
-  if (!account) return;
-  if (account.currentIndex >= account.mfaMethods.length) return finalizeAccount();
-
-  const method = account.mfaMethods[account.currentIndex];
-  account.currentMethod = method;
-  updateProgress();
-  ui.accountVerify.style.display = "block";
-  hide(ui.accountStatus);
-  hide(ui.accountError);
-  ui.accountQr.classList.add("hidden");
-  ui.accountQr.innerHTML = "";
-  ui.accountCodeForm.classList.add("hidden");
-  ui.accountCode.value = "";
-
-  if (method === "passkey") {
-    account.currentIndex += 1;
-    updateProgress();
-    return prepareAccountFactor();
-  }
-
-  accountStatus(`${methodLabel(method)}を準備しています…`);
-
-  const { response, data } = await workerPost(
-    "/create-admin-factor-start",
-    { stagingUserId: account.stagingUserId, method },
-    sessionStorage.getItem("admin_access_token")
-  );
-
-  if (!response.ok) {
-    throw new Error(data.error || `${methodLabel(method)}を準備できませんでした。`);
-  }
-
-  hide(ui.accountStatus);
-
-  if (method === "email") {
-    account.currentChallengeId = data.challengeId || "";
-    ui.accountMessage.textContent = `${data.destination || "登録メールアドレス"} に届いた6桁の認証コードを入力してください。`;
-    ui.accountCodeForm.classList.remove("hidden");
-    ui.accountCode.focus();
+  if (
+    !pendingAccount
+  ) {
     return;
   }
 
-  account.currentChallengeId = "";
-  if (!data.barcodeUri) {
-    throw new Error("認証アプリ登録用のQRコードを取得できませんでした。");
+  const done =
+    new Set(
+      pendingAccount
+        .verifiedMethods ||
+      []
+    );
+
+  const current =
+    pendingAccount
+      .mfaMethods[
+        pendingAccount
+          .currentIndex
+      ] ||
+    "";
+
+  ui.accountProgress.textContent =
+    pendingAccount
+      .mfaMethods
+      .map(method => {
+        if (
+          method === "passkey"
+        ) {
+          return `○ ${methodLabel(
+            method
+          )}`;
+        }
+
+        return `${
+          done.has(method)
+            ? "✓"
+            : method === current
+              ? "●"
+              : "○"
+        } ${methodLabel(
+          method
+        )}`;
+      })
+      .join(
+        "　"
+      );
+}
+
+async function prepareAccountFactor() {
+  const account =
+    pendingAccount;
+
+  if (
+    !account
+  ) {
+    return;
   }
 
-  new QRCode(ui.accountQr, {
-    text: data.barcodeUri,
-    width: 200,
-    height: 200,
-  });
-  ui.accountQr.classList.remove("hidden");
-  ui.accountMessage.textContent = "2FAS Authなどの認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。";
-  ui.accountCodeForm.classList.remove("hidden");
+  if (
+    account.currentIndex >=
+    account.mfaMethods.length
+  ) {
+    return finalizeAccount();
+  }
+
+  const method =
+    account.mfaMethods[
+      account.currentIndex
+    ];
+
+  account.currentMethod =
+    method;
+
+  updateProgress();
+
+  ui.accountVerify.style.display =
+    "block";
+
+  ui.accountAppIntro
+    .classList
+    .remove(
+      "active"
+    );
+
+  hide(
+    ui.accountStatus
+  );
+
+  hide(
+    ui.accountError
+  );
+
+  ui.accountQr
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountQr.innerHTML =
+    "";
+
+  ui.accountCodeForm
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountCode.value =
+    "";
+
+  if (
+    method === "passkey"
+  ) {
+    account.currentIndex +=
+      1;
+
+    updateProgress();
+
+    return prepareAccountFactor();
+  }
+
+  if (
+    method === "app" &&
+    !account.appSetupStarted
+  ) {
+    render2FASDownloadQrs();
+
+    ui.accountMessage.textContent =
+      "";
+
+    ui.accountAppIntro
+      .classList
+      .add(
+        "active"
+      );
+
+    ui.accountAppStart.disabled =
+      false;
+
+    return;
+  }
+
+  accountStatus(
+    `${methodLabel(
+      method
+    )}を準備しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/create-admin-factor-start",
+    {
+      stagingUserId:
+        account.stagingUserId,
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${methodLabel(
+        method
+      )}を準備できませんでした。`
+    );
+  }
+
+  hide(
+    ui.accountStatus
+  );
+
+  if (
+    method === "email"
+  ) {
+    account.currentChallengeId =
+      data.challengeId ||
+      "";
+
+    ui.accountMessage.textContent =
+      `${
+        data.destination ||
+        "登録メールアドレス"
+      } に届いた6桁の認証コードを入力してください。`;
+
+    ui.accountCodeForm
+      .classList
+      .remove(
+        "hidden"
+      );
+
+    ui.accountCode.focus();
+
+    return;
+  }
+
+  account.currentChallengeId =
+    "";
+
+  if (
+    !data.barcodeUri
+  ) {
+    throw new Error(
+      "認証アプリ登録用のQRコードを取得できませんでした。"
+    );
+  }
+
+  new QRCode(
+    ui.accountQr,
+    {
+      text:
+        data.barcodeUri,
+      width:200,
+      height:200,
+    }
+  );
+
+  ui.accountQr
+    .classList
+    .remove(
+      "hidden"
+    );
+
+  ui.accountMessage.textContent =
+    "2FAS AuthでこのQRコードを読み取り、表示された6桁のコードを入力してください。";
+
+  ui.accountCodeForm
+    .classList
+    .remove(
+      "hidden"
+    );
+
   ui.accountCode.focus();
 }
 
+ui.accountAppStart.addEventListener(
+  "click",
+  async () => {
+    if (
+      !pendingAccount ||
+      pendingAccount.currentMethod !== "app"
+    ) {
+      return;
+    }
+
+    ui.accountAppStart.disabled =
+      true;
+
+    pendingAccount.appSetupStarted =
+      true;
+
+    ui.accountAppIntro
+      .classList
+      .remove(
+        "active"
+      );
+
+    try {
+      await prepareAccountFactor();
+
+    } catch(error) {
+      pendingAccount.appSetupStarted =
+        false;
+
+      ui.accountAppIntro
+        .classList
+        .add(
+          "active"
+        );
+
+      ui.accountAppStart.disabled =
+        false;
+
+      accountError(
+        error.message ||
+        "アプリ認証を開始できませんでした。"
+      );
+    }
+  }
+);
+
 async function completeAccountFactor(code) {
-  const account = pendingAccount;
-  if (!account) return;
-  const method = account.currentMethod;
-  accountStatus(`${methodLabel(method)}の認証を確認しています…`);
+  const account =
+    pendingAccount;
 
-  const { response, data } = await workerPost(
-    "/create-admin-factor-complete",
-    {
-      stagingUserId: account.stagingUserId,
-      method,
-      code,
-      challengeId: account.currentChallengeId || "",
-    },
-    sessionStorage.getItem("admin_access_token")
-  );
-
-  if (!response.ok) {
-    throw new Error(data.error || `${methodLabel(method)}を確認できませんでした。`);
+  if (
+    !account
+  ) {
+    return;
   }
 
-  account.verifiedMethods = Array.isArray(data.verifiedMethods)
-    ? data.verifiedMethods
-    : [...new Set([...(account.verifiedMethods || []), method])];
-  account.currentIndex += 1;
-  account.currentMethod = "";
-  account.currentChallengeId = "";
-  hide(ui.accountStatus);
-  ui.accountQr.classList.add("hidden");
-  ui.accountQr.innerHTML = "";
-  ui.accountCodeForm.classList.add("hidden");
-  ui.accountCode.value = "";
+  const method =
+    account.currentMethod;
+
+  accountStatus(
+    `${methodLabel(
+      method
+    )}の認証を確認しています…`
+  );
+
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/create-admin-factor-complete",
+    {
+      stagingUserId:
+        account.stagingUserId,
+      method,
+      code,
+      challengeId:
+        account.currentChallengeId ||
+        "",
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${methodLabel(
+        method
+      )}を確認できませんでした。`
+    );
+  }
+
+  account.verifiedMethods =
+    Array.isArray(
+      data.verifiedMethods
+    )
+      ? data.verifiedMethods
+      : [
+          ...new Set([
+            ...(
+              account.verifiedMethods ||
+              []
+            ),
+            method,
+          ]),
+        ];
+
+  account.currentIndex +=
+    1;
+
+  account.currentMethod =
+    "";
+
+  account.currentChallengeId =
+    "";
+
+  account.appSetupStarted =
+    false;
+
+  hide(
+    ui.accountStatus
+  );
+
+  ui.accountQr
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountQr.innerHTML =
+    "";
+
+  ui.accountCodeForm
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountCode.value =
+    "";
+
   updateProgress();
 
-  if (account.currentIndex >= account.mfaMethods.length) {
+  if (
+    account.currentIndex >=
+    account.mfaMethods.length
+  ) {
     await finalizeAccount();
+
   } else {
     await prepareAccountFactor();
   }
 }
 
 async function finalizeAccount() {
-  const account = pendingAccount;
-  if (!account) return;
-  accountStatus("アカウントを発行しています…");
+  const account =
+    pendingAccount;
 
-  const { response, data } = await workerPost(
-    "/create-admin-finalize",
-    { stagingUserId: account.stagingUserId },
-    sessionStorage.getItem("admin_access_token")
+  if (
+    !account
+  ) {
+    return;
+  }
+
+  accountStatus(
+    "アカウントを発行しています…"
   );
 
-  if (!response.ok) throw new Error(data.error || "アカウント発行処理に失敗しました。");
+  const {
+    response,
+    data,
+  } = await workerPost(
+    "/create-admin-finalize",
+    {
+      stagingUserId:
+        account.stagingUserId,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
 
-  hide(ui.accountVerify);
-  hide(ui.accountStatus);
-  ui.accountResultTitle.textContent = account.simulated
-    ? "認証が完了しました。仮発行のため実際のアカウントは作成していません。"
-    : "認証が完了し、アカウントを発行しました。";
-  ui.resultName.textContent = account.fullName;
-  ui.resultId.textContent = account.username;
-  ui.resultPassword.textContent = account.initialPassword;
-  ui.resultMfa.textContent = account.mfaMethods.map(methodLabel).join(" / ");
-  ui.accountResult.style.display = "block";
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      "アカウント発行処理に失敗しました。"
+    );
+  }
+
+  hide(
+    ui.accountVerify
+  );
+
+  hide(
+    ui.accountStatus
+  );
+
+  ui.accountResultTitle.textContent =
+    account.simulated
+      ? "認証が完了しました。仮発行のため実際のアカウントは作成していません。"
+      : "認証が完了し、アカウントを発行しました。";
+
+  ui.resultName.textContent =
+    account.fullName;
+
+  ui.resultId.textContent =
+    account.username;
+
+  ui.resultPassword.textContent =
+    account.initialPassword;
+
+  ui.resultMfa.textContent =
+    account.mfaMethods
+      .map(
+        methodLabel
+      )
+      .join(
+        " / "
+      );
+
+  ui.accountResult.style.display =
+    "block";
 
   ui.createForm.reset();
-  ui.createPasskey.checked = true;
-  ui.createEmailCheck.checked = false;
-  ui.createApp.checked = false;
-  setCreateDisabled(false);
+
+  ui.createPasskey.checked =
+    true;
+
+  ui.createEmailCheck.checked =
+    false;
+
+  ui.createApp.checked =
+    false;
+
+  setCreateDisabled(
+    false
+  );
+
   updateCreateRequirements();
-  pendingAccount = null;
+
+  pendingAccount =
+    null;
 }
 
-ui.createForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  hide(ui.accountError);
-  hide(ui.accountStatus);
-  ui.accountResult.style.display = "none";
-  resetAccountVerification();
+ui.createForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
 
-  if ((sessionStorage.getItem("admin_sub") || "") !== OWNER_SUB) {
-    return accountError("この操作を行う権限がありません。");
-  }
-
-  const methods = selectedCreateMethods();
-  const email = ui.createEmail.value.trim();
-  if (!methods.length) return accountError("認証方法を1つ以上選択してください。");
-  if ((methods.includes("passkey") || methods.includes("email")) && !email) {
-    return accountError("メールアドレスを入力してください。");
-  }
-
-  ui.createButton.disabled = true;
-  accountStatus("認証用の準備をしています…");
-
-  try {
-    const { response, data } = await workerPost(
-      "/create-admin",
-      {
-        fullName: ui.createName.value.trim(),
-        lastNameRoman: ui.createLast.value.trim(),
-        firstNameRoman: ui.createFirst.value.trim(),
-        birthYear: Number(ui.createYear.value),
-        email,
-        mfaMethods: methods,
-      },
-      sessionStorage.getItem("admin_access_token")
+    hide(
+      ui.accountError
     );
 
-    if (!response.ok) throw new Error(data.error || "認証の準備ができませんでした。");
+    hide(
+      ui.accountStatus
+    );
 
-    pendingAccount = {
-      ...data,
-      currentIndex: 0,
-      currentMethod: "",
-      currentChallengeId: "",
-      verifiedMethods: Array.isArray(data.verifiedMethods) ? data.verifiedMethods : [],
-    };
+    ui.accountResult.style.display =
+      "none";
 
-    setCreateDisabled(true);
-    hide(ui.accountStatus);
-    await prepareAccountFactor();
-  } catch (error) {
-    setCreateDisabled(false);
-    updateCreateRequirements();
-    accountError(error.message || "アカウント認証を開始できませんでした。");
-  } finally {
-    if (!pendingAccount) ui.createButton.disabled = false;
+    resetAccountVerification();
+
+    if (
+      (
+        sessionStorage.getItem(
+          "admin_sub"
+        ) ||
+        ""
+      ) !== OWNER_SUB
+    ) {
+      return accountError(
+        "この操作を行う権限がありません。"
+      );
+    }
+
+    const methods =
+      selectedCreateMethods();
+
+    const email =
+      ui.createEmail.value.trim();
+
+    if (
+      !methods.length
+    ) {
+      return accountError(
+        "認証方法を1つ以上選択してください。"
+      );
+    }
+
+    if (
+      (
+        methods.includes(
+          "passkey"
+        ) ||
+        methods.includes(
+          "email"
+        )
+      ) &&
+      !email
+    ) {
+      return accountError(
+        "メールアドレスを入力してください。"
+      );
+    }
+
+    ui.createButton.disabled =
+      true;
+
+    accountStatus(
+      "認証用の準備をしています…"
+    );
+
+    try {
+      const {
+        response,
+        data,
+      } = await workerPost(
+        "/create-admin",
+        {
+          fullName:
+            ui.createName.value.trim(),
+
+          lastNameRoman:
+            ui.createLast.value.trim(),
+
+          firstNameRoman:
+            ui.createFirst.value.trim(),
+
+          birthYear:
+            Number(
+              ui.createYear.value
+            ),
+
+          email,
+
+          mfaMethods:
+            methods,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+          "認証の準備ができませんでした。"
+        );
+      }
+
+      pendingAccount = {
+        ...data,
+
+        currentIndex:
+          0,
+
+        currentMethod:
+          "",
+
+        currentChallengeId:
+          "",
+
+        verifiedMethods:
+          Array.isArray(
+            data.verifiedMethods
+          )
+            ? data.verifiedMethods
+            : [],
+
+        appSetupStarted:
+          false,
+      };
+
+      setCreateDisabled(
+        true
+      );
+
+      hide(
+        ui.accountStatus
+      );
+
+      await prepareAccountFactor();
+
+    } catch(error) {
+      setCreateDisabled(
+        false
+      );
+
+      updateCreateRequirements();
+
+      accountError(
+        error.message ||
+        "アカウント認証を開始できませんでした。"
+      );
+
+    } finally {
+      if (
+        !pendingAccount
+      ) {
+        ui.createButton.disabled =
+          false;
+      }
+    }
   }
-});
+);
 
-ui.accountCodeForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  if (!pendingAccount?.currentMethod) return accountError("認証情報がありません。");
-  const code = ui.accountCode.value.trim();
-  if (!/^\d{6}$/.test(code)) return accountError("6桁の認証コードを入力してください。");
+ui.accountCodeForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
 
-  ui.accountCodeButton.disabled = true;
-  try {
-    await completeAccountFactor(code);
-  } catch (error) {
-    accountError(error.message || "認証できませんでした。");
-  } finally {
-    ui.accountCodeButton.disabled = false;
+    if (
+      !pendingAccount
+        ?.currentMethod
+    ) {
+      return accountError(
+        "認証情報がありません。"
+      );
+    }
+
+    const code =
+      ui.accountCode.value.trim();
+
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
+      return accountError(
+        "6桁の認証コードを入力してください。"
+      );
+    }
+
+    ui.accountCodeButton.disabled =
+      true;
+
+    try {
+      await completeAccountFactor(
+        code
+      );
+
+    } catch(error) {
+      accountError(
+        error.message ||
+        "認証できませんでした。"
+      );
+
+    } finally {
+      ui.accountCodeButton.disabled =
+        false;
+    }
   }
-});
+);
 
-ui.copyId.addEventListener("click", () => navigator.clipboard.writeText(ui.resultId.textContent));
-ui.copyPassword.addEventListener("click", () => navigator.clipboard.writeText(ui.resultPassword.textContent));
+ui.copyId.addEventListener(
+  "click",
+  () =>
+    navigator.clipboard.writeText(
+      ui.resultId.textContent
+    )
+);
 
-ui.refresh.addEventListener("click", () => {
-  if (pendingAccount) return alert("アカウント認証中は更新できません。");
-  location.reload();
-});
+ui.copyPassword.addEventListener(
+  "click",
+  () =>
+    navigator.clipboard.writeText(
+      ui.resultPassword.textContent
+    )
+);
 
-ui.logout.addEventListener("click", () => {
-  clearSession();
-  resetAccountVerification();
-  window.location.replace(AUTH0_REDIRECT_URI);
-});
+ui.refresh.addEventListener(
+  "click",
+  () => {
+    if (
+      pendingAccount
+    ) {
+      return alert(
+        "アカウント認証中は更新できません。"
+      );
+    }
+
+    location.reload();
+  }
+);
+
+ui.logout.addEventListener(
+  "click",
+  () => {
+    clearSession();
+
+    resetAccountVerification();
+
+    window.location.replace(
+      AUTH0_REDIRECT_URI
+    );
+  }
+);
 
 initAuth();
 
