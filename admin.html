@@ -1325,64 +1325,70 @@ textarea:disabled{
         >
 
           <div class="row">
-            <label class="label">
-              開催日
+            <label class="label" for="meeting-datetime">
+              日時
             </label>
 
             <input
-              id="meeting-date"
+              id="meeting-datetime"
               class="input"
-              type="date"
+              type="datetime-local"
               required
             >
           </div>
 
           <div class="row">
-            <label class="label">
-              開始時間
-            </label>
-
-            <input
-              id="meeting-start"
-              class="input"
-              type="time"
-              required
-            >
-          </div>
-
-          <div class="row">
-            <label class="label">
-              終了時間
-            </label>
-
-            <input
-              id="meeting-end"
-              class="input"
-              type="time"
-            >
-          </div>
-
-          <div class="row">
-            <label class="label">
-              会場
+            <label class="label" for="meeting-place">
+              場所
             </label>
 
             <input
               id="meeting-place"
               class="input"
+              type="text"
+              placeholder="例：長池公園自然館レクチャールーム"
               required
             >
           </div>
 
           <div class="row">
-            <label class="label">
-              備考
+            <label class="label" for="meeting-address">
+              住所（地図ピン用）
             </label>
 
-            <textarea
-              id="meeting-note"
-              class="textarea"
-            ></textarea>
+            <input
+              id="meeting-address"
+              class="input"
+              type="text"
+              placeholder="例：東京都八王子市別所2丁目58"
+              required
+            >
+          </div>
+
+          <div class="row">
+            <label class="label" for="meeting-note1">
+              備考1
+            </label>
+
+            <input
+              id="meeting-note1"
+              class="input"
+              type="text"
+              placeholder="例：予約不要"
+            >
+          </div>
+
+          <div class="row">
+            <label class="label" for="meeting-note2">
+              備考2
+            </label>
+
+            <input
+              id="meeting-note2"
+              class="input"
+              type="text"
+              placeholder="例：料金：300円（学生無料）"
+            >
           </div>
 
           <button
@@ -2572,11 +2578,11 @@ const ui = {
   developerHome: $("developer-home"),
   hpHome: $("hp-home"),
   meetingForm: $("meeting-form"),
-  meetingDate: $("meeting-date"),
-  meetingStart: $("meeting-start"),
-  meetingEnd: $("meeting-end"),
+  meetingDateTime: $("meeting-datetime"),
   meetingPlace: $("meeting-place"),
-  meetingNote: $("meeting-note"),
+  meetingAddress: $("meeting-address"),
+  meetingNote1: $("meeting-note1"),
+  meetingNote2: $("meeting-note2"),
   meetingSave: $("meeting-save"),
   meetingStatus: $("meeting-status"),
   newsForm: $("news-form"),
@@ -3649,17 +3655,12 @@ async function initAuth() {
   }
 }
 
-function meetingStartDate(date, startTime) {
-  if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(date || "") ||
-    !/^\d{2}:\d{2}$/.test(startTime || "")
-  ) {
+function meetingStartDate(dateTime) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(dateTime || "")) {
     return null;
   }
 
-  const value = new Date(
-    `${date}T${startTime}:00+09:00`
-  );
+  const value = new Date(`${dateTime}:00+09:00`);
 
   return Number.isNaN(value.getTime())
     ? null
@@ -3690,11 +3691,11 @@ async function loadMeetingSettings() {
     const meeting = data.meeting;
 
     if (!meeting) {
-      ui.meetingDate.value = "";
-      ui.meetingStart.value = "";
-      ui.meetingEnd.value = "";
+      ui.meetingDateTime.value = "";
       ui.meetingPlace.value = "";
-      ui.meetingNote.value = "";
+      ui.meetingAddress.value = "";
+      ui.meetingNote1.value = "";
+      ui.meetingNote2.value = "";
 
       show(
         ui.meetingStatus,
@@ -3704,24 +3705,23 @@ async function loadMeetingSettings() {
       return;
     }
 
-    ui.meetingDate.value =
-      meeting.date || "";
-
-    ui.meetingStart.value =
-      meeting.startTime || "";
-
-    ui.meetingEnd.value =
-      meeting.endTime || "";
+    ui.meetingDateTime.value =
+      meeting.dateTime || "";
 
     ui.meetingPlace.value =
       meeting.place || "";
 
-    ui.meetingNote.value =
-      meeting.note || "";
+    ui.meetingAddress.value =
+      meeting.address || "";
+
+    ui.meetingNote1.value =
+      meeting.note1 || "";
+
+    ui.meetingNote2.value =
+      meeting.note2 || "";
 
     const startsAt = meetingStartDate(
-      meeting.date,
-      meeting.startTime
+      meeting.dateTime
     );
 
     if (
@@ -3767,11 +3767,11 @@ ui.meetingForm.addEventListener(
       const { response, data } = await workerPost(
         "/meeting-settings-save",
         {
-          date: ui.meetingDate.value,
-          startTime: ui.meetingStart.value,
-          endTime: ui.meetingEnd.value,
+          dateTime: ui.meetingDateTime.value,
           place: ui.meetingPlace.value.trim(),
-          note: ui.meetingNote.value.trim(),
+          address: ui.meetingAddress.value.trim(),
+          note1: ui.meetingNote1.value.trim(),
+          note2: ui.meetingNote2.value.trim(),
         },
         token
       );
