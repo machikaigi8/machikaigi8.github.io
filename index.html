@@ -945,8 +945,46 @@
             meetingPlaceName.textContent =
                 meeting.place || "会場未定";
 
+            const legacyPriceSource =
+                meeting.price ??
+                meeting.note2 ??
+                meeting.note ??
+                "";
+
+            let price = Number.NaN;
+
+            if (
+                typeof legacyPriceSource === "number" &&
+                Number.isInteger(legacyPriceSource)
+            ) {
+                price = legacyPriceSource;
+            } else {
+                const priceMatch = String(legacyPriceSource).match(
+                    /(?:料金|資料代)?[:：]?\s*(\d{1,6})\s*円?/
+                );
+
+                if (priceMatch) {
+                    price = Number(priceMatch[1]);
+                }
+            }
+
+            const priceText =
+                Number.isInteger(price)
+                    ? `料金：${price}円（学生無料）`
+                    : "";
+
+            const note1 =
+                meeting.note1 ||
+                (
+                    typeof meeting.note === "string"
+                        ? meeting.note
+                            .replace(/(?:料金|資料代)[:：]?\s*\d{1,6}\s*円(?:（学生無料）|\(学生無料\))?/g, "")
+                            .trim()
+                        : ""
+                );
+
             meetingNoteText.textContent =
-                [meeting.note1, meeting.note2]
+                [note1, priceText]
                     .filter(Boolean)
                     .join("　");
 
@@ -977,8 +1015,8 @@
                         "長池公園自然館",
                     note1:
                         "予約不要",
-                    note2:
-                        "料金：300円（学生無料）"
+                    price:
+                        300
                 };
 
             const startsAt =
