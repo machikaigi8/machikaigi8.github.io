@@ -432,6 +432,35 @@ textarea:disabled{
   word-break:break-all;
 }
 
+.delete-icon-button{
+  width:40px;
+  height:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #8A2E2E;
+  background:#fff;
+  color:#8A2E2E;
+  cursor:pointer;
+  padding:0;
+}
+
+.delete-icon-button:hover,
+.delete-icon-button:focus-visible{
+  background:#FFF0F0;
+}
+
+.delete-icon-button:disabled{
+  opacity:.35;
+  cursor:not-allowed;
+}
+
+.delete-icon-button svg{
+  width:20px;
+  height:20px;
+  display:block;
+}
+
 @media(max-width:700px){
   .title{
     font-size:31px;
@@ -678,7 +707,7 @@ textarea:disabled{
       >
 
         <p class="hint">
-          Auth0 GuardianアプリでQRコードを読み取り、承認してください。
+          2FAS Authなどの認証アプリでQRコードを読み取ってください。
         </p>
 
         <div
@@ -1310,6 +1339,7 @@ textarea:disabled{
                 <th>ID</th>
                 <th>共同管理者モード</th>
                 <th>編集</th>
+                <th>削除</th>
               </tr>
             </thead>
 
@@ -1622,216 +1652,191 @@ textarea:disabled{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-const AUTH0_DOMAIN =
-  "dev-8e2z74rs10plmrtk.us.auth0.com";
+const AUTH0_DOMAIN = "dev-8e2z74rs10plmrtk.us.auth0.com";
+const AUTH0_CLIENT_ID = "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
+const AUTH0_REALM = "Username-Password-Authentication";
+const API_AUDIENCE = "https://machikaigi8-admin-api";
+const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
+const OWNER_SUB = "auth0|6ad6c756c6029c5d0a72e78a";
+const DUMMY_SUB = "auth0|6ad712865703ba3cd5630025";
+const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
+const AUTH0_REDIRECT_URI = `${window.location.origin}${window.location.pathname}`;
+const PASSKEY_CLAIM = "https://machikaigi8.github.io/auth_method";
 
-const AUTH0_CLIENT_ID =
-  "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
-
-const AUTH0_REALM =
-  "Username-Password-Authentication";
-
-const API_AUDIENCE =
-  "https://machikaigi8-admin-api";
-
-const WORKER_URL =
-  "https://machikaigi-admin-api.taka-souda516.workers.dev";
-
-const OWNER_SUB =
-  "auth0|6ad6c756c6029c5d0a72e78a";
-
-const DUMMY_SUB =
-  "auth0|6ad712865703ba3cd5630025";
-
-const AUTH0_BASE =
-  `https://${AUTH0_DOMAIN}`;
-
-const AUTH0_REDIRECT_URI =
-  `${window.location.origin}${window.location.pathname}`;
-
-const $ =
-  id =>
-    document.getElementById(
-      id
-    );
+const $ = id => document.getElementById(id);
 
 const ui = {
-  topbar:$("topbar"),
-  userName:$("user-name"),
-  refresh:$("refresh"),
-  logout:$("logout"),
-  title:$("page-title"),
-  subtitle:$("subtitle"),
-  loginSection:$("login-section"),
-  loginMain:$("login-main"),
-  loginMethod:$("login-method"),
-  loginPassword:$("login-password"),
-  loginMfa:$("login-mfa"),
-  passkeyRequired:$("passkey-required"),
-  passkeyRequiredMessage:$("passkey-required-message"),
-  passkeyRequiredButton:$("passkey-required-button"),
-  loginIdForm:$("login-id-form"),
-  adminId:$("admin-id"),
-  loginIdButton:$("login-id-button"),
-  loginSelectedId:$("login-selected-id"),
-  loginPasskey:$("login-passkey"),
-  loginEmail:$("login-email"),
-  loginApp:$("login-app"),
-  loginMethodBack:$("login-method-back"),
-  loginPasswordTitle:$("login-password-title"),
-  loginPasswordId:$("login-password-id"),
-  loginPasswordForm:$("login-password-form"),
-  adminPassword:$("admin-password"),
-  loginPasswordButton:$("login-password-button"),
-  loginPasswordBack:$("login-password-back"),
-  loginBack:$("login-back"),
-  authStatus:$("auth-status"),
-  authError:$("auth-error"),
-  loginMfaMessage:$("login-mfa-message"),
-  loginEnroll:$("login-enroll"),
-  loginQr:$("login-qr"),
-  loginCodeArea:$("login-code-area"),
-  loginCodeForm:$("login-code-form"),
-  loginCodeMessage:$("login-code-message"),
-  loginCode:$("login-code"),
-  loginCodeButton:$("login-code-button"),
-  admin:$("admin"),
-  developerHome:$("developer-home"),
-  hpHome:$("hp-home"),
-  meetingForm:$("meeting-form"),
-  meetingSave:$("meeting-save"),
-  meetingStatus:$("meeting-status"),
-  newsForm:$("news-form"),
-  newsAdd:$("news-add"),
-  newsStatus:$("news-status"),
-  passwordForm:$("password-form"),
-  newPassword:$("new-password"),
-  newPasswordConfirm:$("new-password-confirm"),
-  passwordButton:$("password-button"),
-  passwordStatus:$("password-status"),
-  passwordError:$("password-error"),
-  requestForm:$("request-form"),
-  requestSubject:$("request-subject"),
-  requestBody:$("request-body"),
-  requestSend:$("request-send"),
-  requestStatus:$("request-status"),
-  myRequestsStatus:$("my-requests-status"),
-  myRequests:$("my-requests"),
-  allRequestsStatus:$("all-requests-status"),
-  allRequests:$("all-requests"),
-  usersStatus:$("users-status"),
-  usersBody:$("users-body"),
-  createForm:$("create-form"),
-  createName:$("create-name"),
-  createLast:$("create-last"),
-  createFirst:$("create-first"),
-  createYear:$("create-year"),
-  createEmail:$("create-email"),
-  createEmailRequired:$("create-email-required"),
-  createPasskey:$("create-passkey"),
-  createApp:$("create-app"),
-  createEmailCheck:$("create-email-check"),
-  createButton:$("create-button"),
-  accountVerify:$("account-verify"),
-  accountProgress:$("account-progress"),
-  accountMessage:$("account-message"),
-  accountQr:$("account-qr"),
-  accountCodeForm:$("account-code-form"),
-  accountCode:$("account-code"),
-  accountCodeButton:$("account-code-button"),
-  accountStatus:$("account-status"),
-  accountError:$("account-error"),
-  accountResult:$("account-result"),
-  accountResultTitle:$("account-result-title"),
-  resultName:$("result-name"),
-  resultId:$("result-id"),
-  resultPassword:$("result-password"),
-  resultMfa:$("result-mfa"),
-  copyId:$("copy-id"),
-  copyPassword:$("copy-password"),
+  topbar: $("topbar"),
+  userName: $("user-name"),
+  refresh: $("refresh"),
+  logout: $("logout"),
+  title: $("page-title"),
+  subtitle: $("subtitle"),
+  loginSection: $("login-section"),
+  loginMain: $("login-main"),
+  loginMethod: $("login-method"),
+  loginPassword: $("login-password"),
+  loginMfa: $("login-mfa"),
+  passkeyRequired: $("passkey-required"),
+  passkeyRequiredMessage: $("passkey-required-message"),
+  passkeyRequiredButton: $("passkey-required-button"),
+  loginIdForm: $("login-id-form"),
+  adminId: $("admin-id"),
+  loginSelectedId: $("login-selected-id"),
+  loginPasskey: $("login-passkey"),
+  loginEmail: $("login-email"),
+  loginApp: $("login-app"),
+  loginMethodBack: $("login-method-back"),
+  loginPasswordTitle: $("login-password-title"),
+  loginPasswordId: $("login-password-id"),
+  loginPasswordForm: $("login-password-form"),
+  adminPassword: $("admin-password"),
+  loginPasswordButton: $("login-password-button"),
+  loginPasswordBack: $("login-password-back"),
+  loginBack: $("login-back"),
+  authStatus: $("auth-status"),
+  authError: $("auth-error"),
+  loginMfaMessage: $("login-mfa-message"),
+  loginEnroll: $("login-enroll"),
+  loginQr: $("login-qr"),
+  loginCodeArea: $("login-code-area"),
+  loginCodeForm: $("login-code-form"),
+  loginCodeMessage: $("login-code-message"),
+  loginCode: $("login-code"),
+  loginCodeButton: $("login-code-button"),
+  admin: $("admin"),
+  developerHome: $("developer-home"),
+  hpHome: $("hp-home"),
+  meetingForm: $("meeting-form"),
+  meetingStatus: $("meeting-status"),
+  newsForm: $("news-form"),
+  newsStatus: $("news-status"),
+  passwordForm: $("password-form"),
+  newPassword: $("new-password"),
+  newPasswordConfirm: $("new-password-confirm"),
+  passwordButton: $("password-button"),
+  passwordStatus: $("password-status"),
+  passwordError: $("password-error"),
+  requestForm: $("request-form"),
+  requestSubject: $("request-subject"),
+  requestBody: $("request-body"),
+  requestSend: $("request-send"),
+  requestStatus: $("request-status"),
+  myRequestsStatus: $("my-requests-status"),
+  myRequests: $("my-requests"),
+  allRequestsStatus: $("all-requests-status"),
+  allRequests: $("all-requests"),
+  usersStatus: $("users-status"),
+  usersBody: $("users-body"),
+  createForm: $("create-form"),
+  createName: $("create-name"),
+  createLast: $("create-last"),
+  createFirst: $("create-first"),
+  createYear: $("create-year"),
+  createEmail: $("create-email"),
+  createEmailRequired: $("create-email-required"),
+  createPasskey: $("create-passkey"),
+  createApp: $("create-app"),
+  createEmailCheck: $("create-email-check"),
+  createButton: $("create-button"),
+  accountVerify: $("account-verify"),
+  accountProgress: $("account-progress"),
+  accountMessage: $("account-message"),
+  accountQr: $("account-qr"),
+  accountCodeForm: $("account-code-form"),
+  accountCode: $("account-code"),
+  accountCodeButton: $("account-code-button"),
+  accountStatus: $("account-status"),
+  accountError: $("account-error"),
+  accountResult: $("account-result"),
+  accountResultTitle: $("account-result-title"),
+  resultName: $("result-name"),
+  resultId: $("result-id"),
+  resultPassword: $("result-password"),
+  resultMfa: $("result-mfa"),
+  copyId: $("copy-id"),
+  copyPassword: $("copy-password"),
 };
 
-let auth0Client=null;
-let selectedLoginMethod="";
-let loginMfaToken="";
-let loginAuthenticators=[];
-let loginChallenge=null;
-let guardianStop=false;
-let pendingAccount=null;
-let accountStop=false;
+let auth0Client = null;
+let selectedLoginMethod = "";
+let loginAuth0Token = "";
+let loginChallengeId = "";
+let pendingAccount = null;
 
-const show=(element,message)=>{
-  element.textContent=message;
-  element.style.display="block";
+const show = (element, message) => {
+  element.textContent = message;
+  element.style.display = "block";
 };
 
-const hide=element=>{
-  element.style.display="none";
+const hide = element => {
+  element.style.display = "none";
 };
 
-const authStatus=message=>{
+const authStatus = message => {
   hide(ui.authError);
-  show(ui.authStatus,message);
+  show(ui.authStatus, message);
 };
 
-const authError=message=>{
+const authError = message => {
   hide(ui.authStatus);
-  show(ui.authError,message);
+  show(ui.authError, message);
 };
 
-const accountStatus=message=>{
+const accountStatus = message => {
   hide(ui.accountError);
-  show(ui.accountStatus,message);
+  show(ui.accountStatus, message);
 };
 
-const accountError=message=>{
+const accountError = message => {
   hide(ui.accountStatus);
-  show(ui.accountError,message);
+  show(ui.accountError, message);
 };
 
-async function readJson(response){
-  const text=await response.text();
+async function readJson(response) {
+  const text = await response.text();
 
-  if(!text){
+  if (!text) {
     return {};
   }
 
-  try{
+  try {
     return JSON.parse(text);
-  }catch{
-    return{
-      error_description:text,
+  } catch {
+    return {
+      error_description:
+        text,
     };
   }
 }
 
-function decodeJwt(token){
-  try{
-    let payload=
+function decodeJwt(token) {
+  try {
+    let payload =
       token
         .split(".")[1]
-        .replace(/-/g,"+")
-        .replace(/_/g,"/");
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
 
-    payload+="=".repeat(
-      (4-payload.length%4)%4
+    payload += "=".repeat(
+      (4 - payload.length % 4) % 4
     );
 
     return JSON.parse(
       new TextDecoder().decode(
         Uint8Array.from(
           atob(payload),
-          character=>character.charCodeAt(0)
+          c => c.charCodeAt(0)
         )
       )
     );
-  }catch{
+  } catch {
     return {};
   }
 }
 
-async function passwordLogin(username,password){
-  const body=
+async function passwordLogin(username, password) {
+  const body =
     new URLSearchParams({
       grant_type:
         "http://auth0.com/oauth/grant-type/password-realm",
@@ -1847,12 +1852,12 @@ async function passwordLogin(username,password){
         "openid profile",
     });
 
-  const response=
+  const response =
     await fetch(
       `${AUTH0_BASE}/oauth/token`,
       {
-        method:"POST",
-        headers:{
+        method: "POST",
+        headers: {
           "Content-Type":
             "application/x-www-form-urlencoded",
         },
@@ -1860,35 +1865,46 @@ async function passwordLogin(username,password){
       }
     );
 
-  return{
+  return {
     response,
-    data:await readJson(response),
+    data:
+      await readJson(
+        response
+      ),
   };
 }
 
-async function workerPost(path,body={},token=""){
-  const headers={
+async function workerPost(
+  path,
+  body = {},
+  token = ""
+) {
+  const headers = {
     "Content-Type":
       "application/json",
   };
 
-  if(token){
-    headers.Authorization=`Bearer ${token}`;
+  if (token) {
+    headers.Authorization =
+      `Bearer ${token}`;
   }
 
   let response;
 
-  try{
-    response=
+  try {
+    response =
       await fetch(
         `${WORKER_URL}${path}`,
         {
-          method:"POST",
+          method: "POST",
           headers,
-          body:JSON.stringify(body),
+          body:
+            JSON.stringify(
+              body
+            ),
         }
       );
-  }catch(error){
+  } catch (error) {
     console.error(error);
 
     throw new Error(
@@ -1896,374 +1912,91 @@ async function workerPost(path,body={},token=""){
     );
   }
 
-  return{
+  return {
     response,
-    data:await readJson(response),
+    data:
+      await readJson(
+        response
+      ),
   };
 }
 
-async function listAuthenticators(token){
-  const{response,data}=
-    await workerPost(
-      "/mfa-authenticators",
-      {
-        mfaToken:token,
-      }
-    );
-
-  if(!response.ok){
-    throw new Error(
-      data.error_description||
-      data.error||
-      "認証方法を取得できませんでした。"
-    );
+function methodLabel(method) {
+  if (
+    method ===
+    "passkey"
+  ) {
+    return "パスキー";
   }
 
-  return Array.isArray(data)
-    ?data
-    :[];
-}
-
-async function challengeMfa(token,id){
-  const{response,data}=
-    await workerPost(
-      "/mfa-challenge",
-      {
-        mfaToken:token,
-        authenticatorId:id,
-      }
-    );
-
-  if(!response.ok){
-    throw new Error(
-      data.error_description||
-      data.error||
-      "認証を送信できませんでした。"
-    );
-  }
-
-  return data;
-}
-
-async function associateMfa(
-  token,
-  channel,
-  destination=""
-){
-  const{response,data}=
-    await workerPost(
-      "/mfa-associate",
-      {
-        mfaToken:token,
-        channel,
-        destination,
-      }
-    );
-
-  if(!response.ok){
-    throw new Error(
-      data.error_description||
-      data.error||
-      "認証方法を登録できませんでした。"
-    );
-  }
-
-  return data;
-}
-
-const verifyMfa=(
-  token,
-  oob,
-  binding=""
-)=>
-  workerPost(
-    "/mfa-verify",
-    {
-      mfaToken:token,
-      oobCode:oob,
-      bindingCode:binding,
-    }
-  );
-
-function authKind(authenticator){
-  if(
-    authenticator.authenticator_type!==
-    "oob"
-  ){
-    return "";
-  }
-
-  if(
-    authenticator.oob_channel===
-    "auth0"
-  ){
-    return "app";
-  }
-
-  if(
-    authenticator.oob_channel===
+  if (
+    method ===
     "email"
-  ){
-    return "email";
+  ) {
+    return "メール認証";
   }
 
-  return "";
+  if (
+    method ===
+    "app"
+  ) {
+    return "アプリ認証";
+  }
+
+  return method;
 }
 
-const methodLabel=
-  method=>
-    method==="passkey"
-      ?"パスキー"
-      :method==="app"
-        ?"アプリ認証"
-        :"メール認証";
-
-async function startSelectedLoginMfa(
-  token,
-  authenticators,
-  method
-){
-  loginMfaToken=token;
-
-  loginAuthenticators=
-    authenticators.filter(
-      authenticator=>
-        authenticator.active&&
-        authKind(authenticator)
-    );
-
-  ui.loginPassword.classList.add("hidden");
-  ui.loginMfa.classList.remove("hidden");
-
-  ui.title.textContent="認証";
-
-  hide(ui.loginEnroll);
-  hide(ui.loginCodeArea);
-
-  ui.loginQr.innerHTML="";
-
-  ui.loginMfaMessage.textContent=
-    method==="email"
-      ?"メール認証を行います。"
-      :"アプリ認証を行います。";
-
-  const matches=
-    loginAuthenticators.filter(
-      authenticator=>
-        authKind(authenticator)===method
-    );
-
-  if(
-    method==="app"&&
-    matches.length===0
-  ){
-    const assoc=
-      await associateMfa(
-        loginMfaToken,
-        "auth0"
-      );
-
-    if(!assoc.barcode_uri){
-      throw new Error(
-        "認証アプリ登録用のQRコードを取得できませんでした。"
-      );
-    }
-
-    new QRCode(
-      ui.loginQr,
-      {
-        text:assoc.barcode_uri,
-        width:200,
-        height:200,
-      }
-    );
-
-    ui.loginEnroll.style.display="block";
-
-    ui.loginMfaMessage.textContent=
-      "認証アプリを登録して承認してください。";
-
-    authStatus(
-      "Auth0 GuardianアプリでQRコードを読み取り、承認してください。"
-    );
-
-    await pollGuardian(
-      loginMfaToken,
-      assoc.oob_code,
-      false
-    );
-
-    return;
-  }
-
-  const authenticator=
-    matches[0];
-
-  if(!authenticator){
-    throw new Error(
-      method==="email"
-        ?"このアカウントにはメール認証が登録されていません。"
-        :"このアカウントにはアプリ認証が登録されていません。"
-    );
-  }
-
-  const challenge=
-    await challengeMfa(
-      loginMfaToken,
-      authenticator.id
-    );
-
-  if(
-    authenticator.oob_channel===
-    "auth0"
-  ){
-    ui.loginMfaMessage.textContent=
-      "認証アプリに通知を送信しました。承認してください。";
-
-    authStatus(
-      "Auth0 Guardianへ通知しました。承認してください。"
-    );
-
-    await pollGuardian(
-      loginMfaToken,
-      challenge.oob_code,
-      false
-    );
-
-    return;
-  }
-
-  showCode(
-    loginMfaToken,
-    challenge.oob_code,
-    authenticator.oob_channel
+function showLoginStep(step) {
+  [
+    ui.loginMain,
+    ui.loginMethod,
+    ui.loginPassword,
+    ui.loginMfa,
+    ui.passkeyRequired,
+  ].forEach(
+    element =>
+      element.classList.add(
+        "hidden"
+      )
   );
 
-  authStatus(
-    "メールへ認証コードを送信しました。"
+  step.classList.remove(
+    "hidden"
   );
 }
 
-async function pollGuardian(
-  token,
-  oob,
-  accountMode=false
-){
-  let wait=5000;
+function resetLoginVerification() {
+  loginAuth0Token = "";
+  loginChallengeId = "";
 
-  if(accountMode){
-    accountStop=false;
-  }else{
-    guardianStop=false;
-  }
-
-  for(
-    let i=0;
-    i<30;
-    i++
-  ){
-    if(
-      accountMode
-        ?accountStop
-        :guardianStop
-    ){
-      return;
-    }
-
-    await new Promise(
-      resolve=>
-        setTimeout(
-          resolve,
-          wait
-        )
-    );
-
-    const{response,data}=
-      await verifyMfa(
-        token,
-        oob
-      );
-
-    if(
-      response.ok&&
-      data.access_token
-    ){
-      if(accountMode){
-        await completeAccountFactor(
-          data.access_token
-        );
-      }else{
-        await finishLogin(data);
-      }
-
-      return;
-    }
-
-    if(
-      data.error===
-      "authorization_pending"
-    ){
-      continue;
-    }
-
-    if(
-      data.error===
-      "slow_down"
-    ){
-      wait=
-        Math.min(
-          wait+2000,
-          10000
-        );
-
-      continue;
-    }
-
-    throw new Error(
-      data.error_description||
-      data.error||
-      "認証を完了できませんでした。"
-    );
-  }
-
-  throw new Error(
-    "認証待ちがタイムアウトしました。"
+  hide(
+    ui.loginEnroll
   );
+
+  hide(
+    ui.loginCodeArea
+  );
+
+  ui.loginQr.innerHTML = "";
+  ui.loginCode.value = "";
+  ui.loginMfaMessage.textContent = "";
+  ui.loginCodeMessage.textContent = "";
 }
 
-function showCode(
-  token,
-  oob,
-  channel
-){
-  loginChallenge={
-    token,
-    oob,
-  };
-
-  ui.loginCodeMessage.textContent=
-    channel==="voice"
-      ?"通話で案内された認証コードを入力してください。"
-      :`${channel==="email"?"メール":"SMS"}に届いた認証コードを入力してください。`;
-
-  ui.loginCode.value="";
-  ui.loginCodeArea.style.display="block";
-  ui.loginCode.focus();
-}
-
-async function checkPasskeyStatus(
-  accessToken
-){
-  const{response,data}=
+async function checkPasskeyStatus(auth0Token) {
+  const {
+    response,
+    data,
+  } =
     await workerPost(
       "/passkey-status",
       {},
-      accessToken
+      auth0Token
     );
 
-  if(!response.ok){
+  if (!response.ok) {
     throw new Error(
-      data.error||
+      data.error ||
       "パスキー登録状態を確認できませんでした。"
     );
   }
@@ -2271,75 +2004,91 @@ async function checkPasskeyStatus(
   return data;
 }
 
-function showPasskeyRequiredScreen(
-  message
-){
+function showPasskeyRequiredScreen(message) {
   resetLoginVerification();
 
   showLoginStep(
     ui.passkeyRequired
   );
 
-  ui.title.textContent=
+  ui.title.textContent =
     "パスキーの設定";
 
-  ui.passkeyRequiredMessage.textContent=
+  ui.passkeyRequiredMessage.textContent =
     message;
 
   hide(ui.authStatus);
   hide(ui.authError);
 }
 
-function saveLoginSession(
-  tokens,
-  authMode
-){
-  const id=
-    decodeJwt(
-      tokens.id_token||
-      ""
+async function requirePasskeyEnrollmentBeforeAlternateLogin(
+  auth0Token
+) {
+  const status =
+    await checkPasskeyStatus(
+      auth0Token
     );
 
-  const access=
-    decodeJwt(
-      tokens.access_token||
-      ""
+  if (
+    status.required &&
+    !status.enrolled
+  ) {
+    sessionStorage.setItem(
+      "pending_admin_id",
+      ui.adminId.value.trim()
     );
+
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      "setup"
+    );
+
+    showPasskeyRequiredScreen(
+      "このアカウントでは初回ログイン前にパスキー登録が必要です。パスキーで続行し、Auth0で登録してください。"
+    );
+
+    return false;
+  }
+
+  return true;
+}
+
+function saveWorkerSession(
+  data,
+  authMode
+) {
+  if (
+    !data.sessionToken ||
+    !data.expiresAt ||
+    !data.user?.sub
+  ) {
+    throw new Error(
+      "管理者セッションを作成できませんでした。"
+    );
+  }
 
   sessionStorage.setItem(
     "admin_access_token",
-    tokens.access_token
+    data.sessionToken
   );
 
   sessionStorage.setItem(
     "admin_expires_at",
     String(
-      access.exp
-        ?Number(access.exp)*1000
-        :Date.now()+
-          Number(
-            tokens.expires_in||
-            600
-          )*1000
+      data.expiresAt
     )
   );
 
   sessionStorage.setItem(
     "admin_username",
-    id.name||
-    id.nickname||
-    ui.adminId.value.trim()||
-    sessionStorage.getItem(
-      "pending_admin_id"
-    )||
+    data.user.name ||
+    data.user.username ||
     "管理者"
   );
 
   sessionStorage.setItem(
     "admin_sub",
-    access.sub||
-    id.sub||
-    ""
+    data.user.sub
   );
 
   sessionStorage.setItem(
@@ -2351,218 +2100,34 @@ function saveLoginSession(
     "admin_auth_mode",
     authMode
   );
-}
-
-async function finishLogin(tokens){
-  guardianStop=true;
-
-  const status=
-    await checkPasskeyStatus(
-      tokens.access_token
-    );
-
-  if(
-    status.required&&
-    !status.enrolled
-  ){
-    sessionStorage.setItem(
-      "pending_admin_id",
-      ui.adminId.value.trim()
-    );
-
-    sessionStorage.setItem(
-      "passkey_flow_stage",
-      "initial"
-    );
-
-    showPasskeyRequiredScreen(
-      "このアカウントでは初回ログイン時のパスキー登録が必要です。パスキーで続行してください。"
-    );
-
-    return;
-  }
-
-  saveLoginSession(
-    tokens,
-    "password-mfa"
-  );
-
-  sessionStorage.removeItem(
-    "passkey_flow_stage"
-  );
 
   sessionStorage.removeItem(
     "pending_admin_id"
   );
 
-  showAdmin();
-}
-
-function showLoginStep(step){
-  [
-    ui.loginMain,
-    ui.loginMethod,
-    ui.loginPassword,
-    ui.loginMfa,
-    ui.passkeyRequired,
-  ].forEach(
-    element=>
-      element.classList.add(
-        "hidden"
-      )
-  );
-
-  step.classList.remove(
-    "hidden"
+  sessionStorage.removeItem(
+    "passkey_flow_stage"
   );
 }
 
-function resetLoginVerification(){
-  guardianStop=true;
-  loginMfaToken="";
-  loginAuthenticators=[];
-  loginChallenge=null;
-
-  hide(ui.loginEnroll);
-  hide(ui.loginCodeArea);
-
-  ui.loginQr.innerHTML="";
-  ui.loginCode.value="";
-}
-
-ui.loginIdForm.addEventListener(
-  "submit",
-  event=>{
-    event.preventDefault();
-
-    hide(ui.authStatus);
-    hide(ui.authError);
-
-    const username=
-      ui.adminId.value.trim();
-
-    if(!username){
-      return authError(
-        "IDを入力してください。"
-      );
-    }
-
-    ui.loginSelectedId.textContent=
-      username;
-
-    ui.loginPasswordId.textContent=
-      username;
-
-    selectedLoginMethod="";
-
-    resetLoginVerification();
-
-    showLoginStep(
-      ui.loginMethod
-    );
-  }
-);
-
-ui.loginMethodBack.addEventListener(
-  "click",
-  ()=>{
-    selectedLoginMethod="";
-
-    resetLoginVerification();
-
-    showLoginStep(
-      ui.loginMain
-    );
-
-    hide(ui.authStatus);
-    hide(ui.authError);
-
-    ui.adminId.focus();
-  }
-);
-
-ui.loginPasswordBack.addEventListener(
-  "click",
-  ()=>{
-    ui.adminPassword.value="";
-
-    resetLoginVerification();
-
-    showLoginStep(
-      ui.loginMethod
-    );
-
-    hide(ui.authStatus);
-    hide(ui.authError);
-  }
-);
-
-ui.loginEmail.addEventListener(
-  "click",
-  ()=>{
-    selectedLoginMethod="email";
-
-    ui.loginPasswordTitle.textContent=
-      "メール認証";
-
-    ui.loginPasswordId.textContent=
-      ui.adminId.value.trim();
-
-    ui.adminPassword.value="";
-
-    showLoginStep(
-      ui.loginPassword
-    );
-
-    hide(ui.authStatus);
-    hide(ui.authError);
-
-    ui.adminPassword.focus();
-  }
-);
-
-ui.loginApp.addEventListener(
-  "click",
-  ()=>{
-    selectedLoginMethod="app";
-
-    ui.loginPasswordTitle.textContent=
-      "アプリ認証";
-
-    ui.loginPasswordId.textContent=
-      ui.adminId.value.trim();
-
-    ui.adminPassword.value="";
-
-    showLoginStep(
-      ui.loginPassword
-    );
-
-    hide(ui.authStatus);
-    hide(ui.authError);
-
-    ui.adminPassword.focus();
-  }
-);
-
-async function startPasskeyUniversalLogin(){
+async function startPasskeyUniversalLogin() {
   hide(ui.authStatus);
   hide(ui.authError);
 
-  if(!auth0Client){
+  if (!auth0Client) {
     throw new Error(
       "パスキー認証を初期化できていません。ページを再読み込みしてください。"
     );
   }
 
-  const username=
-    ui.adminId.value.trim()||
+  const username =
+    ui.adminId.value.trim() ||
     sessionStorage.getItem(
       "pending_admin_id"
-    )||
+    ) ||
     "";
 
-  if(!username){
+  if (!username) {
     throw new Error(
       "IDを入力してください。"
     );
@@ -2574,12 +2139,12 @@ async function startPasskeyUniversalLogin(){
   );
 
   await auth0Client.loginWithRedirect({
-    appState:{
+    appState: {
       returnTo:
         window.location.pathname,
     },
 
-    authorizationParams:{
+    authorizationParams: {
       audience:
         API_AUDIENCE,
 
@@ -2601,149 +2166,341 @@ async function startPasskeyUniversalLogin(){
   });
 }
 
-ui.loginPasskey.addEventListener(
-  "click",
-  async ()=>{
-    ui.loginPasskey.disabled=true;
-
-    try{
-      sessionStorage.setItem(
-        "passkey_flow_stage",
-        "initial"
-      );
-
-      await startPasskeyUniversalLogin();
-    }catch(error){
-      authError(
-        error.message||
-        "パスキー認証を開始できませんでした。"
-      );
-
-      ui.loginPasskey.disabled=false;
-    }
-  }
-);
-
-ui.passkeyRequiredButton.addEventListener(
-  "click",
-  async ()=>{
-    ui.passkeyRequiredButton.disabled=true;
-
-    try{
-      if(
-        !sessionStorage.getItem(
-          "passkey_flow_stage"
-        )
-      ){
-        sessionStorage.setItem(
-          "passkey_flow_stage",
-          "initial"
-        );
-      }
-
-      await startPasskeyUniversalLogin();
-    }catch(error){
-      authError(
-        error.message||
-        "パスキー認証を開始できませんでした。"
-      );
-
-      ui.passkeyRequiredButton.disabled=false;
-    }
-  }
-);
-
-ui.loginPasswordForm.addEventListener(
+ui.loginIdForm.addEventListener(
   "submit",
-  async event=>{
+  event => {
     event.preventDefault();
 
     hide(ui.authStatus);
     hide(ui.authError);
 
-    if(
-      ![
-        "email",
-        "app",
-      ].includes(
-        selectedLoginMethod
-      )
-    ){
+    const username =
+      ui.adminId.value.trim();
+
+    if (!username) {
       return authError(
-        "ログイン方法を選び直してください。"
+        "IDを入力してください。"
       );
     }
 
-    ui.loginPasswordButton.disabled=true;
+    ui.loginSelectedId.textContent =
+      username;
 
-    try{
-      const{response,data}=
-        await passwordLogin(
-          ui.adminId.value.trim(),
-          ui.adminPassword.value
-        );
+    ui.loginPasswordId.textContent =
+      username;
 
-      ui.adminPassword.value="";
+    selectedLoginMethod = "";
 
-      if(
-        response.ok&&
-        data.access_token
-      ){
-        throw new Error(
-          "追加認証が要求されませんでした。Auth0のMFA設定を確認してください。"
-        );
-      }
+    resetLoginVerification();
 
-      if(
-        data.error!=="mfa_required"||
-        !data.mfa_token
-      ){
-        if(
-          data.error==="invalid_grant"
-        ){
-          throw new Error(
-            "IDまたはパスワードが違います。"
-          );
-        }
-
-        throw new Error(
-          data.error_description||
-          "ログインできませんでした。"
-        );
-      }
-
-      await startSelectedLoginMfa(
-        data.mfa_token,
-        await listAuthenticators(
-          data.mfa_token
-        ),
-        selectedLoginMethod
-      );
-    }catch(error){
-      showLoginStep(
-        ui.loginPassword
-      );
-
-      authError(
-        error.message||
-        "ログイン処理に失敗しました。"
-      );
-    }finally{
-      ui.loginPasswordButton.disabled=false;
-    }
+    showLoginStep(
+      ui.loginMethod
+    );
   }
 );
 
-ui.loginBack.addEventListener(
+ui.loginMethodBack.addEventListener(
   "click",
-  ()=>{
+  () => {
+    selectedLoginMethod = "";
+
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMain
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminId.focus();
+  }
+);
+
+ui.loginPasswordBack.addEventListener(
+  "click",
+  () => {
+    ui.adminPassword.value = "";
+
     resetLoginVerification();
 
     showLoginStep(
       ui.loginMethod
     );
 
-    ui.title.textContent=
+    hide(ui.authStatus);
+    hide(ui.authError);
+  }
+);
+
+ui.loginEmail.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "email";
+
+    ui.loginPasswordTitle.textContent =
+      "メール認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value = "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginApp.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "app";
+
+    ui.loginPasswordTitle.textContent =
+      "アプリ認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value = "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginPasskey.addEventListener(
+  "click",
+  async () => {
+    ui.loginPasskey.disabled =
+      true;
+
+    try {
+      sessionStorage.setItem(
+        "passkey_flow_stage",
+        "initial"
+      );
+
+      await startPasskeyUniversalLogin();
+    } catch (error) {
+      authError(
+        error.message ||
+        "パスキー認証を開始できませんでした。"
+      );
+
+      ui.loginPasskey.disabled =
+        false;
+    }
+  }
+);
+
+ui.passkeyRequiredButton.addEventListener(
+  "click",
+  async () => {
+    ui.passkeyRequiredButton.disabled =
+      true;
+
+    try {
+      if (
+        !sessionStorage.getItem(
+          "passkey_flow_stage"
+        )
+      ) {
+        sessionStorage.setItem(
+          "passkey_flow_stage",
+          "setup"
+        );
+      }
+
+      await startPasskeyUniversalLogin();
+    } catch (error) {
+      authError(
+        error.message ||
+        "パスキー認証を開始できませんでした。"
+      );
+
+      ui.passkeyRequiredButton.disabled =
+        false;
+    }
+  }
+);
+
+ui.loginPasswordForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    hide(ui.authStatus);
+    hide(ui.authError);
+
+    if (
+      ![
+        "email",
+        "app",
+      ].includes(
+        selectedLoginMethod
+      )
+    ) {
+      return authError(
+        "ログイン方法を選び直してください。"
+      );
+    }
+
+    ui.loginPasswordButton.disabled =
+      true;
+
+    try {
+      const {
+        response,
+        data,
+      } =
+        await passwordLogin(
+          ui.adminId.value.trim(),
+          ui.adminPassword.value
+        );
+
+      ui.adminPassword.value = "";
+
+      if (
+        !response.ok ||
+        !data.access_token
+      ) {
+        if (
+          data.error ===
+          "invalid_grant"
+        ) {
+          throw new Error(
+            "IDまたはパスワードが違います。"
+          );
+        }
+
+        throw new Error(
+          data.error_description ||
+          data.error ||
+          "ログインできませんでした。"
+        );
+      }
+
+      loginAuth0Token =
+        data.access_token;
+
+      if (
+        !(
+          await requirePasskeyEnrollmentBeforeAlternateLogin(
+            loginAuth0Token
+          )
+        )
+      ) {
+        return;
+      }
+
+      showLoginStep(
+        ui.loginMfa
+      );
+
+      ui.title.textContent =
+        "認証";
+
+      hide(ui.loginEnroll);
+      hide(ui.loginCodeArea);
+
+      if (
+        selectedLoginMethod ===
+        "email"
+      ) {
+        authStatus(
+          "認証コードを送信しています…"
+        );
+
+        const result =
+          await workerPost(
+            "/login-email-start",
+            {},
+            loginAuth0Token
+          );
+
+        if (
+          !result.response.ok
+        ) {
+          throw new Error(
+            result.data.error ||
+            "認証メールを送信できませんでした。"
+          );
+        }
+
+        loginChallengeId =
+          result.data.challengeId ||
+          "";
+
+        ui.loginMfaMessage.textContent =
+          "メール認証";
+
+        ui.loginCodeMessage.textContent =
+          `${
+            result.data.destination ||
+            "登録メールアドレス"
+          } に届いた6桁の認証コードを入力してください。`;
+
+        ui.loginCodeArea.style.display =
+          "block";
+
+        hide(
+          ui.authStatus
+        );
+
+        ui.loginCode.focus();
+      } else {
+        ui.loginMfaMessage.textContent =
+          "アプリ認証";
+
+        ui.loginCodeMessage.textContent =
+          "2FAS Authなどの認証アプリに表示されている6桁のコードを入力してください。";
+
+        ui.loginCodeArea.style.display =
+          "block";
+
+        ui.loginCode.focus();
+      }
+    } catch (error) {
+      showLoginStep(
+        ui.loginPassword
+      );
+
+      authError(
+        error.message ||
+        "ログイン処理に失敗しました。"
+      );
+    } finally {
+      ui.loginPasswordButton.disabled =
+        false;
+    }
+  }
+);
+
+ui.loginBack.addEventListener(
+  "click",
+  () => {
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
+    );
+
+    ui.title.textContent =
       "管理者画面";
 
     hide(ui.authStatus);
@@ -2753,60 +2510,108 @@ ui.loginBack.addEventListener(
 
 ui.loginCodeForm.addEventListener(
   "submit",
-  async event=>{
+  async event => {
     event.preventDefault();
 
-    if(!loginChallenge){
-      return authError(
-        "認証情報がありません。"
-      );
-    }
-
-    const code=
+    const code =
       ui.loginCode.value.trim();
 
-    if(
-      !/^\d{4,10}$/.test(code)
-    ){
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
       return authError(
-        "認証コードを数字で入力してください。"
+        "6桁の認証コードを入力してください。"
       );
     }
 
-    ui.loginCodeButton.disabled=true;
+    if (
+      !loginAuth0Token
+    ) {
+      return authError(
+        "ログイン情報がありません。最初からやり直してください。"
+      );
+    }
 
-    try{
-      const{response,data}=
-        await verifyMfa(
-          loginChallenge.token,
-          loginChallenge.oob,
-          code
-        );
+    ui.loginCodeButton.disabled =
+      true;
 
-      if(
-        !response.ok||
-        !data.access_token
-      ){
+    hide(ui.authError);
+
+    try {
+      let result;
+
+      if (
+        selectedLoginMethod ===
+        "email"
+      ) {
+        if (
+          !loginChallengeId
+        ) {
+          throw new Error(
+            "メール認証情報がありません。もう一度コードを送信してください。"
+          );
+        }
+
+        result =
+          await workerPost(
+            "/login-email-verify",
+            {
+              code,
+              challengeId:
+                loginChallengeId,
+            },
+            loginAuth0Token
+          );
+      } else if (
+        selectedLoginMethod ===
+        "app"
+      ) {
+        result =
+          await workerPost(
+            "/login-totp-verify",
+            {
+              code,
+            },
+            loginAuth0Token
+          );
+      } else {
         throw new Error(
-          data.error_description||
-          data.error||
-          "認証コードが正しくありません。"
+          "ログイン方法を選び直してください。"
         );
       }
 
-      await finishLogin(data);
-    }catch(error){
+      if (
+        !result.response.ok
+      ) {
+        throw new Error(
+          result.data.error ||
+          "認証できませんでした。"
+        );
+      }
+
+      saveWorkerSession(
+        result.data,
+        selectedLoginMethod
+      );
+
+      resetLoginVerification();
+
+      showAdmin();
+    } catch (error) {
       authError(
-        error.message||
+        error.message ||
         "認証できませんでした。"
       );
-    }finally{
-      ui.loginCodeButton.disabled=false;
+    } finally {
+      ui.loginCodeButton.disabled =
+        false;
     }
   }
 );
 
-const views=
+const views =
   document.querySelectorAll(
     ".view"
   );
@@ -2816,14 +2621,15 @@ document
     "[data-view]"
   )
   .forEach(
-    button=>
+    button => {
       button.addEventListener(
         "click",
-        ()=>
+        () =>
           showView(
             button.dataset.view
           )
-      )
+      );
+    }
   );
 
 document
@@ -2831,55 +2637,73 @@ document
     "[data-home]"
   )
   .forEach(
-    button=>
+    button => {
       button.addEventListener(
         "click",
-        ()=>
-          showView("home")
-      )
+        () =>
+          showView(
+            "home"
+          )
+      );
+    }
   );
 
-function showView(name){
-  const sub=
+function showView(name) {
+  const sub =
     sessionStorage.getItem(
       "admin_sub"
-    )||
+    ) ||
     "";
 
-  if(
+  if (
     [
       "developer",
       "developer-responses",
       "admin-users",
       "create-admin",
-    ].includes(name)&&
-    sub!==OWNER_SUB
-  ){
-    name="home";
+    ].includes(name) &&
+    sub !== OWNER_SUB
+  ) {
+    name = "home";
   }
 
-  const titles={
-    home:"管理者画面",
-    meeting:"次回まち会議日時設定",
-    news:"ニュース追加",
-    password:"パスワード変更",
-    inquiries:"お問い合わせ一覧",
+  const titles = {
+    home:
+      "管理者画面",
+
+    meeting:
+      "次回まち会議日時設定",
+
+    news:
+      "ニュース追加",
+
+    password:
+      "パスワード変更",
+
+    inquiries:
+      "お問い合わせ一覧",
+
     "developer-request":
       "デベロッパーへの要望",
+
     developer:
       "デベロッパーメニュー",
+
     "developer-responses":
       "デベロッパーへの要望の回答",
+
     "admin-users":
       "アカウント一覧",
+
     "hp-update":
       "HP更新",
+
     "create-admin":
       "アカウント作成",
   };
 
-  ui.title.textContent=
-    titles[name]||
+  ui.title.textContent =
+    titles[name] ||
     "管理者画面";
 
   sessionStorage.setItem(
@@ -2888,90 +2712,105 @@ function showView(name){
   );
 
   views.forEach(
-    view=>
+    view =>
       view.classList.remove(
         "active"
       )
   );
 
   $(
-    "view-"+name
+    "view-" + name
   )?.classList.add(
     "active"
   );
 
-  if(
-    name==="developer-request"
-  ){
+  if (
+    name ===
+    "developer-request"
+  ) {
     loadMyRequests();
   }
 
-  if(
-    name==="developer-responses"
-  ){
+  if (
+    name ===
+    "developer-responses"
+  ) {
     loadAllRequests();
   }
 
-  if(
-    name==="admin-users"
-  ){
+  if (
+    name ===
+    "admin-users"
+  ) {
     loadUsers();
   }
 
   window.scrollTo({
-    top:0,
-    behavior:"smooth",
+    top: 0,
+    behavior:
+      "smooth",
   });
 }
 
-function isDummy(){
-  return(
+function isDummy() {
+  return (
     sessionStorage.getItem(
       "admin_sub"
-    )||
+    ) ||
     ""
-  )===DUMMY_SUB;
+  ) === DUMMY_SUB;
 }
 
-function setReadOnly(readOnly){
+function setReadOnly(
+  readOnly
+) {
   [
     ui.meetingForm,
     ui.newsForm,
     ui.passwordForm,
     ui.requestForm,
   ].forEach(
-    form=>
+    form => {
       form
         .querySelectorAll(
           "input,textarea,button"
         )
         .forEach(
-          element=>
-            element.disabled=
-              readOnly
-        )
+          element => {
+            element.disabled =
+              readOnly;
+          }
+        );
+    }
   );
 }
 
-function showAdmin(){
-  ui.loginSection.style.display="none";
-  ui.admin.style.display="block";
-  ui.topbar.style.display="flex";
-  ui.subtitle.style.display="none";
+function showAdmin() {
+  ui.loginSection.style.display =
+    "none";
 
-  ui.userName.textContent=
+  ui.admin.style.display =
+    "block";
+
+  ui.topbar.style.display =
+    "flex";
+
+  ui.subtitle.style.display =
+    "none";
+
+  ui.userName.textContent =
     sessionStorage.getItem(
       "admin_username"
-    )||
+    ) ||
     "管理者";
 
-  const owner=
+  const owner =
     (
       sessionStorage.getItem(
         "admin_sub"
-      )||
+      ) ||
       ""
-    )===OWNER_SUB;
+    ) === OWNER_SUB;
 
   ui.developerHome
     .classList
@@ -2994,21 +2833,29 @@ function showAdmin(){
   showView(
     sessionStorage.getItem(
       "admin_current_view"
-    )||
+    ) ||
     "home"
   );
 }
 
-function showLogin(){
-  ui.title.textContent=
+function showLogin() {
+  ui.title.textContent =
     "管理者画面";
 
-  ui.subtitle.style.display="block";
-  ui.loginSection.style.display="block";
-  ui.admin.style.display="none";
-  ui.topbar.style.display="none";
+  ui.subtitle.style.display =
+    "block";
 
-  selectedLoginMethod="";
+  ui.loginSection.style.display =
+    "block";
+
+  ui.admin.style.display =
+    "none";
+
+  ui.topbar.style.display =
+    "none";
+
+  selectedLoginMethod =
+    "";
 
   resetLoginVerification();
 
@@ -3016,12 +2863,15 @@ function showLogin(){
     ui.loginMain
   );
 
-  ui.adminPassword.value="";
+  ui.adminPassword.value =
+    "";
 
-  setReadOnly(false);
+  setReadOnly(
+    false
+  );
 }
 
-function clearAuthenticatedSession(){
+function clearAuthenticatedSession() {
   [
     "admin_access_token",
     "admin_expires_at",
@@ -3030,14 +2880,14 @@ function clearAuthenticatedSession(){
     "admin_current_view",
     "admin_auth_mode",
   ].forEach(
-    key=>
+    key =>
       sessionStorage.removeItem(
         key
       )
   );
 }
 
-function clearSession(){
+function clearSession() {
   [
     "admin_access_token",
     "admin_expires_at",
@@ -3048,98 +2898,108 @@ function clearSession(){
     "pending_admin_id",
     "passkey_flow_stage",
   ].forEach(
-    key=>
+    key =>
       sessionStorage.removeItem(
         key
       )
   );
 }
 
-function restore(){
-  const token=
+function restore() {
+  const token =
     sessionStorage.getItem(
       "admin_access_token"
     );
 
-  const expires=
+  const expires =
     Number(
       sessionStorage.getItem(
         "admin_expires_at"
-      )||
+      ) ||
       0
     );
 
-  if(
-    !token||
-    Date.now()>=expires
-  ){
+  if (
+    !token ||
+    Date.now() >=
+      expires
+  ) {
     clearSession();
     showLogin();
-  }else{
+  } else {
     showAdmin();
   }
 }
 
-async function finishPasskeyLogin(){
-  const token=
+async function finishPasskeyLogin() {
+  const token =
     await auth0Client.getTokenSilently({
-      detailedResponse:true,
+      detailedResponse:
+        true,
     });
 
-  const user=
+  const user =
     await auth0Client.getUser();
 
-  if(
-    !token?.access_token||
+  if (
+    !token?.access_token ||
     !user?.sub
-  ){
+  ) {
     throw new Error(
       "パスキー認証後のログイン情報を取得できませんでした。"
     );
   }
 
-  const accessPayload=
+  const auth0Token =
+    token.access_token;
+
+  const accessPayload =
     decodeJwt(
-      token.access_token
+      auth0Token
     );
 
-  const authMethod=
+  const authMethod =
     accessPayload[
-      "https://machikaigi8.github.io/auth_method"
-    ]||
+      PASSKEY_CLAIM
+    ] ||
     "";
 
-  const status=
+  const status =
     await checkPasskeyStatus(
-      token.access_token
+      auth0Token
     );
 
-  const stage=
+  const stage =
     sessionStorage.getItem(
       "passkey_flow_stage"
-    )||
+    ) ||
     "initial";
 
-  if(
-    status.required&&
+  if (
+    status.required &&
     !status.enrolled
-  ){
+  ) {
     clearAuthenticatedSession();
 
     showLogin();
 
+    sessionStorage.setItem(
+      "passkey_flow_stage",
+      "setup"
+    );
+
     showPasskeyRequiredScreen(
-      "パスキー登録がまだ完了していません。パスキーの登録を完了してから続行してください。"
+      "パスキー登録がまだ完了していません。Auth0の案内に従ってパスキーを登録してください。"
     );
 
     return;
   }
 
-  if(
-    status.required&&
-    status.newlyEnrolled&&
-    authMethod!=="passkey"
-  ){
+  if (
+    status.enrolled &&
+    authMethod !==
+      "passkey"
+  ) {
     clearAuthenticatedSession();
 
     sessionStorage.setItem(
@@ -3151,14 +3011,14 @@ async function finishPasskeyLogin(){
       "pending_admin_id",
       sessionStorage.getItem(
         "pending_admin_id"
-      )||
-      user.nickname||
-      user.name||
+      ) ||
+      user.nickname ||
+      user.name ||
       ""
     );
 
     await auth0Client.logout({
-      logoutParams:{
+      logoutParams: {
         returnTo:
           AUTH0_REDIRECT_URI,
       },
@@ -3167,77 +3027,57 @@ async function finishPasskeyLogin(){
     return;
   }
 
-  if(
-    authMethod!=="passkey"
-  ){
+  if (
+    authMethod !==
+    "passkey"
+  ) {
     clearAuthenticatedSession();
 
     showLogin();
 
     sessionStorage.setItem(
       "passkey_flow_stage",
-      stage==="confirm"
-        ?"confirm"
-        :"initial"
+      stage === "confirm"
+        ? "confirm"
+        : "initial"
     );
 
     showPasskeyRequiredScreen(
-      stage==="confirm"
-        ?"初回設定を完了するには、今登録したパスキーを使ってもう一度ログインしてください。"
-        :"パスキーでのログインを確認できませんでした。パスキーを選んでログインしてください。"
+      stage === "confirm"
+        ? "初回設定を完了するには、今登録したパスキーを使ってもう一度ログインしてください。"
+        : "パスキーでのログインを確認できませんでした。登録済みのパスキーを使ってログインしてください。"
     );
 
     return;
   }
 
-  saveLoginSession(
-    {
-      access_token:
-        token.access_token,
+  const result =
+    await workerPost(
+      "/login-passkey-complete",
+      {},
+      auth0Token
+    );
 
-      expires_in:
-        token.expires_in,
-
-      id_token:
-        token.id_token||
-        "",
-    },
-    "passkey"
-  );
-
-  if(
-    !sessionStorage.getItem(
-      "admin_username"
-    )||
-    sessionStorage.getItem(
-      "admin_username"
-    )==="管理者"
-  ){
-    sessionStorage.setItem(
-      "admin_username",
-      user.name||
-      user.nickname||
-      sessionStorage.getItem(
-        "pending_admin_id"
-      )||
-      "管理者"
+  if (
+    !result.response.ok
+  ) {
+    throw new Error(
+      result.data.error ||
+      "パスキーでログインできませんでした。"
     );
   }
 
-  sessionStorage.removeItem(
-    "passkey_flow_stage"
-  );
-
-  sessionStorage.removeItem(
-    "pending_admin_id"
+  saveWorkerSession(
+    result.data,
+    "passkey"
   );
 
   showAdmin();
 }
 
-async function initAuth(){
-  try{
-    auth0Client=
+async function initAuth() {
+  try {
+    auth0Client =
       await auth0.createAuth0Client({
         domain:
           AUTH0_DOMAIN,
@@ -3245,7 +3085,7 @@ async function initAuth(){
         clientId:
           AUTH0_CLIENT_ID,
 
-        authorizationParams:{
+        authorizationParams: {
           audience:
             API_AUDIENCE,
 
@@ -3257,15 +3097,15 @@ async function initAuth(){
         },
       });
 
-    const params=
+    const params =
       new URLSearchParams(
         window.location.search
       );
 
-    if(
-      params.has("code")&&
+    if (
+      params.has("code") &&
       params.has("state")
-    ){
+    ) {
       await auth0Client.handleRedirectCallback();
 
       window.history.replaceState(
@@ -3279,14 +3119,16 @@ async function initAuth(){
       return;
     }
 
-    if(
+    if (
       params.has("error")
-    ){
-      const description=
+    ) {
+      const description =
         params.get(
           "error_description"
-        )||
-        params.get("error")||
+        ) ||
+        params.get(
+          "error"
+        ) ||
         "パスキー認証を完了できませんでした。";
 
       window.history.replaceState(
@@ -3304,26 +3146,29 @@ async function initAuth(){
       return;
     }
 
-    if(
+    if (
       sessionStorage.getItem(
         "passkey_flow_stage"
-      )==="confirm"&&
+      ) ===
+        "confirm" &&
       sessionStorage.getItem(
         "pending_admin_id"
       )
-    ){
+    ) {
       await startPasskeyUniversalLogin();
       return;
     }
 
     restore();
-  }catch(error){
-    console.error(error);
+  } catch (error) {
+    console.error(
+      error
+    );
 
     showLogin();
 
     authError(
-      error.message||
+      error.message ||
       "認証機能を初期化できませんでした。"
     );
   }
@@ -3331,10 +3176,12 @@ async function initAuth(){
 
 ui.meetingForm.addEventListener(
   "submit",
-  event=>{
+  event => {
     event.preventDefault();
 
-    if(!isDummy()){
+    if (
+      !isDummy()
+    ) {
       show(
         ui.meetingStatus,
         "画面は完成しています。実際の保存先は次に接続します。"
@@ -3345,10 +3192,12 @@ ui.meetingForm.addEventListener(
 
 ui.newsForm.addEventListener(
   "submit",
-  event=>{
+  event => {
     event.preventDefault();
 
-    if(!isDummy()){
+    if (
+      !isDummy()
+    ) {
       show(
         ui.newsStatus,
         "画面は完成しています。実際のニュース保存先は次に接続します。"
@@ -3359,198 +3208,257 @@ ui.newsForm.addEventListener(
 
 ui.passwordForm.addEventListener(
   "submit",
-  async event=>{
+  async event => {
     event.preventDefault();
 
-    hide(ui.passwordStatus);
-    hide(ui.passwordError);
+    hide(
+      ui.passwordStatus
+    );
 
-    if(isDummy()){
+    hide(
+      ui.passwordError
+    );
+
+    if (
+      isDummy()
+    ) {
       return;
     }
 
-    const password=
+    const password =
       ui.newPassword.value;
 
-    const confirm=
+    const confirm =
       ui.newPasswordConfirm.value;
 
-    if(password!==confirm){
+    if (
+      password !==
+      confirm
+    ) {
       return show(
         ui.passwordError,
         "確認用パスワードが一致しません。"
       );
     }
 
-    if(
-      password.length<8||
-      !/[A-Za-z]/.test(password)||
-      !/[0-9]/.test(password)
-    ){
+    if (
+      password.length <
+        8 ||
+      !/[A-Za-z]/.test(
+        password
+      ) ||
+      !/[0-9]/.test(
+        password
+      )
+    ) {
       return show(
         ui.passwordError,
         "8文字以上で、半角英字と半角数字を含めてください。"
       );
     }
 
-    ui.passwordButton.disabled=true;
+    ui.passwordButton.disabled =
+      true;
 
-    try{
-      const{response,data}=
+    try {
+      const {
+        response,
+        data,
+      } =
         await workerPost(
           "/change-password",
           {
-            newPassword:password,
+            newPassword:
+              password,
           },
           sessionStorage.getItem(
             "admin_access_token"
           )
         );
 
-      if(!response.ok){
+      if (
+        !response.ok
+      ) {
         throw new Error(
-          data.error||
+          data.error ||
           "パスワードを変更できませんでした。"
         );
       }
 
       clearSession();
+
       showLogin();
 
       authStatus(
         "パスワードを変更しました。新しいパスワードでログインしてください。"
       );
-    }catch(error){
+    } catch (error) {
       show(
         ui.passwordError,
         error.message
       );
-    }finally{
-      ui.passwordButton.disabled=false;
+    } finally {
+      ui.passwordButton.disabled =
+        false;
     }
   }
 );
 
-function formatDate(value){
-  if(!value){
+function formatDate(value) {
+  if (!value) {
     return "";
   }
 
-  const date=
+  const date =
     new Date(
       value.endsWith("Z")
-        ?value
-        :value+"Z"
+        ? value
+        : value + "Z"
     );
 
   return Number.isNaN(
     date.getTime()
   )
-    ?value
-    :new Intl.DateTimeFormat(
-      "ja-JP",
-      {
-        dateStyle:"medium",
-        timeStyle:"short",
-        timeZone:"Asia/Tokyo",
-      }
-    ).format(date);
+    ? value
+    : new Intl.DateTimeFormat(
+        "ja-JP",
+        {
+          dateStyle:
+            "medium",
+
+          timeStyle:
+            "short",
+
+          timeZone:
+            "Asia/Tokyo",
+        }
+      ).format(
+        date
+      );
 }
 
 function requestCard(
   item,
   owner
-){
-  const card=
+) {
+  const card =
     document.createElement(
       "article"
     );
 
-  card.className=
+  card.className =
     "request-card";
 
-  const heading=
+  const heading =
     document.createElement(
       "h3"
     );
 
-  heading.textContent=
-    item.subject||
+  heading.textContent =
+    item.subject ||
     "（件名なし）";
 
-  card.append(heading);
+  card.append(
+    heading
+  );
 
-  const meta=
+  const meta =
     document.createElement(
       "div"
     );
 
-  meta.className="hint";
+  meta.className =
+    "hint";
 
-  meta.textContent=
+  meta.textContent =
     owner
-      ?`${item.requesterName||"—"} / ${item.requesterUsername||"—"}　${formatDate(item.createdAt)}`
-      :`送信日時：${formatDate(item.createdAt)}`;
+      ? `${
+          item.requesterName ||
+          "—"
+        } / ${
+          item.requesterUsername ||
+          "—"
+        }　${formatDate(
+          item.createdAt
+        )}`
+      : `送信日時：${formatDate(
+          item.createdAt
+        )}`;
 
-  card.append(meta);
+  card.append(
+    meta
+  );
 
-  const body=
+  const body =
     document.createElement(
       "div"
     );
 
-  body.style.whiteSpace=
+  body.style.whiteSpace =
     "pre-wrap";
 
-  body.textContent=
-    item.body||
+  body.textContent =
+    item.body ||
     "";
 
-  card.append(body);
+  card.append(
+    body
+  );
 
-  if(owner){
-    const textarea=
+  if (owner) {
+    const textarea =
       document.createElement(
         "textarea"
       );
 
-    textarea.className=
+    textarea.className =
       "textarea";
 
-    textarea.value=
-      item.response||
+    textarea.value =
+      item.response ||
       "";
 
-    const button=
+    const button =
       document.createElement(
         "button"
       );
 
-    button.className="button";
-    button.type="button";
+    button.className =
+      "button";
 
-    button.textContent=
+    button.type =
+      "button";
+
+    button.textContent =
       item.response
-        ?"回答を更新"
-        :"回答を保存";
+        ? "回答を更新"
+        : "回答を保存";
 
     button.addEventListener(
       "click",
-      async ()=>{
-        if(!textarea.value.trim()){
+      async () => {
+        if (
+          !textarea.value.trim()
+        ) {
           return alert(
             "回答を入力してください。"
           );
         }
 
-        button.disabled=true;
+        button.disabled =
+          true;
 
-        try{
-          const{response,data}=
+        try {
+          const {
+            response,
+            data,
+          } =
             await workerPost(
               "/developer-request-answer",
               {
-                id:item.id,
+                id:
+                  item.id,
+
                 response:
                   textarea.value.trim(),
               },
@@ -3559,18 +3467,23 @@ function requestCard(
               )
             );
 
-          if(!response.ok){
+          if (
+            !response.ok
+          ) {
             throw new Error(
-              data.error||
+              data.error ||
               "回答を保存できませんでした。"
             );
           }
 
           await loadAllRequests();
-        }catch(error){
-          alert(error.message);
-        }finally{
-          button.disabled=false;
+        } catch (error) {
+          alert(
+            error.message
+          );
+        } finally {
+          button.disabled =
+            false;
         }
       }
     );
@@ -3579,34 +3492,40 @@ function requestCard(
       textarea,
       button
     );
-  }else{
-    const answer=
+  } else {
+    const answer =
       document.createElement(
         "div"
       );
 
-    answer.className=
+    answer.className =
       "request-answer";
 
-    answer.textContent=
+    answer.textContent =
       item.response
-        ?`回答\n${item.response}`
-        :"回答待ち";
+        ? `回答\n${item.response}`
+        : "回答待ち";
 
-    card.append(answer);
+    card.append(
+      answer
+    );
   }
 
   return card;
 }
 
-async function loadMyRequests(){
-  ui.myRequestsStatus.textContent=
+async function loadMyRequests() {
+  ui.myRequestsStatus.textContent =
     "読み込み中...";
 
-  ui.myRequests.innerHTML="";
+  ui.myRequests.innerHTML =
+    "";
 
-  try{
-    const{response,data}=
+  try {
+    const {
+      response,
+      data,
+    } =
       await workerPost(
         "/developer-request-mine",
         {},
@@ -3615,23 +3534,25 @@ async function loadMyRequests(){
         )
       );
 
-    if(!response.ok){
+    if (
+      !response.ok
+    ) {
       throw new Error(
-        data.error||
+        data.error ||
         "要望一覧を取得できませんでした。"
       );
     }
 
-    ui.myRequestsStatus.textContent=
+    ui.myRequestsStatus.textContent =
       data.requests?.length
-        ?""
-        :"送信済みの要望はありません。";
+        ? ""
+        : "送信済みの要望はありません。";
 
     (
-      data.requests||
+      data.requests ||
       []
     ).forEach(
-      item=>
+      item =>
         ui.myRequests.append(
           requestCard(
             item,
@@ -3639,20 +3560,24 @@ async function loadMyRequests(){
           )
         )
     );
-  }catch(error){
-    ui.myRequestsStatus.textContent=
+  } catch (error) {
+    ui.myRequestsStatus.textContent =
       error.message;
   }
 }
 
-async function loadAllRequests(){
-  ui.allRequestsStatus.textContent=
+async function loadAllRequests() {
+  ui.allRequestsStatus.textContent =
     "読み込み中...";
 
-  ui.allRequests.innerHTML="";
+  ui.allRequests.innerHTML =
+    "";
 
-  try{
-    const{response,data}=
+  try {
+    const {
+      response,
+      data,
+    } =
       await workerPost(
         "/developer-requests-admin",
         {},
@@ -3661,23 +3586,25 @@ async function loadAllRequests(){
         )
       );
 
-    if(!response.ok){
+    if (
+      !response.ok
+    ) {
       throw new Error(
-        data.error||
+        data.error ||
         "要望一覧を取得できませんでした。"
       );
     }
 
-    ui.allRequestsStatus.textContent=
+    ui.allRequestsStatus.textContent =
       data.requests?.length
-        ?""
-        :"届いている要望はありません。";
+        ? ""
+        : "届いている要望はありません。";
 
     (
-      data.requests||
+      data.requests ||
       []
     ).forEach(
-      item=>
+      item =>
         ui.allRequests.append(
           requestCard(
             item,
@@ -3685,30 +3612,36 @@ async function loadAllRequests(){
           )
         )
     );
-  }catch(error){
-    ui.allRequestsStatus.textContent=
+  } catch (error) {
+    ui.allRequestsStatus.textContent =
       error.message;
   }
 }
 
 ui.requestForm.addEventListener(
   "submit",
-  async event=>{
+  async event => {
     event.preventDefault();
 
-    if(isDummy()){
+    if (
+      isDummy()
+    ) {
       return;
     }
 
-    ui.requestSend.disabled=true;
+    ui.requestSend.disabled =
+      true;
 
     show(
       ui.requestStatus,
       "送信しています…"
     );
 
-    try{
-      const{response,data}=
+    try {
+      const {
+        response,
+        data,
+      } =
         await workerPost(
           "/developer-request-create",
           {
@@ -3723,9 +3656,11 @@ ui.requestForm.addEventListener(
           )
         );
 
-      if(!response.ok){
+      if (
+        !response.ok
+      ) {
         throw new Error(
-          data.error||
+          data.error ||
           "送信できませんでした。"
         );
       }
@@ -3738,25 +3673,30 @@ ui.requestForm.addEventListener(
       );
 
       await loadMyRequests();
-    }catch(error){
+    } catch (error) {
       show(
         ui.requestStatus,
         error.message
       );
-    }finally{
-      ui.requestSend.disabled=false;
+    } finally {
+      ui.requestSend.disabled =
+        false;
     }
   }
 );
 
-async function loadUsers(){
-  ui.usersStatus.textContent=
+async function loadUsers() {
+  ui.usersStatus.textContent =
     "読み込み中...";
 
-  ui.usersBody.innerHTML="";
+  ui.usersBody.innerHTML =
+    "";
 
-  try{
-    const{response,data}=
+  try {
+    const {
+      response,
+      data,
+    } =
       await workerPost(
         "/admin-users",
         {},
@@ -3765,169 +3705,197 @@ async function loadUsers(){
         )
       );
 
-    if(!response.ok){
+    if (
+      !response.ok
+    ) {
       throw new Error(
-        data.error||
+        data.error ||
         "アカウント一覧を取得できませんでした。"
       );
     }
 
-    ui.usersStatus.textContent=
+    ui.usersStatus.textContent =
       data.users?.length
-        ?""
-        :"表示できるアカウントがありません。";
+        ? ""
+        : "表示できるアカウントがありません。";
 
     (
-      data.users||
+      data.users ||
       []
     ).forEach(
-      user=>{
-        const row=
+      user => {
+        const row =
           document.createElement(
             "tr"
           );
 
-        const name=
+        const name =
           document.createElement(
             "td"
           );
 
-        const id=
+        const id =
           document.createElement(
             "td"
           );
 
-        const mode=
+        const mode =
           document.createElement(
             "td"
           );
 
-        const edit=
+        const edit =
           document.createElement(
             "td"
           );
 
-        name.textContent=
-          user.name||
+        const remove =
+          document.createElement(
+            "td"
+          );
+
+        name.textContent =
+          user.name ||
           "—";
 
-        id.textContent=
-          user.username||
+        id.textContent =
+          user.username ||
           "—";
 
-        const check=
+        const check =
           document.createElement(
             "input"
           );
 
-        check.type="checkbox";
-        check.checked=!!user.coAdmin;
-        check.disabled=true;
+        check.type =
+          "checkbox";
 
-        mode.append(check);
+        check.checked =
+          !!user.coAdmin;
 
-        if(user.isOwner){
-          mode.textContent="—";
-          edit.textContent="—";
-        }else{
-          const actions=
+        check.disabled =
+          true;
+
+        mode.append(
+          check
+        );
+
+        if (
+          user.isOwner
+        ) {
+          mode.textContent =
+            "—";
+
+          edit.textContent =
+            "—";
+
+          remove.textContent =
+            "—";
+        } else {
+          const actions =
             document.createElement(
               "div"
             );
 
-          actions.className=
+          actions.className =
             "edit-actions";
 
-          const editButton=
+          const editButton =
             document.createElement(
               "button"
             );
 
-          editButton.className=
+          editButton.className =
             "mini";
 
-          editButton.textContent=
+          editButton.textContent =
             "編集";
 
-          editButton.disabled=
+          editButton.disabled =
             !!user.isDummy;
 
-          const save=
+          const save =
             document.createElement(
               "button"
             );
 
-          save.className=
+          save.className =
             "mini save hidden";
 
-          save.textContent=
+          save.textContent =
             "保存";
 
-          const cancel=
+          const cancel =
             document.createElement(
               "button"
             );
 
-          cancel.className=
+          cancel.className =
             "mini hidden";
 
-          cancel.textContent=
+          cancel.textContent =
             "キャンセル";
 
-          let original=
+          let original =
             !!user.coAdmin;
 
           editButton.addEventListener(
             "click",
-            ()=>{
-              original=
+            () => {
+              original =
                 !!user.coAdmin;
 
-              check.disabled=false;
+              check.disabled =
+                false;
 
-              editButton
-                .classList
-                .add("hidden");
+              editButton.classList.add(
+                "hidden"
+              );
 
-              save
-                .classList
-                .remove("hidden");
+              save.classList.remove(
+                "hidden"
+              );
 
-              cancel
-                .classList
-                .remove("hidden");
+              cancel.classList.remove(
+                "hidden"
+              );
             }
           );
 
           cancel.addEventListener(
             "click",
-            ()=>{
-              check.checked=
+            () => {
+              check.checked =
                 original;
 
-              check.disabled=true;
+              check.disabled =
+                true;
 
-              save
-                .classList
-                .add("hidden");
+              save.classList.add(
+                "hidden"
+              );
 
-              cancel
-                .classList
-                .add("hidden");
+              cancel.classList.add(
+                "hidden"
+              );
 
-              editButton
-                .classList
-                .remove("hidden");
+              editButton.classList.remove(
+                "hidden"
+              );
             }
           );
 
           save.addEventListener(
             "click",
-            async ()=>{
-              save.disabled=true;
+            async () => {
+              save.disabled =
+                true;
 
-              try{
-                const{response,data}=
+              try {
+                const {
+                  response,
+                  data,
+                } =
                   await workerPost(
                     "/set-co-admin",
                     {
@@ -3942,41 +3910,45 @@ async function loadUsers(){
                     )
                   );
 
-                if(!response.ok){
+                if (
+                  !response.ok
+                ) {
                   throw new Error(
-                    data.error||
+                    data.error ||
                     "変更できませんでした。"
                   );
                 }
 
-                user.coAdmin=
+                user.coAdmin =
                   check.checked;
 
-                original=
+                original =
                   check.checked;
 
-                check.disabled=true;
+                check.disabled =
+                  true;
 
-                save
-                  .classList
-                  .add("hidden");
+                save.classList.add(
+                  "hidden"
+                );
 
-                cancel
-                  .classList
-                  .add("hidden");
+                cancel.classList.add(
+                  "hidden"
+                );
 
-                editButton
-                  .classList
-                  .remove("hidden");
-              }catch(error){
-                check.checked=
+                editButton.classList.remove(
+                  "hidden"
+                );
+              } catch (error) {
+                check.checked =
                   original;
 
                 alert(
                   error.message
                 );
-              }finally{
-                save.disabled=false;
+              } finally {
+                save.disabled =
+                  false;
               }
             }
           );
@@ -3987,52 +3959,167 @@ async function loadUsers(){
             cancel
           );
 
-          edit.append(actions);
+          edit.append(
+            actions
+          );
+
+          const deleteButton =
+            document.createElement(
+              "button"
+            );
+
+          deleteButton.type =
+            "button";
+
+          deleteButton.className =
+            "delete-icon-button";
+
+          deleteButton.setAttribute(
+            "aria-label",
+            `${
+              user.username ||
+              user.name ||
+              "アカウント"
+            }を削除`
+          );
+
+          deleteButton.title =
+            "アカウントを削除";
+
+          deleteButton.innerHTML =
+            `
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
+              </svg>
+            `;
+
+          deleteButton.addEventListener(
+            "click",
+            async () => {
+              const label =
+                user.username ||
+                user.name ||
+                "このアカウント";
+
+              const confirmed =
+                window.confirm(
+                  `「${label}」を削除しますか？\nこの操作は取り消せません。`
+                );
+
+              if (
+                !confirmed
+              ) {
+                return;
+              }
+
+              deleteButton.disabled =
+                true;
+
+              try {
+                const {
+                  response,
+                  data,
+                } =
+                  await workerPost(
+                    "/delete-admin",
+                    {
+                      userId:
+                        user.userId,
+                    },
+                    sessionStorage.getItem(
+                      "admin_access_token"
+                    )
+                  );
+
+                if (
+                  !response.ok
+                ) {
+                  throw new Error(
+                    data.error ||
+                    "アカウントを削除できませんでした。"
+                  );
+                }
+
+                await loadUsers();
+              } catch (error) {
+                alert(
+                  error.message
+                );
+
+                deleteButton.disabled =
+                  false;
+              }
+            }
+          );
+
+          remove.append(
+            deleteButton
+          );
         }
 
         row.append(
           name,
           id,
           mode,
-          edit
+          edit,
+          remove
         );
 
-        ui.usersBody.append(row);
+        ui.usersBody.append(
+          row
+        );
       }
     );
-  }catch(error){
-    ui.usersStatus.textContent=
+  } catch (error) {
+    ui.usersStatus.textContent =
       error.message;
   }
 }
 
-function selectedCreateMethods(){
-  const methods=[];
+function selectedCreateMethods() {
+  const methods =
+    [];
 
-  if(ui.createPasskey.checked){
-    methods.push("passkey");
+  if (
+    ui.createPasskey.checked
+  ) {
+    methods.push(
+      "passkey"
+    );
   }
 
-  if(ui.createEmailCheck.checked){
-    methods.push("email");
+  if (
+    ui.createEmailCheck.checked
+  ) {
+    methods.push(
+      "email"
+    );
   }
 
-  if(ui.createApp.checked){
-    methods.push("app");
+  if (
+    ui.createApp.checked
+  ) {
+    methods.push(
+      "app"
+    );
   }
 
   return methods;
 }
 
-function updateCreateRequirements(){
-  const methods=
+function updateCreateRequirements() {
+  const methods =
     selectedCreateMethods();
 
-  const emailRequired=
-    methods.includes("passkey")||
-    methods.includes("email");
+  const emailRequired =
+    methods.includes(
+      "passkey"
+    ) ||
+    methods.includes(
+      "email"
+    );
 
-  ui.createEmail.required=
+  ui.createEmail.required =
     emailRequired;
 
   ui.createEmailRequired
@@ -4048,395 +4135,422 @@ function updateCreateRequirements(){
   ui.createEmailCheck,
   ui.createApp,
 ].forEach(
-  element=>
+  element => {
     element.addEventListener(
       "change",
       updateCreateRequirements
-    )
+    );
+  }
 );
 
 updateCreateRequirements();
 
-function setCreateDisabled(value){
+function setCreateDisabled(
+  value
+) {
   ui.createForm
     .querySelectorAll(
       "input,button"
     )
     .forEach(
-      element=>
-        element.disabled=value
+      element => {
+        element.disabled =
+          value;
+      }
     );
 }
 
-function resetAccountVerification(){
-  accountStop=true;
-  pendingAccount=null;
+function resetAccountVerification() {
+  pendingAccount =
+    null;
 
-  hide(ui.accountVerify);
+  hide(
+    ui.accountVerify
+  );
 
-  ui.accountProgress.textContent="";
-  ui.accountMessage.textContent="";
+  ui.accountProgress.textContent =
+    "";
+
+  ui.accountMessage.textContent =
+    "";
 
   ui.accountQr
     .classList
-    .add("hidden");
+    .add(
+      "hidden"
+    );
 
-  ui.accountQr.innerHTML="";
+  ui.accountQr.innerHTML =
+    "";
 
   ui.accountCodeForm
     .classList
-    .add("hidden");
+    .add(
+      "hidden"
+    );
 
-  ui.accountCode.value="";
+  ui.accountCode.value =
+    "";
 }
 
-function updateProgress(){
-  if(!pendingAccount){
+function updateProgress() {
+  if (
+    !pendingAccount
+  ) {
     return;
   }
 
-  const done=
+  const done =
     new Set(
       pendingAccount
-        .verifiedMethods||
+        .verifiedMethods ||
       []
     );
 
-  const current=
+  const current =
     pendingAccount
       .mfaMethods[
         pendingAccount
           .currentIndex
-      ]||
+      ] ||
     "";
 
-  ui.accountProgress.textContent=
+  ui.accountProgress.textContent =
     pendingAccount
       .mfaMethods
       .map(
-        method=>{
-          if(
-            method==="passkey"&&
-            pendingAccount.passkeyPending
-          ){
-            return `○ ${methodLabel(method)}`;
+        method => {
+          if (
+            method ===
+            "passkey"
+          ) {
+            return `○ ${methodLabel(
+              method
+            )}`;
           }
 
           return `${
-            done.has(method)
-              ?"✓"
-              :method===current
-                ?"●"
-                :"○"
-          } ${methodLabel(method)}`;
+            done.has(
+              method
+            )
+              ? "✓"
+              : method ===
+                current
+                ? "●"
+                : "○"
+          } ${methodLabel(
+            method
+          )}`;
         }
       )
-      .join("　");
+      .join(
+        "　"
+      );
 }
 
-async function prepareAccountFactor(){
-  const account=
+async function prepareAccountFactor() {
+  const account =
     pendingAccount;
 
-  if(!account){
+  if (
+    !account
+  ) {
     return;
   }
 
-  if(
-    account.currentIndex>=
+  if (
+    account.currentIndex >=
     account.mfaMethods.length
-  ){
+  ) {
     return finalizeAccount();
   }
 
-  const method=
+  const method =
     account.mfaMethods[
       account.currentIndex
     ];
 
-  account.currentMethod=method;
+  account.currentMethod =
+    method;
 
   updateProgress();
 
-  ui.accountVerify.style.display="block";
+  ui.accountVerify.style.display =
+    "block";
 
-  hide(ui.accountStatus);
-  hide(ui.accountError);
+  hide(
+    ui.accountStatus
+  );
+
+  hide(
+    ui.accountError
+  );
 
   ui.accountQr
     .classList
-    .add("hidden");
+    .add(
+      "hidden"
+    );
 
-  ui.accountQr.innerHTML="";
+  ui.accountQr.innerHTML =
+    "";
 
   ui.accountCodeForm
     .classList
-    .add("hidden");
+    .add(
+      "hidden"
+    );
 
-  ui.accountCode.value="";
+  ui.accountCode.value =
+    "";
 
-  if(method==="passkey"){
-    ui.accountMessage.textContent="";
-
-    account.passkeyPending=true;
-    account.currentIndex+=1;
+  if (
+    method ===
+    "passkey"
+  ) {
+    account.currentIndex +=
+      1;
 
     updateProgress();
 
     return prepareAccountFactor();
   }
 
-  ui.accountMessage.textContent=
-    `${methodLabel(method)}を認証します。`;
-
-  let verificationUserId;
-  let username;
-  let password;
-
-  if(method==="app"){
-    verificationUserId=
-      account.stagingUserId;
-
-    username=
-      account.loginUsername;
-
-    password=
-      account.loginPassword;
-  }else{
-    accountStatus(
-      "メール認証を準備しています…"
-    );
-
-    const{response,data}=
-      await workerPost(
-        "/create-admin-factor-user",
-        {
-          stagingUserId:
-            account.stagingUserId,
-
-          method:"email",
-        },
-        sessionStorage.getItem(
-          "admin_access_token"
-        )
-      );
-
-    if(!response.ok){
-      throw new Error(
-        data.error||
-        "メール認証を準備できませんでした。"
-      );
-    }
-
-    verificationUserId=
-      data.verificationUserId;
-
-    username=
-      data.loginUsername;
-
-    password=
-      data.loginPassword;
-
-    hide(ui.accountStatus);
-  }
-
-  account.currentVerificationUserId=
-    verificationUserId;
-
-  const{response,data}=
-    await passwordLogin(
-      username,
-      password
-    );
-
-  if(
-    response.ok&&
-    data.access_token
-  ){
-    throw new Error(
-      "MFAが要求されませんでした。Auth0のMFA設定を確認してください。"
-    );
-  }
-
-  if(
-    data.error!=="mfa_required"||
-    !data.mfa_token
-  ){
-    throw new Error(
-      data.error_description||
-      "認証を開始できませんでした。"
-    );
-  }
-
-  const channel=
-    method==="app"
-      ?"auth0"
-      :"email";
-
-  const assoc=
-    await associateMfa(
-      data.mfa_token,
-      channel,
-      method==="email"
-        ?account.email
-        :""
-    );
-
-  account.currentMfaToken=
-    data.mfa_token;
-
-  account.currentOobCode=
-    assoc.oob_code;
-
-  if(method==="app"){
-    if(!assoc.barcode_uri){
-      throw new Error(
-        "Guardian登録用QRコードを取得できませんでした。"
-      );
-    }
-
-    new QRCode(
-      ui.accountQr,
-      {
-        text:
-          assoc.barcode_uri,
-
-        width:200,
-        height:200,
-      }
-    );
-
-    ui.accountQr
-      .classList
-      .remove("hidden");
-
-    ui.accountMessage.textContent=
-      "GuardianアプリでQRコードを読み取り、承認してください。";
-
-    await pollGuardian(
-      data.mfa_token,
-      assoc.oob_code,
-      true
-    );
-  }else{
-    ui.accountMessage.textContent=
-      "メールに届いた認証コードを入力してください。";
-
-    ui.accountCodeForm
-      .classList
-      .remove("hidden");
-
-    ui.accountCode.focus();
-  }
-}
-
-async function completeAccountFactor(
-  accessToken
-){
-  const account=
-    pendingAccount;
-
-  if(!account){
-    return;
-  }
-
-  const method=
-    account.currentMethod;
-
   accountStatus(
-    `${methodLabel(method)}の認証完了を確認しています…`
+    `${methodLabel(
+      method
+    )}を準備しています…`
   );
 
-  const{response,data}=
+  const {
+    response,
+    data,
+  } =
     await workerPost(
-      "/create-admin-factor-complete",
+      "/create-admin-factor-start",
       {
         stagingUserId:
           account.stagingUserId,
 
-        verificationUserId:
-          account.currentVerificationUserId,
-
         method,
-
-        verifiedAccessToken:
-          accessToken,
       },
       sessionStorage.getItem(
         "admin_access_token"
       )
     );
 
-  if(!response.ok){
+  if (
+    !response.ok
+  ) {
     throw new Error(
-      data.error||
-      `${methodLabel(method)}の認証完了を確認できませんでした。`
+      data.error ||
+      `${methodLabel(
+        method
+      )}を準備できませんでした。`
     );
   }
 
-  account.verifiedMethods=
-    Array.isArray(
-      data.verifiedMethods
-    )
-      ?data.verifiedMethods
-      :[
-          ...(
-            account.verifiedMethods||
-            []
-          ),
-          method,
-        ];
+  hide(
+    ui.accountStatus
+  );
 
-  account.currentIndex+=1;
-  account.currentMethod="";
-  account.currentVerificationUserId="";
-  account.currentMfaToken="";
-  account.currentOobCode="";
-  accountStop=true;
+  if (
+    method ===
+    "email"
+  ) {
+    account.currentChallengeId =
+      data.challengeId ||
+      "";
 
-  hide(ui.accountStatus);
+    ui.accountMessage.textContent =
+      `${
+        data.destination ||
+        "登録メールアドレス"
+      } に届いた6桁の認証コードを入力してください。`;
+
+    ui.accountCodeForm
+      .classList
+      .remove(
+        "hidden"
+      );
+
+    ui.accountCode.focus();
+
+    return;
+  }
+
+  account.currentChallengeId =
+    "";
+
+  if (
+    !data.barcodeUri
+  ) {
+    throw new Error(
+      "認証アプリ登録用のQRコードを取得できませんでした。"
+    );
+  }
+
+  new QRCode(
+    ui.accountQr,
+    {
+      text:
+        data.barcodeUri,
+
+      width: 200,
+
+      height: 200,
+    }
+  );
+
+  ui.accountQr
+    .classList
+    .remove(
+      "hidden"
+    );
+
+  ui.accountMessage.textContent =
+    "2FAS Authなどの認証アプリでQRコードを読み取り、表示された6桁のコードを入力してください。";
 
   ui.accountCodeForm
     .classList
-    .add("hidden");
+    .remove(
+      "hidden"
+    );
+
+  ui.accountCode.focus();
+}
+
+async function completeAccountFactor(
+  code
+) {
+  const account =
+    pendingAccount;
+
+  if (
+    !account
+  ) {
+    return;
+  }
+
+  const method =
+    account.currentMethod;
+
+  accountStatus(
+    `${methodLabel(
+      method
+    )}の認証を確認しています…`
+  );
+
+  const {
+    response,
+    data,
+  } =
+    await workerPost(
+      "/create-admin-factor-complete",
+      {
+        stagingUserId:
+          account.stagingUserId,
+
+        method,
+
+        code,
+
+        challengeId:
+          account.currentChallengeId ||
+          "",
+      },
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      data.error ||
+      `${methodLabel(
+        method
+      )}を確認できませんでした。`
+    );
+  }
+
+  account.verifiedMethods =
+    Array.isArray(
+      data.verifiedMethods
+    )
+      ? data.verifiedMethods
+      : [
+          ...new Set([
+            ...(
+              account.verifiedMethods ||
+              []
+            ),
+            method,
+          ]),
+        ];
+
+  account.currentIndex +=
+    1;
+
+  account.currentMethod =
+    "";
+
+  account.currentChallengeId =
+    "";
+
+  hide(
+    ui.accountStatus
+  );
+
+  ui.accountQr
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountQr.innerHTML =
+    "";
+
+  ui.accountCodeForm
+    .classList
+    .add(
+      "hidden"
+    );
+
+  ui.accountCode.value =
+    "";
 
   updateProgress();
 
-  if(
-    account.currentIndex>=
+  if (
+    account.currentIndex >=
     account.mfaMethods.length
-  ){
+  ) {
     await finalizeAccount();
-  }else{
-    accountStatus(
-      `${methodLabel(method)}の認証が完了しました。次の認証へ進みます…`
-    );
-
-    await new Promise(
-      resolve=>
-        setTimeout(
-          resolve,
-          450
-        )
-    );
-
+  } else {
     await prepareAccountFactor();
   }
 }
 
-async function finalizeAccount(){
-  const account=
+async function finalizeAccount() {
+  const account =
     pendingAccount;
 
-  if(!account){
+  if (
+    !account
+  ) {
     return;
   }
 
   accountStatus(
-    "すべての認証が完了しました。アカウントを発行しています…"
+    "アカウントを発行しています…"
   );
 
-  const{response,data}=
+  const {
+    response,
+    data,
+  } =
     await workerPost(
       "/create-admin-finalize",
       {
@@ -4448,106 +4562,143 @@ async function finalizeAccount(){
       )
     );
 
-  if(!response.ok){
+  if (
+    !response.ok
+  ) {
     throw new Error(
-      data.error||
+      data.error ||
       "アカウント発行処理に失敗しました。"
     );
   }
 
-  hide(ui.accountVerify);
-  hide(ui.accountStatus);
+  hide(
+    ui.accountVerify
+  );
 
-  ui.accountResultTitle.textContent=
+  hide(
+    ui.accountStatus
+  );
+
+  ui.accountResultTitle.textContent =
     account.simulated
-      ?"認証が完了しました。仮発行のため実際のアカウントは作成していません。"
-      :"認証がすべて完了し、アカウントを発行しました。";
+      ? "認証が完了しました。仮発行のため実際のアカウントは作成していません。"
+      : "認証が完了し、アカウントを発行しました。";
 
-  ui.resultName.textContent=
+  ui.resultName.textContent =
     account.fullName;
 
-  ui.resultId.textContent=
+  ui.resultId.textContent =
     account.username;
 
-  ui.resultPassword.textContent=
+  ui.resultPassword.textContent =
     account.initialPassword;
 
-  ui.resultMfa.textContent=
+  ui.resultMfa.textContent =
     account.mfaMethods
-      .map(methodLabel)
-      .join(" / ");
+      .map(
+        methodLabel
+      )
+      .join(
+        " / "
+      );
 
-  ui.accountResult.style.display="block";
+  ui.accountResult.style.display =
+    "block";
 
   ui.createForm.reset();
 
-  ui.createPasskey.checked=true;
-  ui.createEmailCheck.checked=false;
-  ui.createApp.checked=false;
+  ui.createPasskey.checked =
+    true;
 
-  setCreateDisabled(false);
+  ui.createEmailCheck.checked =
+    false;
+
+  ui.createApp.checked =
+    false;
+
+  setCreateDisabled(
+    false
+  );
+
   updateCreateRequirements();
 
-  pendingAccount=null;
+  pendingAccount =
+    null;
 }
 
 ui.createForm.addEventListener(
   "submit",
-  async event=>{
+  async event => {
     event.preventDefault();
 
-    hide(ui.accountError);
-    hide(ui.accountStatus);
+    hide(
+      ui.accountError
+    );
 
-    ui.accountResult.style.display="none";
+    hide(
+      ui.accountStatus
+    );
+
+    ui.accountResult.style.display =
+      "none";
 
     resetAccountVerification();
 
-    if(
+    if (
       (
         sessionStorage.getItem(
           "admin_sub"
-        )||
+        ) ||
         ""
-      )!==OWNER_SUB
-    ){
+      ) !== OWNER_SUB
+    ) {
       return accountError(
         "この操作を行う権限がありません。"
       );
     }
 
-    const methods=
+    const methods =
       selectedCreateMethods();
 
-    const email=
+    const email =
       ui.createEmail.value.trim();
 
-    if(!methods.length){
+    if (
+      !methods.length
+    ) {
       return accountError(
         "認証方法を1つ以上選択してください。"
       );
     }
 
-    if(
+    if (
       (
-        methods.includes("passkey")||
-        methods.includes("email")
-      )&&
+        methods.includes(
+          "passkey"
+        ) ||
+        methods.includes(
+          "email"
+        )
+      ) &&
       !email
-    ){
+    ) {
       return accountError(
         "メールアドレスを入力してください。"
       );
     }
 
-    ui.createButton.disabled=true;
+    ui.createButton.disabled =
+      true;
 
     accountStatus(
       "認証用の準備をしています…"
     );
 
-    try{
-      const{response,data}=
+    try {
+      const {
+        response,
+        data,
+      } =
         await workerPost(
           "/create-admin",
           {
@@ -4575,41 +4726,61 @@ ui.createForm.addEventListener(
           )
         );
 
-      if(!response.ok){
+      if (
+        !response.ok
+      ) {
         throw new Error(
-          data.error||
+          data.error ||
           "認証の準備ができませんでした。"
         );
       }
 
-      pendingAccount={
+      pendingAccount = {
         ...data,
 
-        currentIndex:0,
-        currentMethod:"",
-        currentVerificationUserId:"",
-        currentMfaToken:"",
-        currentOobCode:"",
-        verifiedMethods:[],
+        currentIndex:
+          0,
+
+        currentMethod:
+          "",
+
+        currentChallengeId:
+          "",
+
+        verifiedMethods:
+          Array.isArray(
+            data.verifiedMethods
+          )
+            ? data.verifiedMethods
+            : [],
       };
 
-      setCreateDisabled(true);
+      setCreateDisabled(
+        true
+      );
 
-      hide(ui.accountStatus);
+      hide(
+        ui.accountStatus
+      );
 
       await prepareAccountFactor();
-    }catch(error){
-      setCreateDisabled(false);
+    } catch (error) {
+      setCreateDisabled(
+        false
+      );
 
       updateCreateRequirements();
 
       accountError(
-        error.message||
+        error.message ||
         "アカウント認証を開始できませんでした。"
       );
-    }finally{
-      if(!pendingAccount){
-        ui.createButton.disabled=false;
+    } finally {
+      if (
+        !pendingAccount
+      ) {
+        ui.createButton.disabled =
+          false;
       }
     }
   }
@@ -4617,70 +4788,53 @@ ui.createForm.addEventListener(
 
 ui.accountCodeForm.addEventListener(
   "submit",
-  async event=>{
+  async event => {
     event.preventDefault();
 
-    const account=
-      pendingAccount;
-
-    if(
-      !account?.currentMfaToken||
-      !account?.currentOobCode
-    ){
+    if (
+      !pendingAccount
+        ?.currentMethod
+    ) {
       return accountError(
         "認証情報がありません。"
       );
     }
 
-    const code=
+    const code =
       ui.accountCode.value.trim();
 
-    if(
-      !/^\d{4,10}$/.test(code)
-    ){
+    if (
+      !/^\d{6}$/.test(
+        code
+      )
+    ) {
       return accountError(
-        "認証コードを数字で入力してください。"
+        "6桁の認証コードを入力してください。"
       );
     }
 
-    ui.accountCodeButton.disabled=true;
+    ui.accountCodeButton.disabled =
+      true;
 
-    try{
-      const{response,data}=
-        await verifyMfa(
-          account.currentMfaToken,
-          account.currentOobCode,
-          code
-        );
-
-      if(
-        !response.ok||
-        !data.access_token
-      ){
-        throw new Error(
-          data.error_description||
-          data.error||
-          "認証コードが正しくありません。"
-        );
-      }
-
+    try {
       await completeAccountFactor(
-        data.access_token
+        code
       );
-    }catch(error){
+    } catch (error) {
       accountError(
-        error.message||
+        error.message ||
         "認証できませんでした。"
       );
-    }finally{
-      ui.accountCodeButton.disabled=false;
+    } finally {
+      ui.accountCodeButton.disabled =
+        false;
     }
   }
 );
 
 ui.copyId.addEventListener(
   "click",
-  ()=>
+  () =>
     navigator.clipboard.writeText(
       ui.resultId.textContent
     )
@@ -4688,7 +4842,7 @@ ui.copyId.addEventListener(
 
 ui.copyPassword.addEventListener(
   "click",
-  ()=>
+  () =>
     navigator.clipboard.writeText(
       ui.resultPassword.textContent
     )
@@ -4696,8 +4850,10 @@ ui.copyPassword.addEventListener(
 
 ui.refresh.addEventListener(
   "click",
-  ()=>{
-    if(pendingAccount){
+  () => {
+    if (
+      pendingAccount
+    ) {
       return alert(
         "アカウント認証中は更新できません。"
       );
@@ -4709,11 +4865,8 @@ ui.refresh.addEventListener(
 
 ui.logout.addEventListener(
   "click",
-  async ()=>{
-    guardianStop=true;
-    accountStop=true;
-
-    const authMode=
+  async () => {
+    const authMode =
       sessionStorage.getItem(
         "admin_auth_mode"
       );
@@ -4722,21 +4875,24 @@ ui.logout.addEventListener(
 
     resetAccountVerification();
 
-    if(
-      authMode==="passkey"&&
+    if (
+      authMode ===
+        "passkey" &&
       auth0Client
-    ){
-      try{
+    ) {
+      try {
         await auth0Client.logout({
-          logoutParams:{
+          logoutParams: {
             returnTo:
               AUTH0_REDIRECT_URI,
           },
         });
 
         return;
-      }catch(error){
-        console.error(error);
+      } catch (error) {
+        console.error(
+          error
+        );
       }
     }
 
