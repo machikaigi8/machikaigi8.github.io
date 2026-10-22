@@ -87,6 +87,51 @@ textarea{
   margin:auto;
 }
 
+.login-method-grid{
+  display:grid;
+  gap:12px;
+  width:min(570px,100%);
+  margin:18px auto 0;
+}
+
+.login-method{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  min-height:66px;
+  padding:14px 16px;
+  border:2px solid var(--navy);
+  border-radius:0;
+  background:white;
+  color:var(--navy);
+  font-weight:700;
+  text-align:left;
+  cursor:pointer;
+}
+
+.login-method:hover,
+.login-method:focus-visible{
+  background:#E8EEF6;
+}
+
+.login-method small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-weight:400;
+}
+
+.selected-id{
+  width:min(570px,100%);
+  margin:0 auto 18px;
+  padding:10px 12px;
+  border-left:4px solid var(--navy);
+  background:#E8EEF6;
+  color:var(--text);
+  word-break:break-all;
+}
+
 .row{
   margin-bottom:20px;
 }
@@ -384,7 +429,7 @@ textarea:disabled{
         ログイン
       </h2>
 
-      <form id="login-form" class="form">
+      <form id="login-id-form" class="form">
 
         <div class="row">
           <label class="label" for="admin-id">
@@ -398,6 +443,95 @@ textarea:disabled{
             required
           >
         </div>
+
+        <button
+          id="login-id-button"
+          class="button"
+        >
+          次へ
+        </button>
+
+      </form>
+
+    </div>
+
+    <div id="login-method" class="hidden">
+
+      <h2 class="section-title">
+        ログイン方法
+      </h2>
+
+      <div class="selected-id">
+        ID：
+        <strong id="login-selected-id"></strong>
+      </div>
+
+      <div class="login-method-grid">
+
+        <button
+          id="login-passkey"
+          class="login-method"
+          type="button"
+        >
+          <span>
+            🔑 Passkey
+            <small>パスワードを使わずにログイン</small>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button
+          id="login-email"
+          class="login-method"
+          type="button"
+        >
+          <span>
+            ✉ メール認証
+            <small>パスワード確認後、メールで認証</small>
+          </span>
+          <span>›</span>
+        </button>
+
+        <button
+          id="login-app"
+          class="login-method"
+          type="button"
+        >
+          <span>
+            📱 アプリ認証
+            <small>パスワード確認後、認証アプリで認証</small>
+          </span>
+          <span>›</span>
+        </button>
+
+      </div>
+
+      <button
+        id="login-method-back"
+        class="sub"
+        type="button"
+        style="margin-top:22px"
+      >
+        ← ID入力へ戻る
+      </button>
+
+    </div>
+
+    <div id="login-password" class="hidden">
+
+      <h2
+        id="login-password-title"
+        class="section-title"
+      >
+        パスワード確認
+      </h2>
+
+      <div class="selected-id">
+        ID：
+        <strong id="login-password-id"></strong>
+      </div>
+
+      <form id="login-password-form" class="form">
 
         <div class="row">
           <label class="label" for="admin-password">
@@ -414,13 +548,22 @@ textarea:disabled{
         </div>
 
         <button
-          id="login-button"
+          id="login-password-button"
           class="button"
         >
-          ログイン
+          パスワードを確認
         </button>
 
       </form>
+
+      <button
+        id="login-password-back"
+        class="sub"
+        type="button"
+        style="margin-top:22px"
+      >
+        ← ログイン方法へ戻る
+      </button>
 
     </div>
 
@@ -431,25 +574,10 @@ textarea:disabled{
       </h2>
 
       <div class="form">
-
-        <p class="hint">
-          認証方法を選んで「認証」を押してください。
-          電話認証ではSMSまたは通話を選べます。
-        </p>
-
-        <div
-          id="login-mfa-options"
-          class="mfa-options"
-        ></div>
-
-        <button
-          id="login-mfa-send"
-          class="button"
-          type="button"
-        >
-          認証
-        </button>
-
+        <p
+          id="login-mfa-message"
+          class="hint"
+        ></p>
       </div>
 
       <div
@@ -458,7 +586,7 @@ textarea:disabled{
       >
 
         <p class="hint">
-          GuardianアプリでQRコードを読み取って承認してください。
+          Auth0 GuardianアプリでQRコードを読み取り、承認してください。
         </p>
 
         <div
@@ -520,7 +648,7 @@ textarea:disabled{
         type="button"
         style="margin-top:22px"
       >
-        ← ログイン画面へ戻る
+        ← ログイン方法へ戻る
       </button>
 
     </div>
@@ -1440,6 +1568,7 @@ textarea:disabled{
 
 </main>
 
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.27/auth0-spa-js.production.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
@@ -1466,6 +1595,9 @@ const DUMMY_SUB =
 
 const AUTH0_BASE =
   `https://${AUTH0_DOMAIN}`;
+
+const AUTH0_REDIRECT_URI =
+  `${window.location.origin}${window.location.pathname}`;
 
 const $ =
   id =>
@@ -1498,20 +1630,56 @@ const ui = {
   loginMain:
     $("login-main"),
 
+  loginMethod:
+    $("login-method"),
+
+  loginPassword:
+    $("login-password"),
+
   loginMfa:
     $("login-mfa"),
 
-  loginForm:
-    $("login-form"),
+  loginIdForm:
+    $("login-id-form"),
 
   adminId:
     $("admin-id"),
 
+  loginIdButton:
+    $("login-id-button"),
+
+  loginSelectedId:
+    $("login-selected-id"),
+
+  loginPasskey:
+    $("login-passkey"),
+
+  loginEmail:
+    $("login-email"),
+
+  loginApp:
+    $("login-app"),
+
+  loginMethodBack:
+    $("login-method-back"),
+
+  loginPasswordTitle:
+    $("login-password-title"),
+
+  loginPasswordId:
+    $("login-password-id"),
+
+  loginPasswordForm:
+    $("login-password-form"),
+
   adminPassword:
     $("admin-password"),
 
-  loginButton:
-    $("login-button"),
+  loginPasswordButton:
+    $("login-password-button"),
+
+  loginPasswordBack:
+    $("login-password-back"),
 
   loginBack:
     $("login-back"),
@@ -1522,11 +1690,8 @@ const ui = {
   authError:
     $("auth-error"),
 
-  mfaOptions:
-    $("login-mfa-options"),
-
-  mfaSend:
-    $("login-mfa-send"),
+  loginMfaMessage:
+    $("login-mfa-message"),
 
   loginEnroll:
     $("login-enroll"),
@@ -1717,6 +1882,12 @@ const ui = {
   copyPassword:
     $("copy-password"),
 };
+
+let auth0Client =
+  null;
+
+let selectedLoginMethod =
+  "";
 
 let loginMfaToken =
   "";
@@ -2140,9 +2311,10 @@ const methodLabel =
         ? "電話認証"
         : "メール認証";
 
-function renderLoginMfa(
+async function startSelectedLoginMfa(
   token,
-  authenticators
+  authenticators,
+  method
 ) {
   loginMfaToken =
     token;
@@ -2156,7 +2328,7 @@ function renderLoginMfa(
         )
     );
 
-  ui.loginMain
+  ui.loginPassword
     .classList
     .add(
       "hidden"
@@ -2171,9 +2343,6 @@ function renderLoginMfa(
   ui.title.textContent =
     "認証";
 
-  ui.mfaOptions.innerHTML =
-    "";
-
   hide(
     ui.loginEnroll
   );
@@ -2182,251 +2351,121 @@ function renderLoginMfa(
     ui.loginCodeArea
   );
 
-  const methods = [
-    "app",
-    "phone",
-    "email",
-  ];
+  ui.loginQr.innerHTML =
+    "";
 
-  let selected =
-    false;
+  ui.loginMfaMessage.textContent =
+    method === "email"
+      ? "メール認証を行います。"
+      : "アプリ認証を行います。";
 
-  for (
-    const method of
-    methods
+  const matches =
+    loginAuthenticators.filter(
+      authenticator =>
+        authKind(
+          authenticator
+        ) ===
+        method
+    );
+
+  if (
+    method === "app" &&
+    matches.length === 0
   ) {
-    const matches =
-      loginAuthenticators.filter(
-        authenticator =>
-          authKind(
-            authenticator
-          ) ===
-          method
+    const assoc =
+      await associateMfa(
+        loginMfaToken,
+        "auth0"
       );
-
-    const canEnrollApp =
-      method === "app" &&
-      loginAuthenticators.length ===
-        0;
-
-    const available =
-      matches.length > 0 ||
-      canEnrollApp;
-
-    const box =
-      document.createElement(
-        "div"
-      );
-
-    box.className =
-      "mfa-box";
 
     if (
-      !available
+      !assoc.barcode_uri
     ) {
-      box.style.opacity =
-        ".5";
+      throw new Error(
+        "認証アプリ登録用のQRコードを取得できませんでした。"
+      );
     }
 
-    const top =
-      document.createElement(
-        "label"
-      );
+    new QRCode(
+      ui.loginQr,
+      {
+        text:
+          assoc.barcode_uri,
 
-    top.className =
-      "choice";
+        width:
+          200,
 
-    const radio =
-      document.createElement(
-        "input"
-      );
-
-    radio.type =
-      "radio";
-
-    radio.name =
-      "login-method";
-
-    radio.value =
-      method;
-
-    radio.disabled =
-      !available;
-
-    if (
-      method !==
-      "phone"
-    ) {
-      radio.dataset.id =
-        matches[0]?.id ||
-        "";
-    }
-
-    if (
-      available &&
-      !selected
-    ) {
-      radio.checked =
-        true;
-
-      selected =
-        true;
-    }
-
-    top.append(
-      radio,
-      document.createTextNode(
-        available
-          ? methodLabel(
-              method
-            )
-          : `${methodLabel(method)}（未登録）`
-      )
-    );
-
-    box.append(
-      top
-    );
-
-    if (
-      method ===
-      "phone"
-    ) {
-      const sub =
-        document.createElement(
-          "div"
-        );
-
-      sub.className =
-        "phone-choices login-phone-choices";
-
-      for (
-        const channel of
-        [
-          "sms",
-          "voice",
-        ]
-      ) {
-        const authenticator =
-          matches.find(
-            item =>
-              item.oob_channel ===
-              channel
-          );
-
-        const label =
-          document.createElement(
-            "label"
-          );
-
-        label.className =
-          "choice";
-
-        const input =
-          document.createElement(
-            "input"
-          );
-
-        input.type =
-          "radio";
-
-        input.name =
-          "login-phone-channel";
-
-        input.value =
-          channel;
-
-        input.dataset.id =
-          authenticator?.id ||
-          "";
-
-        input.disabled =
-          !authenticator;
-
-        if (
-          authenticator &&
-          !sub.querySelector(
-            "input:checked"
-          )
-        ) {
-          input.checked =
-            true;
-        }
-
-        label.append(
-          input,
-          document.createTextNode(
-            authenticator
-              ? (
-                  channel ===
-                  "sms"
-                    ? "SMS"
-                    : "通話"
-                )
-              : `${
-                  channel ===
-                  "sms"
-                    ? "SMS"
-                    : "通話"
-                }（利用不可）`
-          )
-        );
-
-        sub.append(
-          label
-        );
+        height:
+          200,
       }
+    );
 
-      box.append(
-        sub
-      );
-    }
+    ui.loginEnroll.style.display =
+      "block";
 
-    ui.mfaOptions.append(
-      box
+    ui.loginMfaMessage.textContent =
+      "認証アプリを登録して承認してください。";
+
+    authStatus(
+      "Auth0 GuardianアプリでQRコードを読み取り、承認してください。"
+    );
+
+    await pollGuardian(
+      loginMfaToken,
+      assoc.oob_code,
+      false
+    );
+
+    return;
+  }
+
+  const authenticator =
+    matches[0];
+
+  if (
+    !authenticator
+  ) {
+    throw new Error(
+      method === "email"
+        ? "このアカウントにはメール認証が登録されていません。"
+        : "このアカウントにはアプリ認証が登録されていません。"
     );
   }
 
-  const update =
-    () => {
-      const selectedMethod =
-        document.querySelector(
-          'input[name="login-method"]:checked'
-        )?.value;
-
-      document
-        .querySelectorAll(
-          ".login-phone-choices"
-        )
-        .forEach(
-          element =>
-            element.classList.toggle(
-              "hidden",
-              selectedMethod !==
-                "phone"
-            )
-        );
-    };
-
-  document
-    .querySelectorAll(
-      'input[name="login-method"]'
-    )
-    .forEach(
-      input =>
-        input.addEventListener(
-          "change",
-          update
-        )
+  const challenge =
+    await challengeMfa(
+      loginMfaToken,
+      authenticator.id
     );
 
-  update();
+  if (
+    authenticator.oob_channel ===
+    "auth0"
+  ) {
+    ui.loginMfaMessage.textContent =
+      "認証アプリに通知を送信しました。承認してください。";
 
-  ui.mfaSend.disabled =
-    !selected;
+    authStatus(
+      "Auth0 Guardianへ通知しました。承認してください。"
+    );
+
+    await pollGuardian(
+      loginMfaToken,
+      challenge.oob_code,
+      false
+    );
+
+    return;
+  }
+
+  showCode(
+    loginMfaToken,
+    challenge.oob_code,
+    authenticator.oob_channel
+  );
 
   authStatus(
-    "ID・パスワードを確認しました。認証方法を選択してください。"
+    "メールへ認証コードを送信しました。"
   );
 }
 
@@ -2615,10 +2654,274 @@ function finishLogin(
     "home"
   );
 
+  sessionStorage.setItem(
+    "admin_auth_mode",
+    "password-mfa"
+  );
+
   showAdmin();
 }
 
-ui.loginForm.addEventListener(
+function showLoginStep(
+  step
+) {
+  [
+    ui.loginMain,
+    ui.loginMethod,
+    ui.loginPassword,
+    ui.loginMfa,
+  ].forEach(
+    element =>
+      element.classList.add(
+        "hidden"
+      )
+  );
+
+  step.classList.remove(
+    "hidden"
+  );
+}
+
+function resetLoginVerification() {
+  guardianStop =
+    true;
+
+  loginMfaToken =
+    "";
+
+  loginAuthenticators =
+    [];
+
+  loginChallenge =
+    null;
+
+  hide(
+    ui.loginEnroll
+  );
+
+  hide(
+    ui.loginCodeArea
+  );
+
+  ui.loginQr.innerHTML =
+    "";
+
+  ui.loginCode.value =
+    "";
+}
+
+ui.loginIdForm.addEventListener(
+  "submit",
+  event => {
+    event.preventDefault();
+
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+
+    const username =
+      ui.adminId.value.trim();
+
+    if (
+      !username
+    ) {
+      return authError(
+        "IDを入力してください。"
+      );
+    }
+
+    ui.loginSelectedId.textContent =
+      username;
+
+    ui.loginPasswordId.textContent =
+      username;
+
+    selectedLoginMethod =
+      "";
+
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
+    );
+  }
+);
+
+ui.loginMethodBack.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "";
+
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMain
+    );
+
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+
+    ui.adminId.focus();
+  }
+);
+
+ui.loginPasswordBack.addEventListener(
+  "click",
+  () => {
+    ui.adminPassword.value =
+      "";
+
+    resetLoginVerification();
+
+    showLoginStep(
+      ui.loginMethod
+    );
+
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+  }
+);
+
+ui.loginEmail.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "email";
+
+    ui.loginPasswordTitle.textContent =
+      "メール認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value =
+      "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginApp.addEventListener(
+  "click",
+  () => {
+    selectedLoginMethod =
+      "app";
+
+    ui.loginPasswordTitle.textContent =
+      "アプリ認証";
+
+    ui.loginPasswordId.textContent =
+      ui.adminId.value.trim();
+
+    ui.adminPassword.value =
+      "";
+
+    showLoginStep(
+      ui.loginPassword
+    );
+
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+
+    ui.adminPassword.focus();
+  }
+);
+
+ui.loginPasskey.addEventListener(
+  "click",
+  async () => {
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
+
+    ui.loginPasskey.disabled =
+      true;
+
+    try {
+      if (
+        !auth0Client
+      ) {
+        throw new Error(
+          "Passkey認証を初期化できていません。ページを再読み込みしてください。"
+        );
+      }
+
+      sessionStorage.setItem(
+        "pending_admin_id",
+        ui.adminId.value.trim()
+      );
+
+      await auth0Client.loginWithRedirect({
+        appState: {
+          returnTo:
+            window.location.pathname,
+        },
+
+        authorizationParams: {
+          audience:
+            API_AUDIENCE,
+
+          scope:
+            "openid profile",
+
+          redirect_uri:
+            AUTH0_REDIRECT_URI,
+
+          connection:
+            AUTH0_REALM,
+        },
+      });
+    } catch (
+      error
+    ) {
+      authError(
+        error.message ||
+        "Passkey認証を開始できませんでした。"
+      );
+
+      ui.loginPasskey.disabled =
+        false;
+    }
+  }
+);
+
+ui.loginPasswordForm.addEventListener(
   "submit",
   async event => {
     event.preventDefault();
@@ -2631,7 +2934,20 @@ ui.loginForm.addEventListener(
       ui.authError
     );
 
-    ui.loginButton.disabled =
+    if (
+      ![
+        "email",
+        "app",
+      ].includes(
+        selectedLoginMethod
+      )
+    ) {
+      return authError(
+        "ログイン方法を選び直してください。"
+      );
+    }
+
+    ui.loginPasswordButton.disabled =
       true;
 
     try {
@@ -2652,7 +2968,7 @@ ui.loginForm.addEventListener(
         data.access_token
       ) {
         throw new Error(
-          "二段階認証が要求されませんでした。Auth0のMFA設定を確認してください。"
+          "追加認証が要求されませんでした。Auth0のMFA設定を確認してください。"
         );
       }
 
@@ -2676,21 +2992,26 @@ ui.loginForm.addEventListener(
         );
       }
 
-      renderLoginMfa(
+      await startSelectedLoginMfa(
         data.mfa_token,
         await listAuthenticators(
           data.mfa_token
-        )
+        ),
+        selectedLoginMethod
       );
     } catch (
       error
     ) {
+      showLoginStep(
+        ui.loginPassword
+      );
+
       authError(
         error.message ||
         "ログイン処理に失敗しました。"
       );
     } finally {
-      ui.loginButton.disabled =
+      ui.loginPasswordButton.disabled =
         false;
     }
   }
@@ -2699,29 +3020,11 @@ ui.loginForm.addEventListener(
 ui.loginBack.addEventListener(
   "click",
   () => {
-    guardianStop =
-      true;
+    resetLoginVerification();
 
-    loginMfaToken =
-      "";
-
-    loginAuthenticators =
-      [];
-
-    loginChallenge =
-      null;
-
-    ui.loginMfa
-      .classList
-      .add(
-        "hidden"
-      );
-
-    ui.loginMain
-      .classList
-      .remove(
-        "hidden"
-      );
+    showLoginStep(
+      ui.loginMethod
+    );
 
     ui.title.textContent =
       "管理者画面";
@@ -2733,177 +3036,6 @@ ui.loginBack.addEventListener(
     hide(
       ui.authError
     );
-  }
-);
-
-ui.mfaSend.addEventListener(
-  "click",
-  async () => {
-    const selected =
-      document.querySelector(
-        'input[name="login-method"]:checked'
-      );
-
-    if (
-      !selected
-    ) {
-      return authError(
-        "認証方法を選択してください。"
-      );
-    }
-
-    ui.mfaSend.disabled =
-      true;
-
-    hide(
-      ui.loginEnroll
-    );
-
-    hide(
-      ui.loginCodeArea
-    );
-
-    try {
-      const method =
-        selected.value;
-
-      if (
-        method ===
-          "app" &&
-        !selected.dataset.id
-      ) {
-        const assoc =
-          await associateMfa(
-            loginMfaToken,
-            "auth0"
-          );
-
-        ui.loginQr.innerHTML =
-          "";
-
-        new QRCode(
-          ui.loginQr,
-          {
-            text:
-              assoc.barcode_uri,
-
-            width:
-              200,
-
-            height:
-              200,
-          }
-        );
-
-        ui.loginEnroll.style.display =
-          "block";
-
-        authStatus(
-          "GuardianアプリでQRコードを読み取り、承認してください。"
-        );
-
-        await pollGuardian(
-          loginMfaToken,
-          assoc.oob_code,
-          false
-        );
-
-        return;
-      }
-
-      let authenticator;
-
-      if (
-        method ===
-        "phone"
-      ) {
-        const delivery =
-          document.querySelector(
-            'input[name="login-phone-channel"]:checked'
-          );
-
-        if (
-          !delivery ||
-          delivery.disabled ||
-          !delivery.dataset.id
-        ) {
-          throw new Error(
-            "SMSまたは通話を選択してください。"
-          );
-        }
-
-        authenticator =
-          loginAuthenticators.find(
-            item =>
-              item.id ===
-              delivery.dataset.id
-          );
-      } else {
-        authenticator =
-          loginAuthenticators.find(
-            item =>
-              item.id ===
-              selected.dataset.id
-          );
-      }
-
-      if (
-        !authenticator
-      ) {
-        throw new Error(
-          "選択した認証方法を確認できませんでした。"
-        );
-      }
-
-      const challenge =
-        await challengeMfa(
-          loginMfaToken,
-          authenticator.id
-        );
-
-      if (
-        authenticator.oob_channel ===
-        "auth0"
-      ) {
-        authStatus(
-          "Auth0 Guardianへ通知しました。承認してください。"
-        );
-
-        await pollGuardian(
-          loginMfaToken,
-          challenge.oob_code,
-          false
-        );
-      } else {
-        showCode(
-          loginMfaToken,
-          challenge.oob_code,
-          authenticator.oob_channel
-        );
-
-        authStatus(
-          authenticator.oob_channel ===
-            "voice"
-            ? "登録された電話番号へ通話を開始しました。"
-            : `${
-                authenticator.oob_channel ===
-                "email"
-                  ? "メール"
-                  : "SMS"
-              }へ認証コードを送信しました。`
-        );
-      }
-    } catch (
-      error
-    ) {
-      authError(
-        error.message ||
-        "認証を送信できませんでした。"
-      );
-    } finally {
-      ui.mfaSend.disabled =
-        false;
-    }
   }
 );
 
@@ -3222,17 +3354,17 @@ function showLogin() {
   ui.topbar.style.display =
     "none";
 
-  ui.loginMain
-    .classList
-    .remove(
-      "hidden"
-    );
+  selectedLoginMethod =
+    "";
 
-  ui.loginMfa
-    .classList
-    .add(
-      "hidden"
-    );
+  resetLoginVerification();
+
+  showLoginStep(
+    ui.loginMain
+  );
+
+  ui.adminPassword.value =
+    "";
 
   setReadOnly(
     false
@@ -3246,6 +3378,8 @@ function clearSession() {
     "admin_username",
     "admin_sub",
     "admin_current_view",
+    "admin_auth_mode",
+    "pending_admin_id",
   ].forEach(
     key =>
       sessionStorage.removeItem(
@@ -3277,6 +3411,181 @@ function restore() {
     showLogin();
   } else {
     showAdmin();
+  }
+}
+
+async function finishPasskeyLogin() {
+  const token =
+    await auth0Client.getTokenSilently({
+      detailedResponse:
+        true,
+    });
+
+  const user =
+    await auth0Client.getUser();
+
+  if (
+    !token?.access_token ||
+    !user?.sub
+  ) {
+    throw new Error(
+      "Passkey認証後のログイン情報を取得できませんでした。"
+    );
+  }
+
+  const accessPayload =
+    decodeJwt(
+      token.access_token
+    );
+
+  const expiresAt =
+    accessPayload.exp
+      ? Number(
+          accessPayload.exp
+        ) *
+        1000
+      : Date.now() +
+        Number(
+          token.expires_in ||
+          600
+        ) *
+        1000;
+
+  sessionStorage.setItem(
+    "admin_access_token",
+    token.access_token
+  );
+
+  sessionStorage.setItem(
+    "admin_expires_at",
+    String(
+      expiresAt
+    )
+  );
+
+  sessionStorage.setItem(
+    "admin_username",
+    user.name ||
+      user.nickname ||
+      sessionStorage.getItem(
+        "pending_admin_id"
+      ) ||
+      "管理者"
+  );
+
+  sessionStorage.setItem(
+    "admin_sub",
+    user.sub
+  );
+
+  sessionStorage.setItem(
+    "admin_current_view",
+    "home"
+  );
+
+  sessionStorage.setItem(
+    "admin_auth_mode",
+    "passkey"
+  );
+
+  sessionStorage.removeItem(
+    "pending_admin_id"
+  );
+
+  showAdmin();
+}
+
+async function initAuth() {
+  try {
+    auth0Client =
+      await auth0.createAuth0Client({
+        domain:
+          AUTH0_DOMAIN,
+
+        clientId:
+          AUTH0_CLIENT_ID,
+
+        authorizationParams: {
+          audience:
+            API_AUDIENCE,
+
+          scope:
+            "openid profile",
+
+          redirect_uri:
+            AUTH0_REDIRECT_URI,
+        },
+      });
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    if (
+      params.has(
+        "code"
+      ) &&
+      params.has(
+        "state"
+      )
+    ) {
+      await auth0Client.handleRedirectCallback();
+
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${window.location.hash}`
+      );
+
+      await finishPasskeyLogin();
+
+      return;
+    }
+
+    if (
+      params.has(
+        "error"
+      )
+    ) {
+      const description =
+        params.get(
+          "error_description"
+        ) ||
+        params.get(
+          "error"
+        ) ||
+        "Passkey認証を完了できませんでした。";
+
+      window.history.replaceState(
+        {},
+        document.title,
+        `${window.location.pathname}${window.location.hash}`
+      );
+
+      showLogin();
+
+      authError(
+        description
+      );
+
+      return;
+    }
+
+    restore();
+  } catch (
+    error
+  ) {
+    console.error(
+      error
+    );
+
+    showLogin();
+
+    authError(
+      error.message ||
+      "認証機能を初期化できませんでした。"
+    );
   }
 }
 
@@ -5191,22 +5500,50 @@ ui.refresh.addEventListener(
 
 ui.logout.addEventListener(
   "click",
-  () => {
+  async () => {
     guardianStop =
       true;
 
     accountStop =
       true;
 
+    const authMode =
+      sessionStorage.getItem(
+        "admin_auth_mode"
+      );
+
     clearSession();
 
     resetAccountVerification();
+
+    if (
+      authMode ===
+        "passkey" &&
+      auth0Client
+    ) {
+      try {
+        await auth0Client.logout({
+          logoutParams: {
+            returnTo:
+              AUTH0_REDIRECT_URI,
+          },
+        });
+
+        return;
+      } catch (
+        error
+      ) {
+        console.error(
+          error
+        );
+      }
+    }
 
     showLogin();
   }
 );
 
-restore();
+initAuth();
 </script>
 
 </body>
