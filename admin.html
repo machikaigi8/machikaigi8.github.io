@@ -1,30 +1,101 @@
-function meetingStartDate(date, startTime) {
-  if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(date || "") ||
-    !/^\d{2}:\d{2}$/.test(startTime || "")
-  ) {
-    return null;
-  }
+async function maybeResumeAdminSensitiveAction() {
+  const raw =
+    sessionStorage.getItem("admin_sensitive_resume_action");
 
-  const value = new Date(
-    `${date}T${startTime}:00+09:00`
-  );
-
-  return Number.isNaN(value.getTime())
-    ? null
-    : value;
-}
-
-async function loadMeetingSettings() {
-  if (!sessionStorage.getItem("admin_access_token")) {
+  if (!raw) {
     return;
   }
 
-  hide(ui.meetingStatus);
+  let pending;
+
+  try {
+    pending = JSON.parse(raw);
+  } catch {
+    sessionStorage.removeItem(
+      "admin_sensitive_resume_action"
+    );
+    return;
+  }
+
+  sessionStorage.removeItem(
+    "admin_sensitive_resume_action"
+  );
+
+  const token =
+    sessionStorage.getItem(
+      "admin_sensitive_approval_token"
+    ) || "";
+
+  const expiresAt = Number(
+    sessionStorage.getItem(
+      "admin_sensitive_approval_expires"
+    ) || 0
+  );
+
+  const target =
+    sessionStorage.getItem(
+      "admin_sensitive_approval_target"
+    ) || "";
+
+  sessionStorage.removeItem(
+    "admin_sensitive_approval_token"
+  );
+
+  sessionStorage.removeItem(
+    "admin_sensitive_approval_expires"
+  );
+
+  sessionStorage.removeItem(
+    "admin_sensitive_approval_target"
+  );
+
+  if (
+    !pending.userId ||
+    !pending.action ||
+    target !== pending.userId ||
+    !token ||
+    Date.now() >= expiresAt
+  ) {
+    ui.usersStatus.textContent =
+      "本人承認の有効期限が切れました。もう一度操作してください。";
+
+    return;
+  }
+
+  await loadAdminUserEditor(
+    pending.userId,
+    true
+  );
+
+  adminEditApprovalToken = token;
+  adminEditApprovalExpiresAt = expiresAt;
+
+  await executeAdminSensitiveAction(
+    pending.action
+  );
+}
+
+async function loadUsers(closeEditor = true) {
+  ui.usersStatus.textContent = "読み込み中...";
+  ui.usersBody.innerHTML = "";
+
+  if (closeEditor) {
+    adminEditUserId = "";
+    adminEditUserState = null;
+    pendingAdminSensitiveAction = null;
+
+    clearAdminApprovalUi(true);
+    closeAdminEditAppEnroll();
+
+    ui.adminPasswordResult.classList.remove("active");
+    ui.adminPasswordResult.style.display = "";
+
+    ui.adminUserEditor.classList.remove("active");
+  }
 
   try {
     const { response, data } = await workerPost(
-      "/meeting-settings",
+      "/admin-users",
       {},
       sessionStorage.getItem("admin_access_token")
     );
@@ -32,118 +103,733 @@ async function loadMeetingSettings() {
     if (!response.ok) {
       throw new Error(
         data.error ||
-        "次回まち会議の設定を取得できませんでした。"
+        "アカウント一覧を取得できませんでした。"
       );
     }
 
-    const meeting = data.meeting;
-
-    if (!meeting) {
-      ui.meetingDate.value = "";
-      ui.meetingStart.value = "";
-      ui.meetingEnd.value = "";
-      ui.meetingPlace.value = "";
-      ui.meetingNote.value = "";
-
-      show(
-        ui.meetingStatus,
-        "現在、次回まち会議は未設定です。"
+    const visibleUsers =
+      (data.users || []).filter(user =>
+        String(
+          user.username || ""
+        ).startsWith("mach_")
       );
 
-      return;
-    }
+    ui.usersStatus.textContent =
+      visibleUsers.length
+        ? ""
+        : "表示できるアカウントがありません。";
 
-    ui.meetingDate.value =
-      meeting.date || "";
+    visibleUsers.forEach(user => {
+      const row =
+        document.createElement("tr");
 
-    ui.meetingStart.value =
-      meeting.startTime || "";
+      const name =
+        document.createElement("td");
 
-    ui.meetingEnd.value =
-      meeting.endTime || "";
+      const id =
+        document.createElement("td");
 
-    ui.meetingPlace.value =
-      meeting.place || "";
+      const mode =
+        document.createElement("td");
 
-    ui.meetingNote.value =
-      meeting.note || "";
+      const edit =
+        document.createElement("td");
 
-    const startsAt = meetingStartDate(
-      meeting.date,
-      meeting.startTime
-    );
+      const remove =
+        document.createElement("td");
 
-    if (
-      startsAt &&
-      Date.now() >= startsAt.getTime()
-    ) {
-      show(
-        ui.meetingStatus,
-        "この開催日時はすでに過ぎているため、公開ページでは「未定」と表示されています。新しい予定を保存すると上書き更新されます。"
+      name.textContent =
+        user.name || "—";
+
+      id.textContent =
+        user.username || "—";
+
+      mode.textContent =
+        user.isOwner
+          ? "—"
+          : user.coAdmin
+            ? "ON"
+            : "OFF";
+
+      const editButton =
+        document.createElement("button");
+
+      editButton.className = "mini";
+      editButton.textContent = "編集";
+
+      editButton.addEventListener(
+        "click",
+        () => {
+          loadAdminUserEditor(
+            user.userId,
+            true
+          );
+        }
       );
-    }
+
+      edit.append(editButton);
+
+      if (user.isOwner) {
+        remove.textContent = "—";
+      } else {
+        const deleteButton =
+          document.createElement("button");
+
+        deleteButton.type = "button";
+        deleteButton.className = "delete-icon-button";
+
+        deleteButton.setAttribute(
+          "aria-label",
+          `${user.username || user.name || "アカウント"}を削除`
+        );
+
+        deleteButton.title =
+          "アカウントを削除";
+
+        deleteButton.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
+          </svg>
+        `;
+
+        deleteButton.addEventListener(
+          "click",
+          async () => {
+            const label =
+              user.username ||
+              user.name ||
+              "このアカウント";
+
+            const confirmed = window.confirm(
+              `「${label}」を削除しますか？\nこの操作は取り消せません。`
+            );
+
+            if (!confirmed) {
+              return;
+            }
+
+            deleteButton.disabled = true;
+
+            try {
+              const { response, data } = await workerPost(
+                "/delete-admin",
+                {
+                  userId: user.userId,
+                },
+                sessionStorage.getItem("admin_access_token")
+              );
+
+              if (!response.ok) {
+                throw new Error(
+                  data.error ||
+                  "アカウントを削除できませんでした。"
+                );
+              }
+
+              await loadUsers();
+            } catch (error) {
+              alert(error.message);
+              deleteButton.disabled = false;
+            }
+          }
+        );
+
+        remove.append(deleteButton);
+      }
+
+      row.append(
+        name,
+        id,
+        mode,
+        edit,
+        remove
+      );
+
+      ui.usersBody.append(row);
+    });
+
+    await maybeResumeAdminSensitiveAction();
   } catch (error) {
-    show(
-      ui.meetingStatus,
-      error.message ||
-      "次回まち会議の設定を取得できませんでした。"
-    );
+    ui.usersStatus.textContent = error.message;
   }
 }
 
-ui.meetingForm.addEventListener(
+function selectedCreateMethods() {
+  const methods = [];
+
+  if (ui.createPasskey.checked) {
+    methods.push("passkey");
+  }
+
+  if (ui.createEmailCheck.checked) {
+    methods.push("email");
+  }
+
+  if (ui.createApp.checked) {
+    methods.push("app");
+  }
+
+  return methods;
+}
+
+function updateCreateRequirements() {
+  const methods =
+    selectedCreateMethods();
+
+  const emailRequired =
+    methods.includes("passkey") ||
+    methods.includes("email");
+
+  ui.createEmail.required =
+    emailRequired;
+
+  ui.createEmailRequired.classList.toggle(
+    "active",
+    emailRequired
+  );
+}
+
+[
+  ui.createPasskey,
+  ui.createEmailCheck,
+  ui.createApp,
+].forEach(element => {
+  element.addEventListener(
+    "change",
+    updateCreateRequirements
+  );
+});
+
+updateCreateRequirements();
+
+function setCreateDisabled(value) {
+  ui.createForm
+    .querySelectorAll("input,button")
+    .forEach(element => {
+      element.disabled = value;
+    });
+}
+
+function resetAccountVerification() {
+  pendingAccount = null;
+
+  hide(ui.accountVerify);
+
+  ui.accountAppIntro.classList.remove("active");
+
+  ui.accountProgress.textContent = "";
+  ui.accountMessage.textContent = "";
+
+  ui.accountQr.classList.add("hidden");
+  ui.accountQr.innerHTML = "";
+
+  ui.accountCodeForm.classList.add("hidden");
+  ui.accountCode.value = "";
+}
+
+function updateProgress() {
+  if (!pendingAccount) {
+    return;
+  }
+
+  const done = new Set(
+    pendingAccount.verifiedMethods || []
+  );
+
+  const current =
+    pendingAccount.mfaMethods[
+      pendingAccount.currentIndex
+    ] || "";
+
+  ui.accountProgress.textContent =
+    pendingAccount.mfaMethods
+      .map(method => {
+        if (method === "passkey") {
+          return `○ ${methodLabel(method)}`;
+        }
+
+        return `${
+          done.has(method)
+            ? "✓"
+            : method === current
+              ? "●"
+              : "○"
+        } ${methodLabel(method)}`;
+      })
+      .join("　");
+}
+
+async function prepareAccountFactor() {
+  const account = pendingAccount;
+
+  if (!account) {
+    return;
+  }
+
+  if (
+    account.currentIndex >=
+    account.mfaMethods.length
+  ) {
+    return finalizeAccount();
+  }
+
+  const method =
+    account.mfaMethods[
+      account.currentIndex
+    ];
+
+  account.currentMethod = method;
+
+  updateProgress();
+
+  ui.accountVerify.style.display = "block";
+  ui.accountAppIntro.classList.remove("active");
+
+  hide(ui.accountStatus);
+  hide(ui.accountError);
+
+  ui.accountQr.classList.add("hidden");
+  ui.accountQr.innerHTML = "";
+
+  ui.accountCodeForm.classList.add("hidden");
+  ui.accountCode.value = "";
+
+  if (method === "passkey") {
+    account.currentIndex += 1;
+
+    updateProgress();
+
+    return prepareAccountFactor();
+  }
+
+  if (
+    method === "app" &&
+    !account.appSetupStarted
+  ) {
+    render2FASDownloadQrs();
+
+    ui.accountMessage.textContent = "";
+
+    ui.accountAppIntro.classList.add("active");
+
+    ui.accountAppStart.disabled = false;
+
+    return;
+  }
+
+  accountStatus(
+    `${methodLabel(method)}を準備しています…`
+  );
+
+  const { response, data } = await workerPost(
+    "/create-admin-factor-start",
+    {
+      stagingUserId: account.stagingUserId,
+      method,
+    },
+    sessionStorage.getItem("admin_access_token")
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      `${methodLabel(method)}を準備できませんでした。`
+    );
+  }
+
+  hide(ui.accountStatus);
+
+  if (method === "email") {
+    account.currentChallengeId =
+      data.challengeId || "";
+
+    ui.accountMessage.textContent =
+      `${data.destination || "登録メールアドレス"} に届いた6桁の認証コードを入力してください。`;
+
+    ui.accountCodeForm.classList.remove("hidden");
+
+    ui.accountCode.focus();
+
+    return;
+  }
+
+  account.currentChallengeId = "";
+
+  if (!data.barcodeUri) {
+    throw new Error(
+      "認証アプリ登録用のQRコードを取得できませんでした。"
+    );
+  }
+
+  new QRCode(
+    ui.accountQr,
+    {
+      text: data.barcodeUri,
+      width: 200,
+      height: 200,
+    }
+  );
+
+  ui.accountQr.classList.remove("hidden");
+
+  ui.accountMessage.textContent =
+    "2FAS AuthでこのQRコードを読み取り、表示された6桁のコードを入力してください。";
+
+  ui.accountCodeForm.classList.remove("hidden");
+
+  ui.accountCode.focus();
+}
+
+ui.accountAppStart.addEventListener(
+  "click",
+  async () => {
+    if (
+      !pendingAccount ||
+      pendingAccount.currentMethod !== "app"
+    ) {
+      return;
+    }
+
+    ui.accountAppStart.disabled = true;
+
+    pendingAccount.appSetupStarted = true;
+
+    ui.accountAppIntro.classList.remove("active");
+
+    try {
+      await prepareAccountFactor();
+    } catch (error) {
+      pendingAccount.appSetupStarted = false;
+
+      ui.accountAppIntro.classList.add("active");
+      ui.accountAppStart.disabled = false;
+
+      accountError(
+        error.message ||
+        "アプリ認証を開始できませんでした。"
+      );
+    }
+  }
+);
+
+async function completeAccountFactor(code) {
+  const account = pendingAccount;
+
+  if (!account) {
+    return;
+  }
+
+  const method = account.currentMethod;
+
+  accountStatus(
+    `${methodLabel(method)}の認証を確認しています…`
+  );
+
+  const { response, data } = await workerPost(
+    "/create-admin-factor-complete",
+    {
+      stagingUserId: account.stagingUserId,
+      method,
+      code,
+      challengeId:
+        account.currentChallengeId || "",
+    },
+    sessionStorage.getItem("admin_access_token")
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      `${methodLabel(method)}を確認できませんでした。`
+    );
+  }
+
+  account.verifiedMethods =
+    Array.isArray(data.verifiedMethods)
+      ? data.verifiedMethods
+      : [
+          ...new Set([
+            ...(account.verifiedMethods || []),
+            method,
+          ]),
+        ];
+
+  account.currentIndex += 1;
+  account.currentMethod = "";
+  account.currentChallengeId = "";
+  account.appSetupStarted = false;
+
+  hide(ui.accountStatus);
+
+  ui.accountQr.classList.add("hidden");
+  ui.accountQr.innerHTML = "";
+
+  ui.accountCodeForm.classList.add("hidden");
+  ui.accountCode.value = "";
+
+  updateProgress();
+
+  if (
+    account.currentIndex >=
+    account.mfaMethods.length
+  ) {
+    await finalizeAccount();
+  } else {
+    await prepareAccountFactor();
+  }
+}
+
+async function finalizeAccount() {
+  const account = pendingAccount;
+
+  if (!account) {
+    return;
+  }
+
+  accountStatus(
+    "アカウントを発行しています…"
+  );
+
+  const { response, data } = await workerPost(
+    "/create-admin-finalize",
+    {
+      stagingUserId: account.stagingUserId,
+    },
+    sessionStorage.getItem("admin_access_token")
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ||
+      "アカウント発行処理に失敗しました。"
+    );
+  }
+
+  hide(ui.accountVerify);
+  hide(ui.accountStatus);
+
+  ui.accountResultTitle.textContent =
+    account.simulated
+      ? "認証が完了しました。仮発行のため実際のアカウントは作成していません。"
+      : "認証が完了し、アカウントを発行しました。";
+
+  ui.resultName.textContent = account.fullName;
+  ui.resultId.textContent = account.username;
+  ui.resultPassword.textContent = account.initialPassword;
+
+  ui.resultMfa.textContent =
+    account.mfaMethods
+      .map(methodLabel)
+      .join(" / ");
+
+  ui.accountResult.style.display = "block";
+
+  ui.createForm.reset();
+
+  ui.createPasskey.checked = true;
+  ui.createEmailCheck.checked = false;
+  ui.createApp.checked = false;
+
+  setCreateDisabled(false);
+  updateCreateRequirements();
+
+  pendingAccount = null;
+}
+
+ui.createForm.addEventListener(
   "submit",
   async event => {
     event.preventDefault();
 
-    if (isDummy()) {
-      return;
+    hide(ui.accountError);
+    hide(ui.accountStatus);
+
+    ui.accountResult.style.display = "none";
+
+    resetAccountVerification();
+
+    if (
+      (sessionStorage.getItem("admin_sub") || "") !==
+      OWNER_SUB
+    ) {
+      return accountError(
+        "この操作を行う権限がありません。"
+      );
     }
 
-    hide(ui.meetingStatus);
-    ui.meetingSave.disabled = true;
+    const methods =
+      selectedCreateMethods();
+
+    const email =
+      ui.createEmail.value.trim();
+
+    if (!methods.length) {
+      return accountError(
+        "認証方法を1つ以上選択してください。"
+      );
+    }
+
+    if (
+      (
+        methods.includes("passkey") ||
+        methods.includes("email")
+      ) &&
+      !email
+    ) {
+      return accountError(
+        "メールアドレスを入力してください。"
+      );
+    }
+
+    ui.createButton.disabled = true;
+
+    accountStatus(
+      "認証用の準備をしています…"
+    );
 
     try {
-      const token =
-        sessionStorage.getItem("admin_access_token") || "";
-
-      if (!token) {
-        throw new Error(
-          "ログイン期限が切れています。もう一度ログインしてください。"
-        );
-      }
-
       const { response, data } = await workerPost(
-        "/meeting-settings-save",
+        "/create-admin",
         {
-          date: ui.meetingDate.value,
-          startTime: ui.meetingStart.value,
-          endTime: ui.meetingEnd.value,
-          place: ui.meetingPlace.value.trim(),
-          note: ui.meetingNote.value.trim(),
+          fullName:
+            ui.createName.value.trim(),
+
+          lastNameRoman:
+            ui.createLast.value.trim(),
+
+          firstNameRoman:
+            ui.createFirst.value.trim(),
+
+          birthYear:
+            Number(ui.createYear.value),
+
+          email,
+
+          mfaMethods: methods,
         },
-        token
+        sessionStorage.getItem("admin_access_token")
       );
 
       if (!response.ok) {
         throw new Error(
           data.error ||
-          "次回まち会議の設定を保存できませんでした。"
+          "認証の準備ができませんでした。"
         );
       }
 
-      show(
-        ui.meetingStatus,
-        "次回まち会議の設定を更新しました。公開ページにも反映されます。"
-      );
+      pendingAccount = {
+        ...data,
+        currentIndex: 0,
+        currentMethod: "",
+        currentChallengeId: "",
+        verifiedMethods:
+          Array.isArray(data.verifiedMethods)
+            ? data.verifiedMethods
+            : [],
+        appSetupStarted: false,
+      };
+
+      setCreateDisabled(true);
+
+      hide(ui.accountStatus);
+
+      await prepareAccountFactor();
     } catch (error) {
-      show(
-        ui.meetingStatus,
+      setCreateDisabled(false);
+
+      updateCreateRequirements();
+
+      accountError(
         error.message ||
-        "次回まち会議の設定を保存できませんでした。"
+        "アカウント認証を開始できませんでした。"
       );
     } finally {
-      ui.meetingSave.disabled = false;
+      if (!pendingAccount) {
+        ui.createButton.disabled = false;
+      }
     }
   }
 );
+
+ui.accountCodeForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    if (!pendingAccount?.currentMethod) {
+      return accountError(
+        "認証情報がありません。"
+      );
+    }
+
+    const code =
+      ui.accountCode.value.trim();
+
+    if (!/^\d{6}$/.test(code)) {
+      return accountError(
+        "6桁の認証コードを入力してください。"
+      );
+    }
+
+    ui.accountCodeButton.disabled = true;
+
+    try {
+      await completeAccountFactor(code);
+    } catch (error) {
+      accountError(
+        error.message ||
+        "認証できませんでした。"
+      );
+    } finally {
+      ui.accountCodeButton.disabled = false;
+    }
+  }
+);
+
+ui.copyId.addEventListener(
+  "click",
+  () =>
+    navigator.clipboard.writeText(
+      ui.resultId.textContent
+    )
+);
+
+ui.copyPassword.addEventListener(
+  "click",
+  () =>
+    navigator.clipboard.writeText(
+      ui.resultPassword.textContent
+    )
+);
+
+ui.refresh.addEventListener(
+  "click",
+  () => {
+    if (pendingAccount) {
+      return alert(
+        "アカウント認証中は更新できません。"
+      );
+    }
+
+    location.reload();
+  }
+);
+
+ui.logout.addEventListener(
+  "click",
+  () => {
+    clearSession();
+    resetAccountVerification();
+
+    window.location.replace(
+      AUTH0_REDIRECT_URI
+    );
+  }
+);
+
+initAuth();
+
+</script>
+
+</body>
+</html>
