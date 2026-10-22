@@ -221,6 +221,62 @@ textarea{
   padding:11px 13px;
 }
 
+.meeting-format-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  min-height:54px;
+  padding:9px 12px;
+  border:2px solid var(--navy);
+  background:#fff;
+}
+
+.meeting-number-input{
+  height:38px;
+  border:1px solid #8EA0B7;
+  background:#fff;
+  color:var(--text);
+  padding:6px 7px;
+  text-align:center;
+  font-weight:700;
+  -moz-appearance:textfield;
+}
+
+.meeting-number-input::-webkit-outer-spin-button,
+.meeting-number-input::-webkit-inner-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+
+.meeting-number-2{
+  width:58px;
+}
+
+.meeting-price-input{
+  width:90px;
+}
+
+.meeting-fixed{
+  color:var(--navy);
+  font-weight:700;
+  font-size:18px;
+  white-space:nowrap;
+}
+
+.meeting-weekday{
+  min-width:1em;
+  text-align:center;
+}
+
+.meeting-time-first{
+  margin-left:8px;
+}
+
+.meeting-format-hint{
+  margin:8px 0 0;
+}
+
 .textarea{
   min-height:150px;
   resize:vertical;
@@ -1325,16 +1381,66 @@ textarea:disabled{
         >
 
           <div class="row">
-            <label class="label" for="meeting-datetime">
+            <label class="label">
               日時
             </label>
 
-            <input
-              id="meeting-datetime"
-              class="input"
-              type="datetime-local"
-              required
-            >
+            <div class="meeting-format-row" aria-label="次回まち会議の日時">
+              <input
+                id="meeting-month"
+                class="meeting-number-input meeting-number-2"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="12"
+                placeholder="12"
+                aria-label="月"
+                required
+              >
+              <span class="meeting-fixed">/</span>
+              <input
+                id="meeting-day"
+                class="meeting-number-input meeting-number-2"
+                type="number"
+                inputmode="numeric"
+                min="1"
+                max="31"
+                placeholder="12"
+                aria-label="日"
+                required
+              >
+              <span class="meeting-fixed">(</span>
+              <span id="meeting-weekday" class="meeting-fixed meeting-weekday">―</span>
+              <span class="meeting-fixed">)</span>
+              <input
+                id="meeting-hour"
+                class="meeting-number-input meeting-number-2 meeting-time-first"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max="23"
+                placeholder="13"
+                aria-label="時"
+                required
+              >
+              <span class="meeting-fixed">:</span>
+              <input
+                id="meeting-minute"
+                class="meeting-number-input meeting-number-2"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max="59"
+                placeholder="00"
+                aria-label="分"
+                required
+              >
+              <span class="meeting-fixed">〜</span>
+            </div>
+
+            <p class="hint meeting-format-hint">
+              「/」「曜日」「:」「〜」は自動で固定表示されます。数字だけ入力してください。
+            </p>
           </div>
 
           <div class="row">
@@ -1379,16 +1485,29 @@ textarea:disabled{
           </div>
 
           <div class="row">
-            <label class="label" for="meeting-note2">
+            <label class="label" for="meeting-price">
               備考2
             </label>
 
-            <input
-              id="meeting-note2"
-              class="input"
-              type="text"
-              placeholder="例：料金：300円（学生無料）"
-            >
+            <div class="meeting-format-row meeting-price-row">
+              <span class="meeting-fixed">料金：</span>
+              <input
+                id="meeting-price"
+                class="meeting-number-input meeting-price-input"
+                type="number"
+                inputmode="numeric"
+                min="0"
+                max="999999"
+                placeholder="300"
+                aria-label="料金"
+                required
+              >
+              <span class="meeting-fixed">円（学生無料）</span>
+            </div>
+
+            <p class="hint meeting-format-hint">
+              「料金：」「円（学生無料）」は固定です。金額の数字だけ入力してください。
+            </p>
           </div>
 
           <button
@@ -2578,11 +2697,15 @@ const ui = {
   developerHome: $("developer-home"),
   hpHome: $("hp-home"),
   meetingForm: $("meeting-form"),
-  meetingDateTime: $("meeting-datetime"),
+  meetingMonth: $("meeting-month"),
+  meetingDay: $("meeting-day"),
+  meetingWeekday: $("meeting-weekday"),
+  meetingHour: $("meeting-hour"),
+  meetingMinute: $("meeting-minute"),
   meetingPlace: $("meeting-place"),
   meetingAddress: $("meeting-address"),
   meetingNote1: $("meeting-note1"),
-  meetingNote2: $("meeting-note2"),
+  meetingPrice: $("meeting-price"),
   meetingSave: $("meeting-save"),
   meetingStatus: $("meeting-status"),
   newsForm: $("news-form"),
@@ -3655,6 +3778,8 @@ async function initAuth() {
   }
 }
 
+const MEETING_WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
 function meetingStartDate(dateTime) {
   if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(dateTime || "")) {
     return null;
@@ -3666,6 +3791,93 @@ function meetingStartDate(dateTime) {
     ? null
     : value;
 }
+
+function currentJstParts() {
+  const parts = new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }
+  ).formatToParts(new Date());
+
+  const values = Object.fromEntries(
+    parts
+      .filter(part => part.type !== "literal")
+      .map(part => [part.type, part.value])
+  );
+
+  return {
+    year: Number(values.year),
+    month: Number(values.month),
+    day: Number(values.day),
+    hour: Number(values.hour),
+    minute: Number(values.minute),
+  };
+}
+
+function inferMeetingYear(month, day, hour, minute) {
+  const now = currentJstParts();
+  const thisYear = new Date(
+    `${String(now.year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00+09:00`
+  );
+
+  if (Number.isNaN(thisYear.getTime())) {
+    return now.year;
+  }
+
+  return thisYear.getTime() >= Date.now()
+    ? now.year
+    : now.year + 1;
+}
+
+function updateMeetingWeekday() {
+  const month = Number(ui.meetingMonth.value);
+  const day = Number(ui.meetingDay.value);
+  const hour = Number(ui.meetingHour.value || 0);
+  const minute = Number(ui.meetingMinute.value || 0);
+
+  if (
+    !Number.isInteger(month) ||
+    !Number.isInteger(day) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    ui.meetingWeekday.textContent = "―";
+    return;
+  }
+
+  const year = inferMeetingYear(month, day, hour, minute);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) {
+    ui.meetingWeekday.textContent = "―";
+    return;
+  }
+
+  ui.meetingWeekday.textContent =
+    MEETING_WEEKDAYS[date.getUTCDay()];
+}
+
+[
+  ui.meetingMonth,
+  ui.meetingDay,
+  ui.meetingHour,
+  ui.meetingMinute,
+].forEach(input => {
+  input.addEventListener("input", updateMeetingWeekday);
+});
 
 async function loadMeetingSettings() {
   if (!sessionStorage.getItem("admin_access_token")) {
@@ -3691,11 +3903,15 @@ async function loadMeetingSettings() {
     const meeting = data.meeting;
 
     if (!meeting) {
-      ui.meetingDateTime.value = "";
+      ui.meetingMonth.value = "";
+      ui.meetingDay.value = "";
+      ui.meetingHour.value = "";
+      ui.meetingMinute.value = "";
+      ui.meetingWeekday.textContent = "―";
       ui.meetingPlace.value = "";
       ui.meetingAddress.value = "";
       ui.meetingNote1.value = "";
-      ui.meetingNote2.value = "";
+      ui.meetingPrice.value = "";
 
       show(
         ui.meetingStatus,
@@ -3705,8 +3921,26 @@ async function loadMeetingSettings() {
       return;
     }
 
-    ui.meetingDateTime.value =
-      meeting.dateTime || "";
+    const match = String(meeting.dateTime || "").match(
+      /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+    );
+
+    if (match) {
+      ui.meetingMonth.value = String(Number(match[2]));
+      ui.meetingDay.value = String(Number(match[3]));
+      ui.meetingHour.value = String(Number(match[4]));
+      ui.meetingMinute.value = match[5];
+      ui.meetingWeekday.textContent =
+        MEETING_WEEKDAYS[
+          new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]))).getUTCDay()
+        ];
+    } else {
+      ui.meetingMonth.value = "";
+      ui.meetingDay.value = "";
+      ui.meetingHour.value = "";
+      ui.meetingMinute.value = "";
+      ui.meetingWeekday.textContent = "―";
+    }
 
     ui.meetingPlace.value =
       meeting.place || "";
@@ -3717,8 +3951,8 @@ async function loadMeetingSettings() {
     ui.meetingNote1.value =
       meeting.note1 || "";
 
-    ui.meetingNote2.value =
-      meeting.note2 || "";
+    ui.meetingPrice.value =
+      meeting.price ?? "";
 
     const startsAt = meetingStartDate(
       meeting.dateTime
@@ -3764,14 +3998,23 @@ ui.meetingForm.addEventListener(
         );
       }
 
+      const month = Number(ui.meetingMonth.value);
+      const day = Number(ui.meetingDay.value);
+      const hour = Number(ui.meetingHour.value);
+      const minute = Number(ui.meetingMinute.value);
+      const price = Number(ui.meetingPrice.value);
+
       const { response, data } = await workerPost(
         "/meeting-settings-save",
         {
-          dateTime: ui.meetingDateTime.value,
+          month,
+          day,
+          hour,
+          minute,
           place: ui.meetingPlace.value.trim(),
           address: ui.meetingAddress.value.trim(),
           note1: ui.meetingNote1.value.trim(),
-          note2: ui.meetingNote2.value.trim(),
+          price,
         },
         token
       );
@@ -3781,6 +4024,19 @@ ui.meetingForm.addEventListener(
           data.error ||
           "次回まち会議の設定を保存できませんでした。"
         );
+      }
+
+      if (data.meeting?.dateTime) {
+        const saved = String(data.meeting.dateTime).match(
+          /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+        );
+
+        if (saved) {
+          ui.meetingWeekday.textContent =
+            MEETING_WEEKDAYS[
+              new Date(Date.UTC(Number(saved[1]), Number(saved[2]) - 1, Number(saved[3]))).getUTCDay()
+            ];
+        }
       }
 
       show(
