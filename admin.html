@@ -320,21 +320,6 @@ textarea:disabled{
   margin-bottom:18px;
 }
 
-.bottom-nav{
-  display:flex;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:22px;
-}
-
-.bottom-nav .sub{
-  text-decoration:none;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
-
 .mfa-options,
 .create-options{
   display:grid;
@@ -896,21 +881,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <a
-          class="sub"
-          href="https://machikaigi8.github.io/"
-        >
-          ← HPトップへ戻る
-        </a>
-      </div>
-
     </section>
 
     <section
       id="view-meeting"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -986,18 +969,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-news"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -1056,18 +1040,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-password"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -1131,18 +1116,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-inquiries"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -1153,18 +1139,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-developer-request"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -1235,18 +1222,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-developer"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
 
       <div class="card">
 
@@ -1288,18 +1276,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-developer-responses"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-view="developer"
+      >
+        ← デベロッパーメニューへ戻る
+      </button>
 
       <div class="card">
 
@@ -1317,18 +1306,19 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-view="developer">
-          ← デベロッパーメニューへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
       id="view-admin-users"
       class="view"
     >
+
+      <button
+        class="sub back"
+        data-view="developer"
+      >
+        ← デベロッパーメニューへ戻る
+      </button>
 
       <div class="card">
 
@@ -1361,12 +1351,6 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-view="developer">
-          ← デベロッパーメニューへ戻る
-        </button>
-      </div>
-
     </section>
 
     <section
@@ -1374,18 +1358,19 @@ textarea:disabled{
       class="view"
     >
 
+      <button
+        class="sub back"
+        data-home
+      >
+        ← 管理者トップへ戻る
+      </button>
+
       <div class="card">
 
         <p class="hint">
           HP更新機能は次に接続します。
         </p>
 
-      </div>
-
-      <div class="bottom-nav">
-        <button class="sub" data-home>
-          ← 管理者トップへ戻る
-        </button>
       </div>
 
     </section>
@@ -1649,11 +1634,13 @@ textarea:disabled{
 
       </div>
 
-      <div class="bottom-nav">
-        <button class="sub" data-view="developer">
-          ← デベロッパーメニューへ戻る
-        </button>
-      </div>
+      <button
+        class="sub"
+        data-view="developer"
+        style="margin-top:18px"
+      >
+        ← デベロッパーメニューへ戻る
+      </button>
 
     </section>
 
@@ -1809,13 +1796,16 @@ const accountError = message => {
 async function readJson(response) {
   const text = await response.text();
 
-  if (!text) return {};
+  if (!text) {
+    return {};
+  }
 
   try {
     return JSON.parse(text);
   } catch {
     return {
-      error_description: text
+      error_description:
+        text,
     };
   }
 }
@@ -1878,11 +1868,17 @@ async function passwordLogin(username, password) {
   return {
     response,
     data:
-      await readJson(response),
+      await readJson(
+        response
+      ),
   };
 }
 
-async function workerPost(path, body = {}, token = "") {
+async function workerPost(
+  path,
+  body = {},
+  token = ""
+) {
   const headers = {
     "Content-Type":
       "application/json",
@@ -1903,7 +1899,9 @@ async function workerPost(path, body = {}, token = "") {
           method: "POST",
           headers,
           body:
-            JSON.stringify(body),
+            JSON.stringify(
+              body
+            ),
         }
       );
   } catch (error) {
@@ -1917,20 +1915,31 @@ async function workerPost(path, body = {}, token = "") {
   return {
     response,
     data:
-      await readJson(response),
+      await readJson(
+        response
+      ),
   };
 }
 
 function methodLabel(method) {
-  if (method === "passkey") {
+  if (
+    method ===
+    "passkey"
+  ) {
     return "パスキー";
   }
 
-  if (method === "email") {
+  if (
+    method ===
+    "email"
+  ) {
     return "メール認証";
   }
 
-  if (method === "app") {
+  if (
+    method ===
+    "app"
+  ) {
     return "アプリ認証";
   }
 
@@ -1943,7 +1952,7 @@ function showLoginStep(step) {
     ui.loginMethod,
     ui.loginPassword,
     ui.loginMfa,
-    ui.passkeyRequired
+    ui.passkeyRequired,
   ].forEach(
     element =>
       element.classList.add(
@@ -1960,8 +1969,13 @@ function resetLoginVerification() {
   loginAuth0Token = "";
   loginChallengeId = "";
 
-  hide(ui.loginEnroll);
-  hide(ui.loginCodeArea);
+  hide(
+    ui.loginEnroll
+  );
+
+  hide(
+    ui.loginCodeArea
+  );
 
   ui.loginQr.innerHTML = "";
   ui.loginCode.value = "";
@@ -2007,7 +2021,9 @@ function showPasskeyRequiredScreen(message) {
   hide(ui.authError);
 }
 
-async function requirePasskeyEnrollmentBeforeAlternateLogin(auth0Token) {
+async function requirePasskeyEnrollmentBeforeAlternateLogin(
+  auth0Token
+) {
   const status =
     await checkPasskeyStatus(
       auth0Token
@@ -2037,7 +2053,10 @@ async function requirePasskeyEnrollmentBeforeAlternateLogin(auth0Token) {
   return true;
 }
 
-function saveWorkerSession(data, authMode) {
+function saveWorkerSession(
+  data,
+  authMode
+) {
   if (
     !data.sessionToken ||
     !data.expiresAt ||
@@ -2055,7 +2074,9 @@ function saveWorkerSession(data, authMode) {
 
   sessionStorage.setItem(
     "admin_expires_at",
-    String(data.expiresAt)
+    String(
+      data.expiresAt
+    )
   );
 
   sessionStorage.setItem(
@@ -2327,7 +2348,10 @@ ui.loginPasswordForm.addEventListener(
     hide(ui.authError);
 
     if (
-      !["email", "app"].includes(
+      ![
+        "email",
+        "app",
+      ].includes(
         selectedLoginMethod
       )
     ) {
@@ -2434,7 +2458,9 @@ ui.loginPasswordForm.addEventListener(
         ui.loginCodeArea.style.display =
           "block";
 
-        hide(ui.authStatus);
+        hide(
+          ui.authStatus
+        );
 
         ui.loginCode.focus();
       } else {
@@ -2720,8 +2746,9 @@ function showView(name) {
   }
 
   window.scrollTo({
-    top:0,
-    behavior:"smooth",
+    top: 0,
+    behavior:
+      "smooth",
   });
 }
 
@@ -2734,7 +2761,9 @@ function isDummy() {
   ) === DUMMY_SUB;
 }
 
-function setReadOnly(readOnly) {
+function setReadOnly(
+  readOnly
+) {
   [
     ui.meetingForm,
     ui.newsForm,
@@ -2905,7 +2934,8 @@ function restore() {
 async function finishPasskeyLogin() {
   const token =
     await auth0Client.getTokenSilently({
-      detailedResponse:true,
+      detailedResponse:
+        true,
     });
 
   const user =
@@ -2987,7 +3017,12 @@ async function finishPasskeyLogin() {
       ""
     );
 
-    await startPasskeyUniversalLogin();
+    await auth0Client.logout({
+      logoutParams: {
+        returnTo:
+          AUTH0_REDIRECT_URI,
+      },
+    });
 
     return;
   }
@@ -3050,7 +3085,7 @@ async function initAuth() {
         clientId:
           AUTH0_CLIENT_ID,
 
-        authorizationParams:{
+        authorizationParams: {
           audience:
             API_AUDIENCE,
 
@@ -3126,7 +3161,9 @@ async function initAuth() {
 
     restore();
   } catch (error) {
-    console.error(error);
+    console.error(
+      error
+    );
 
     showLogin();
 
@@ -3300,7 +3337,10 @@ function formatDate(value) {
       );
 }
 
-function requestCard(item, owner) {
+function requestCard(
+  item,
+  owner
+) {
   const card =
     document.createElement(
       "article"
@@ -3365,9 +3405,7 @@ function requestCard(item, owner) {
     body
   );
 
-  if (
-    owner
-  ) {
+  if (owner) {
     const textarea =
       document.createElement(
         "textarea"
@@ -4107,7 +4145,9 @@ function updateCreateRequirements() {
 
 updateCreateRequirements();
 
-function setCreateDisabled(value) {
+function setCreateDisabled(
+  value
+) {
   ui.createForm
     .querySelectorAll(
       "input,button"
@@ -4238,8 +4278,13 @@ async function prepareAccountFactor() {
   ui.accountVerify.style.display =
     "block";
 
-  hide(ui.accountStatus);
-  hide(ui.accountError);
+  hide(
+    ui.accountStatus
+  );
+
+  hide(
+    ui.accountError
+  );
 
   ui.accountQr
     .classList
@@ -4305,7 +4350,9 @@ async function prepareAccountFactor() {
     );
   }
 
-  hide(ui.accountStatus);
+  hide(
+    ui.accountStatus
+  );
 
   if (
     method ===
@@ -4349,11 +4396,9 @@ async function prepareAccountFactor() {
       text:
         data.barcodeUri,
 
-      width:
-        200,
+      width: 200,
 
-      height:
-        200,
+      height: 200,
     }
   );
 
@@ -4375,7 +4420,9 @@ async function prepareAccountFactor() {
   ui.accountCode.focus();
 }
 
-async function completeAccountFactor(code) {
+async function completeAccountFactor(
+  code
+) {
   const account =
     pendingAccount;
 
@@ -4452,7 +4499,9 @@ async function completeAccountFactor(code) {
   account.currentChallengeId =
     "";
 
-  hide(ui.accountStatus);
+  hide(
+    ui.accountStatus
+  );
 
   ui.accountQr
     .classList
@@ -4522,8 +4571,13 @@ async function finalizeAccount() {
     );
   }
 
-  hide(ui.accountVerify);
-  hide(ui.accountStatus);
+  hide(
+    ui.accountVerify
+  );
+
+  hide(
+    ui.accountStatus
+  );
 
   ui.accountResultTitle.textContent =
     account.simulated
@@ -4577,8 +4631,13 @@ ui.createForm.addEventListener(
   async event => {
     event.preventDefault();
 
-    hide(ui.accountError);
-    hide(ui.accountStatus);
+    hide(
+      ui.accountError
+    );
+
+    hide(
+      ui.accountStatus
+    );
 
     ui.accountResult.style.display =
       "none";
@@ -4700,7 +4759,9 @@ ui.createForm.addEventListener(
         true
       );
 
-      hide(ui.accountStatus);
+      hide(
+        ui.accountStatus
+      );
 
       await prepareAccountFactor();
     } catch (error) {
@@ -4804,14 +4865,38 @@ ui.refresh.addEventListener(
 
 ui.logout.addEventListener(
   "click",
-  () => {
+  async () => {
+    const authMode =
+      sessionStorage.getItem(
+        "admin_auth_mode"
+      );
+
     clearSession();
 
     resetAccountVerification();
 
-    window.location.replace(
-      AUTH0_REDIRECT_URI
-    );
+    if (
+      authMode ===
+        "passkey" &&
+      auth0Client
+    ) {
+      try {
+        await auth0Client.logout({
+          logoutParams: {
+            returnTo:
+              AUTH0_REDIRECT_URI,
+          },
+        });
+
+        return;
+      } catch (error) {
+        console.error(
+          error
+        );
+      }
+    }
+
+    showLogin();
   }
 );
 
