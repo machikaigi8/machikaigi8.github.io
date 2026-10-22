@@ -316,6 +316,10 @@ textarea:disabled{
   text-align:left;
 }
 
+.back{
+  margin-bottom:18px;
+}
+
 .bottom-nav{
   display:flex;
   justify-content:center;
@@ -329,6 +333,25 @@ textarea:disabled{
   display:inline-flex;
   align-items:center;
   justify-content:center;
+}
+
+.mfa-options,
+.create-options{
+  display:grid;
+  gap:10px;
+}
+
+.mfa-box,
+.create-option{
+  border:1px solid #9AA9BC;
+  background:white;
+  padding:12px;
+}
+
+.choice{
+  display:flex;
+  gap:8px;
+  align-items:center;
 }
 
 .qr{
@@ -801,11 +824,7 @@ textarea:disabled{
 
   </section>
 
-  <!-- ログイン枠の外 -->
-  <div
-    id="login-home-link"
-    class="bottom-nav"
-  >
+  <div id="login-home-link" class="bottom-nav">
     <a
       class="sub"
       href="https://machikaigi8.github.io/"
@@ -1487,7 +1506,6 @@ textarea:disabled{
           <div class="row">
             <label class="label" for="create-email">
               メールアドレス
-
               <span
                 id="create-email-required"
                 class="required-mark"
@@ -1655,14 +1673,10 @@ const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
 const OWNER_SUB = "auth0|6ad6c756c6029c5d0a72e78a";
 const DUMMY_SUB = "auth0|6ad712865703ba3cd5630025";
 const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
-const AUTH0_REDIRECT_URI =
-  `${window.location.origin}${window.location.pathname}`;
-const PASSKEY_CLAIM =
-  "https://machikaigi8.github.io/auth_method";
+const AUTH0_REDIRECT_URI = `${window.location.origin}${window.location.pathname}`;
+const PASSKEY_CLAIM = "https://machikaigi8.github.io/auth_method";
 
-const $ =
-  id =>
-    document.getElementById(id);
+const $ = id => document.getElementById(id);
 
 const ui = {
   topbar: $("topbar"),
@@ -1764,242 +1778,107 @@ let loginAuth0Token = "";
 let loginChallengeId = "";
 let pendingAccount = null;
 
-const show = (
-  element,
-  message
-) => {
-  element.textContent =
-    message;
-
-  element.style.display =
-    "block";
+const show = (element, message) => {
+  element.textContent = message;
+  element.style.display = "block";
 };
 
-const hide =
-  element => {
-    element.style.display =
-      "none";
-  };
+const hide = element => {
+  element.style.display = "none";
+};
 
-const authStatus =
-  message => {
-    hide(
-      ui.authError
-    );
+const authStatus = message => {
+  hide(ui.authError);
+  show(ui.authStatus, message);
+};
 
-    show(
-      ui.authStatus,
-      message
-    );
-  };
+const authError = message => {
+  hide(ui.authStatus);
+  show(ui.authError, message);
+};
 
-const authError =
-  message => {
-    hide(
-      ui.authStatus
-    );
+const accountStatus = message => {
+  hide(ui.accountError);
+  show(ui.accountStatus, message);
+};
 
-    show(
-      ui.authError,
-      message
-    );
-  };
+const accountError = message => {
+  hide(ui.accountStatus);
+  show(ui.accountError, message);
+};
 
-const accountStatus =
-  message => {
-    hide(
-      ui.accountError
-    );
-
-    show(
-      ui.accountStatus,
-      message
-    );
-  };
-
-const accountError =
-  message => {
-    hide(
-      ui.accountStatus
-    );
-
-    show(
-      ui.accountError,
-      message
-    );
-  };
-
-async function readJson(
-  response
-) {
-  const text =
-    await response.text();
-
-  if (
-    !text
-  ) {
-    return {};
-  }
-
+async function readJson(response) {
+  const text = await response.text();
+  if (!text) return {};
   try {
-    return JSON.parse(
-      text
-    );
-
+    return JSON.parse(text);
   } catch {
-    return {
-      error_description:
-        text,
-    };
+    return { error_description: text };
   }
 }
 
-function decodeJwt(
-  token
-) {
+function decodeJwt(token) {
   try {
-    let payload =
-      token
-        .split(".")[1]
-        .replace(
-          /-/g,
-          "+"
-        )
-        .replace(
-          /_/g,
-          "/"
-        );
-
-    payload +=
-      "=".repeat(
-        (
-          4 -
-          payload.length %
-          4
-        ) %
-        4
-      );
-
+    let payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    payload += "=".repeat((4 - payload.length % 4) % 4);
     return JSON.parse(
       new TextDecoder().decode(
         Uint8Array.from(
-          atob(
-            payload
-          ),
-          c =>
-            c.charCodeAt(
-              0
-            )
+          atob(payload),
+          c => c.charCodeAt(0)
         )
       )
     );
-
   } catch {
     return {};
   }
 }
 
-async function passwordLogin(
-  username,
-  password
-) {
-  const body =
-    new URLSearchParams({
-      grant_type:
-        "http://auth0.com/oauth/grant-type/password-realm",
+async function passwordLogin(username, password) {
+  const body = new URLSearchParams({
+    grant_type: "http://auth0.com/oauth/grant-type/password-realm",
+    client_id: AUTH0_CLIENT_ID,
+    username,
+    password,
+    realm: AUTH0_REALM,
+    audience: API_AUDIENCE,
+    scope: "openid profile",
+  });
 
-      client_id:
-        AUTH0_CLIENT_ID,
-
-      username,
-
-      password,
-
-      realm:
-        AUTH0_REALM,
-
-      audience:
-        API_AUDIENCE,
-
-      scope:
-        "openid profile",
-    });
-
-  const response =
-    await fetch(
-      `${AUTH0_BASE}/oauth/token`,
-      {
-        method:
-          "POST",
-
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded",
-        },
-
-        body,
-      }
-    );
+  const response = await fetch(`${AUTH0_BASE}/oauth/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body,
+  });
 
   return {
     response,
-
-    data:
-      await readJson(
-        response
-      ),
+    data: await readJson(response),
   };
 }
 
-async function workerPost(
-  path,
-  body = {},
-  token = ""
-) {
-  // Authorizationヘッダーを使わず、
-  // text/plain の単純POSTにすることで
-  // CORS preflightを発生させない。
+async function workerPost(path, body = {}, token = "") {
   const envelope = {
-    authToken:
-      token || "",
-
-    data:
-      body || {},
+    authToken: token || "",
+    data: body || {},
   };
 
   let response;
 
   try {
-    response =
-      await fetch(
-        `${WORKER_URL}${path}`,
-        {
-          method:
-            "POST",
-
-          mode:
-            "cors",
-
-          credentials:
-            "omit",
-
-          headers: {
-            "Content-Type":
-              "text/plain;charset=UTF-8",
-          },
-
-          body:
-            JSON.stringify(
-              envelope
-            ),
-        }
-      );
-
+    response = await fetch(`${WORKER_URL}${path}`, {
+      method: "POST",
+      mode: "cors",
+      credentials: "omit",
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+      },
+      body: JSON.stringify(envelope),
+    });
   } catch (error) {
-    console.error(
-      "Worker fetch failed:",
-      error
-    );
+    console.error("Worker fetch failed:", error);
 
     const detail =
       error?.message
@@ -2013,103 +1892,64 @@ async function workerPost(
 
   return {
     response,
-
-    data:
-      await readJson(
-        response
-      ),
+    data: await readJson(response),
   };
 }
 
-function methodLabel(
-  method
-) {
-  if (
-    method === "passkey"
-  ) {
+function methodLabel(method) {
+  if (method === "passkey") {
     return "パスキー";
   }
 
-  if (
-    method === "email"
-  ) {
+  if (method === "email") {
     return "メール認証";
   }
 
-  if (
-    method === "app"
-  ) {
+  if (method === "app") {
     return "アプリ認証";
   }
 
   return method;
 }
 
-function showLoginStep(
-  step
-) {
+function showLoginStep(step) {
   [
     ui.loginMain,
     ui.loginMethod,
     ui.loginPassword,
     ui.loginMfa,
     ui.passkeyRequired,
-  ].forEach(
-    element =>
-      element.classList.add(
-        "hidden"
-      )
+  ].forEach(element =>
+    element.classList.add("hidden")
   );
 
-  step.classList.remove(
-    "hidden"
-  );
+  step.classList.remove("hidden");
 }
 
 function resetLoginVerification() {
-  loginAuth0Token =
-    "";
+  loginAuth0Token = "";
+  loginChallengeId = "";
 
-  loginChallengeId =
-    "";
+  hide(ui.loginEnroll);
+  hide(ui.loginCodeArea);
 
-  hide(
-    ui.loginEnroll
-  );
-
-  hide(
-    ui.loginCodeArea
-  );
-
-  ui.loginQr.innerHTML =
-    "";
-
-  ui.loginCode.value =
-    "";
-
-  ui.loginMfaMessage.textContent =
-    "";
-
-  ui.loginCodeMessage.textContent =
-    "";
+  ui.loginQr.innerHTML = "";
+  ui.loginCode.value = "";
+  ui.loginMfaMessage.textContent = "";
+  ui.loginCodeMessage.textContent = "";
 }
 
-async function checkPasskeyStatus(
-  auth0Token
-) {
+async function checkPasskeyStatus(auth0Token) {
   const {
     response,
     data,
-  } =
-    await workerPost(
-      "/passkey-status",
-      {},
-      auth0Token
-    );
+  } = await workerPost(
+    "/passkey-status",
+    {},
+    auth0Token
+  );
 
-  if (
-    !response.ok
-  ) {
+  if (!response.ok) {
     throw new Error(
       data.error ||
       "パスキー登録状態を確認できませんでした。"
@@ -2119,9 +1959,7 @@ async function checkPasskeyStatus(
   return data;
 }
 
-function showPasskeyRequiredScreen(
-  message
-) {
+function showPasskeyRequiredScreen(message) {
   resetLoginVerification();
 
   showLoginStep(
@@ -2134,18 +1972,11 @@ function showPasskeyRequiredScreen(
   ui.passkeyRequiredMessage.textContent =
     message;
 
-  hide(
-    ui.authStatus
-  );
-
-  hide(
-    ui.authError
-  );
+  hide(ui.authStatus);
+  hide(ui.authError);
 }
 
-async function requirePasskeyEnrollmentBeforeAlternateLogin(
-  auth0Token
-) {
+async function requirePasskeyEnrollmentBeforeAlternateLogin(auth0Token) {
   const status =
     await checkPasskeyStatus(
       auth0Token
@@ -2175,10 +2006,7 @@ async function requirePasskeyEnrollmentBeforeAlternateLogin(
   return true;
 }
 
-function saveWorkerSession(
-  data,
-  authMode
-) {
+function saveWorkerSession(data, authMode) {
   if (
     !data.sessionToken ||
     !data.expiresAt ||
@@ -2196,9 +2024,7 @@ function saveWorkerSession(
 
   sessionStorage.setItem(
     "admin_expires_at",
-    String(
-      data.expiresAt
-    )
+    String(data.expiresAt)
   );
 
   sessionStorage.setItem(
@@ -2233,17 +2059,10 @@ function saveWorkerSession(
 }
 
 async function startPasskeyUniversalLogin() {
-  hide(
-    ui.authStatus
-  );
+  hide(ui.authStatus);
+  hide(ui.authError);
 
-  hide(
-    ui.authError
-  );
-
-  if (
-    !auth0Client
-  ) {
+  if (!auth0Client) {
     throw new Error(
       "パスキー認証を初期化できていません。ページを再読み込みしてください。"
     );
@@ -2256,9 +2075,7 @@ async function startPasskeyUniversalLogin() {
     ) ||
     "";
 
-  if (
-    !username
-  ) {
+  if (!username) {
     throw new Error(
       "IDを入力してください。"
     );
@@ -2269,6 +2086,13 @@ async function startPasskeyUniversalLogin() {
     username
   );
 
+  /*
+    重要：
+    login_hint は入れない。
+
+    Identifier First画面をAuth0側で表示させ、
+    Auth0の「パスキーで続行」入口を使えるようにする。
+  */
   await auth0Client.loginWithRedirect({
     appState: {
       returnTo:
@@ -2290,9 +2114,6 @@ async function startPasskeyUniversalLogin() {
 
       prompt:
         "login",
-
-      login_hint:
-        username,
     },
   });
 }
@@ -2302,20 +2123,13 @@ ui.loginIdForm.addEventListener(
   event => {
     event.preventDefault();
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
 
     const username =
       ui.adminId.value.trim();
 
-    if (
-      !username
-    ) {
+    if (!username) {
       return authError(
         "IDを入力してください。"
       );
@@ -2327,8 +2141,7 @@ ui.loginIdForm.addEventListener(
     ui.loginPasswordId.textContent =
       username;
 
-    selectedLoginMethod =
-      "";
+    selectedLoginMethod = "";
 
     resetLoginVerification();
 
@@ -2341,8 +2154,7 @@ ui.loginIdForm.addEventListener(
 ui.loginMethodBack.addEventListener(
   "click",
   () => {
-    selectedLoginMethod =
-      "";
+    selectedLoginMethod = "";
 
     resetLoginVerification();
 
@@ -2350,13 +2162,8 @@ ui.loginMethodBack.addEventListener(
       ui.loginMain
     );
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
 
     ui.adminId.focus();
   }
@@ -2365,8 +2172,7 @@ ui.loginMethodBack.addEventListener(
 ui.loginPasswordBack.addEventListener(
   "click",
   () => {
-    ui.adminPassword.value =
-      "";
+    ui.adminPassword.value = "";
 
     resetLoginVerification();
 
@@ -2374,13 +2180,8 @@ ui.loginPasswordBack.addEventListener(
       ui.loginMethod
     );
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
   }
 );
 
@@ -2396,20 +2197,14 @@ ui.loginEmail.addEventListener(
     ui.loginPasswordId.textContent =
       ui.adminId.value.trim();
 
-    ui.adminPassword.value =
-      "";
+    ui.adminPassword.value = "";
 
     showLoginStep(
       ui.loginPassword
     );
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
 
     ui.adminPassword.focus();
   }
@@ -2427,20 +2222,14 @@ ui.loginApp.addEventListener(
     ui.loginPasswordId.textContent =
       ui.adminId.value.trim();
 
-    ui.adminPassword.value =
-      "";
+    ui.adminPassword.value = "";
 
     showLoginStep(
       ui.loginPassword
     );
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
 
     ui.adminPassword.focus();
   }
@@ -2509,13 +2298,8 @@ ui.loginPasswordForm.addEventListener(
   async event => {
     event.preventDefault();
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
 
     if (
       ![
@@ -2537,21 +2321,20 @@ ui.loginPasswordForm.addEventListener(
       const {
         response,
         data,
-      } =
-        await passwordLogin(
-          ui.adminId.value.trim(),
-          ui.adminPassword.value
-        );
+      } = await passwordLogin(
+        ui.adminId.value.trim(),
+        ui.adminPassword.value
+      );
 
-      ui.adminPassword.value =
-        "";
+      ui.adminPassword.value = "";
 
       if (
         !response.ok ||
         !data.access_token
       ) {
         if (
-          data.error === "invalid_grant"
+          data.error ===
+          "invalid_grant"
         ) {
           throw new Error(
             "IDまたはパスワードが違います。"
@@ -2585,16 +2368,12 @@ ui.loginPasswordForm.addEventListener(
       ui.title.textContent =
         "認証";
 
-      hide(
-        ui.loginEnroll
-      );
-
-      hide(
-        ui.loginCodeArea
-      );
+      hide(ui.loginEnroll);
+      hide(ui.loginCodeArea);
 
       if (
-        selectedLoginMethod === "email"
+        selectedLoginMethod ===
+        "email"
       ) {
         authStatus(
           "認証コードを送信しています…"
@@ -2632,9 +2411,7 @@ ui.loginPasswordForm.addEventListener(
         ui.loginCodeArea.style.display =
           "block";
 
-        hide(
-          ui.authStatus
-        );
+        hide(ui.authStatus);
 
         ui.loginCode.focus();
 
@@ -2680,13 +2457,8 @@ ui.loginBack.addEventListener(
     ui.title.textContent =
       "管理者画面";
 
-    hide(
-      ui.authStatus
-    );
-
-    hide(
-      ui.authError
-    );
+    hide(ui.authStatus);
+    hide(ui.authError);
   }
 );
 
@@ -2708,9 +2480,7 @@ ui.loginCodeForm.addEventListener(
       );
     }
 
-    if (
-      !loginAuth0Token
-    ) {
+    if (!loginAuth0Token) {
       return authError(
         "ログイン情報がありません。最初からやり直してください。"
       );
@@ -2719,19 +2489,16 @@ ui.loginCodeForm.addEventListener(
     ui.loginCodeButton.disabled =
       true;
 
-    hide(
-      ui.authError
-    );
+    hide(ui.authError);
 
     try {
       let result;
 
       if (
-        selectedLoginMethod === "email"
+        selectedLoginMethod ===
+        "email"
       ) {
-        if (
-          !loginChallengeId
-        ) {
+        if (!loginChallengeId) {
           throw new Error(
             "メール認証情報がありません。もう一度コードを送信してください。"
           );
@@ -2749,7 +2516,8 @@ ui.loginCodeForm.addEventListener(
           );
 
       } else if (
-        selectedLoginMethod === "app"
+        selectedLoginMethod ===
+        "app"
       ) {
         result =
           await workerPost(
@@ -2806,37 +2574,31 @@ document
   .querySelectorAll(
     "[data-view]"
   )
-  .forEach(
-    button => {
-      button.addEventListener(
-        "click",
-        () =>
-          showView(
-            button.dataset.view
-          )
-      );
-    }
-  );
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () =>
+        showView(
+          button.dataset.view
+        )
+    );
+  });
 
 document
   .querySelectorAll(
     "[data-home]"
   )
-  .forEach(
-    button => {
-      button.addEventListener(
-        "click",
-        () =>
-          showView(
-            "home"
-          )
-      );
-    }
-  );
+  .forEach(button => {
+    button.addEventListener(
+      "click",
+      () =>
+        showView(
+          "home"
+        )
+    );
+  });
 
-function showView(
-  name
-) {
+function showView(name) {
   const sub =
     sessionStorage.getItem(
       "admin_sub"
@@ -2849,13 +2611,10 @@ function showView(
       "developer-responses",
       "admin-users",
       "create-admin",
-    ].includes(
-      name
-    ) &&
+    ].includes(name) &&
     sub !== OWNER_SUB
   ) {
-    name =
-      "home";
+    name = "home";
   }
 
   const titles = {
@@ -2917,29 +2676,29 @@ function showView(
   );
 
   if (
-    name === "developer-request"
+    name ===
+    "developer-request"
   ) {
     loadMyRequests();
   }
 
   if (
-    name === "developer-responses"
+    name ===
+    "developer-responses"
   ) {
     loadAllRequests();
   }
 
   if (
-    name === "admin-users"
+    name ===
+    "admin-users"
   ) {
     loadUsers();
   }
 
   window.scrollTo({
-    top:
-      0,
-
-    behavior:
-      "smooth",
+    top: 0,
+    behavior: "smooth",
   });
 }
 
@@ -2952,28 +2711,22 @@ function isDummy() {
   ) === DUMMY_SUB;
 }
 
-function setReadOnly(
-  readOnly
-) {
+function setReadOnly(readOnly) {
   [
     ui.meetingForm,
     ui.newsForm,
     ui.passwordForm,
     ui.requestForm,
-  ].forEach(
-    form => {
-      form
-        .querySelectorAll(
-          "input,textarea,button"
-        )
-        .forEach(
-          element => {
-            element.disabled =
-              readOnly;
-          }
-        );
-    }
-  );
+  ].forEach(form => {
+    form
+      .querySelectorAll(
+        "input,textarea,button"
+      )
+      .forEach(element => {
+        element.disabled =
+          readOnly;
+      });
+  });
 }
 
 function showAdmin() {
@@ -3076,11 +2829,10 @@ function clearAuthenticatedSession() {
     "admin_sub",
     "admin_current_view",
     "admin_auth_mode",
-  ].forEach(
-    key =>
-      sessionStorage.removeItem(
-        key
-      )
+  ].forEach(key =>
+    sessionStorage.removeItem(
+      key
+    )
   );
 }
 
@@ -3094,11 +2846,10 @@ function clearSession() {
     "admin_auth_mode",
     "pending_admin_id",
     "passkey_flow_stage",
-  ].forEach(
-    key =>
-      sessionStorage.removeItem(
-        key
-      )
+  ].forEach(key =>
+    sessionStorage.removeItem(
+      key
+    )
   );
 }
 
@@ -3132,8 +2883,7 @@ function restore() {
 async function finishPasskeyLogin() {
   const token =
     await auth0Client.getTokenSilently({
-      detailedResponse:
-        true,
+      detailedResponse: true,
     });
 
   const user =
@@ -3354,9 +3104,7 @@ async function initAuth() {
     restore();
 
   } catch (error) {
-    console.error(
-      error
-    );
+    console.error(error);
 
     showLogin();
 
@@ -3404,13 +3152,8 @@ ui.passwordForm.addEventListener(
   async event => {
     event.preventDefault();
 
-    hide(
-      ui.passwordStatus
-    );
-
-    hide(
-      ui.passwordError
-    );
+    hide(ui.passwordStatus);
+    hide(ui.passwordError);
 
     if (
       isDummy()
@@ -3455,17 +3198,16 @@ ui.passwordForm.addEventListener(
       const {
         response,
         data,
-      } =
-        await workerPost(
-          "/change-password",
-          {
-            newPassword:
-              password,
-          },
-          sessionStorage.getItem(
-            "admin_access_token"
-          )
-        );
+      } = await workerPost(
+        "/change-password",
+        {
+          newPassword:
+            password,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
 
       if (
         !response.ok
@@ -3497,12 +3239,8 @@ ui.passwordForm.addEventListener(
   }
 );
 
-function formatDate(
-  value
-) {
-  if (
-    !value
-  ) {
+function formatDate(value) {
+  if (!value) {
     return "";
   }
 
@@ -3529,15 +3267,10 @@ function formatDate(
           timeZone:
             "Asia/Tokyo",
         }
-      ).format(
-        date
-      );
+      ).format(date);
 }
 
-function requestCard(
-  item,
-  owner
-) {
+function requestCard(item, owner) {
   const card =
     document.createElement(
       "article"
@@ -3602,9 +3335,7 @@ function requestCard(
     body
   );
 
-  if (
-    owner
-  ) {
+  if (owner) {
     const textarea =
       document.createElement(
         "textarea"
@@ -3651,20 +3382,19 @@ function requestCard(
           const {
             response,
             data,
-          } =
-            await workerPost(
-              "/developer-request-answer",
-              {
-                id:
-                  item.id,
+          } = await workerPost(
+            "/developer-request-answer",
+            {
+              id:
+                item.id,
 
-                response:
-                  textarea.value.trim(),
-              },
-              sessionStorage.getItem(
-                "admin_access_token"
-              )
-            );
+              response:
+                textarea.value.trim(),
+            },
+            sessionStorage.getItem(
+              "admin_access_token"
+            )
+          );
 
           if (
             !response.ok
@@ -3727,14 +3457,13 @@ async function loadMyRequests() {
     const {
       response,
       data,
-    } =
-      await workerPost(
-        "/developer-request-mine",
-        {},
-        sessionStorage.getItem(
-          "admin_access_token"
-        )
-      );
+    } = await workerPost(
+      "/developer-request-mine",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
 
     if (
       !response.ok
@@ -3753,14 +3482,13 @@ async function loadMyRequests() {
     (
       data.requests ||
       []
-    ).forEach(
-      item =>
-        ui.myRequests.append(
-          requestCard(
-            item,
-            false
-          )
+    ).forEach(item =>
+      ui.myRequests.append(
+        requestCard(
+          item,
+          false
         )
+      )
     );
 
   } catch (error) {
@@ -3780,14 +3508,13 @@ async function loadAllRequests() {
     const {
       response,
       data,
-    } =
-      await workerPost(
-        "/developer-requests-admin",
-        {},
-        sessionStorage.getItem(
-          "admin_access_token"
-        )
-      );
+    } = await workerPost(
+      "/developer-requests-admin",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
 
     if (
       !response.ok
@@ -3806,14 +3533,13 @@ async function loadAllRequests() {
     (
       data.requests ||
       []
-    ).forEach(
-      item =>
-        ui.allRequests.append(
-          requestCard(
-            item,
-            true
-          )
+    ).forEach(item =>
+      ui.allRequests.append(
+        requestCard(
+          item,
+          true
         )
+      )
     );
 
   } catch (error) {
@@ -3845,20 +3571,19 @@ ui.requestForm.addEventListener(
       const {
         response,
         data,
-      } =
-        await workerPost(
-          "/developer-request-create",
-          {
-            subject:
-              ui.requestSubject.value.trim(),
+      } = await workerPost(
+        "/developer-request-create",
+        {
+          subject:
+            ui.requestSubject.value.trim(),
 
-            body:
-              ui.requestBody.value.trim(),
-          },
-          sessionStorage.getItem(
-            "admin_access_token"
-          )
-        );
+          body:
+            ui.requestBody.value.trim(),
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
 
       if (
         !response.ok
@@ -3902,14 +3627,13 @@ async function loadUsers() {
     const {
       response,
       data,
-    } =
-      await workerPost(
-        "/admin-users",
-        {},
-        sessionStorage.getItem(
-          "admin_access_token"
-        )
-      );
+    } = await workerPost(
+      "/admin-users",
+      {},
+      sessionStorage.getItem(
+        "admin_access_token"
+      )
+    );
 
     if (
       !response.ok
@@ -3928,152 +3652,207 @@ async function loadUsers() {
     (
       data.users ||
       []
-    ).forEach(
-      user => {
-        const row =
-          document.createElement(
-            "tr"
-          );
-
-        const name =
-          document.createElement(
-            "td"
-          );
-
-        const id =
-          document.createElement(
-            "td"
-          );
-
-        const mode =
-          document.createElement(
-            "td"
-          );
-
-        const edit =
-          document.createElement(
-            "td"
-          );
-
-        const remove =
-          document.createElement(
-            "td"
-          );
-
-        name.textContent =
-          user.name ||
-          "—";
-
-        id.textContent =
-          user.username ||
-          "—";
-
-        const check =
-          document.createElement(
-            "input"
-          );
-
-        check.type =
-          "checkbox";
-
-        check.checked =
-          !!user.coAdmin;
-
-        check.disabled =
-          true;
-
-        mode.append(
-          check
+    ).forEach(user => {
+      const row =
+        document.createElement(
+          "tr"
         );
 
-        if (
-          user.isOwner
-        ) {
-          mode.textContent =
-            "—";
+      const name =
+        document.createElement(
+          "td"
+        );
 
-          edit.textContent =
-            "—";
+      const id =
+        document.createElement(
+          "td"
+        );
 
-          remove.textContent =
-            "—";
+      const mode =
+        document.createElement(
+          "td"
+        );
 
-        } else {
-          const actions =
-            document.createElement(
-              "div"
-            );
+      const edit =
+        document.createElement(
+          "td"
+        );
 
-          actions.className =
-            "edit-actions";
+      const remove =
+        document.createElement(
+          "td"
+        );
 
-          const editButton =
-            document.createElement(
-              "button"
-            );
+      name.textContent =
+        user.name ||
+        "—";
 
-          editButton.className =
-            "mini";
+      id.textContent =
+        user.username ||
+        "—";
 
-          editButton.textContent =
-            "編集";
+      const check =
+        document.createElement(
+          "input"
+        );
 
-          editButton.disabled =
-            !!user.isDummy;
+      check.type =
+        "checkbox";
 
-          const save =
-            document.createElement(
-              "button"
-            );
+      check.checked =
+        !!user.coAdmin;
 
-          save.className =
-            "mini save hidden";
+      check.disabled =
+        true;
 
-          save.textContent =
-            "保存";
+      mode.append(
+        check
+      );
 
-          const cancel =
-            document.createElement(
-              "button"
-            );
+      if (
+        user.isOwner
+      ) {
+        mode.textContent =
+          "—";
 
-          cancel.className =
-            "mini hidden";
+        edit.textContent =
+          "—";
 
-          cancel.textContent =
-            "キャンセル";
+        remove.textContent =
+          "—";
 
-          let original =
-            !!user.coAdmin;
-
-          editButton.addEventListener(
-            "click",
-            () => {
-              original =
-                !!user.coAdmin;
-
-              check.disabled =
-                false;
-
-              editButton.classList.add(
-                "hidden"
-              );
-
-              save.classList.remove(
-                "hidden"
-              );
-
-              cancel.classList.remove(
-                "hidden"
-              );
-            }
+      } else {
+        const actions =
+          document.createElement(
+            "div"
           );
 
-          cancel.addEventListener(
-            "click",
-            () => {
-              check.checked =
-                original;
+        actions.className =
+          "edit-actions";
+
+        const editButton =
+          document.createElement(
+            "button"
+          );
+
+        editButton.className =
+          "mini";
+
+        editButton.textContent =
+          "編集";
+
+        editButton.disabled =
+          !!user.isDummy;
+
+        const save =
+          document.createElement(
+            "button"
+          );
+
+        save.className =
+          "mini save hidden";
+
+        save.textContent =
+          "保存";
+
+        const cancel =
+          document.createElement(
+            "button"
+          );
+
+        cancel.className =
+          "mini hidden";
+
+        cancel.textContent =
+          "キャンセル";
+
+        let original =
+          !!user.coAdmin;
+
+        editButton.addEventListener(
+          "click",
+          () => {
+            original =
+              !!user.coAdmin;
+
+            check.disabled =
+              false;
+
+            editButton.classList.add(
+              "hidden"
+            );
+
+            save.classList.remove(
+              "hidden"
+            );
+
+            cancel.classList.remove(
+              "hidden"
+            );
+          }
+        );
+
+        cancel.addEventListener(
+          "click",
+          () => {
+            check.checked =
+              original;
+
+            check.disabled =
+              true;
+
+            save.classList.add(
+              "hidden"
+            );
+
+            cancel.classList.add(
+              "hidden"
+            );
+
+            editButton.classList.remove(
+              "hidden"
+            );
+          }
+        );
+
+        save.addEventListener(
+          "click",
+          async () => {
+            save.disabled =
+              true;
+
+            try {
+              const {
+                response,
+                data,
+              } = await workerPost(
+                "/set-co-admin",
+                {
+                  userId:
+                    user.userId,
+
+                  enabled:
+                    check.checked,
+                },
+                sessionStorage.getItem(
+                  "admin_access_token"
+                )
+              );
+
+              if (
+                !response.ok
+              ) {
+                throw new Error(
+                  data.error ||
+                  "変更できませんでした。"
+                );
+              }
+
+              user.coAdmin =
+                check.checked;
+
+              original =
+                check.checked;
 
               check.disabled =
                 true;
@@ -4089,197 +3868,138 @@ async function loadUsers() {
               editButton.classList.remove(
                 "hidden"
               );
-            }
-          );
 
-          save.addEventListener(
-            "click",
-            async () => {
+            } catch (error) {
+              check.checked =
+                original;
+
+              alert(
+                error.message
+              );
+
+            } finally {
               save.disabled =
-                true;
-
-              try {
-                const {
-                  response,
-                  data,
-                } =
-                  await workerPost(
-                    "/set-co-admin",
-                    {
-                      userId:
-                        user.userId,
-
-                      enabled:
-                        check.checked,
-                    },
-                    sessionStorage.getItem(
-                      "admin_access_token"
-                    )
-                  );
-
-                if (
-                  !response.ok
-                ) {
-                  throw new Error(
-                    data.error ||
-                    "変更できませんでした。"
-                  );
-                }
-
-                user.coAdmin =
-                  check.checked;
-
-                original =
-                  check.checked;
-
-                check.disabled =
-                  true;
-
-                save.classList.add(
-                  "hidden"
-                );
-
-                cancel.classList.add(
-                  "hidden"
-                );
-
-                editButton.classList.remove(
-                  "hidden"
-                );
-
-              } catch (error) {
-                check.checked =
-                  original;
-
-                alert(
-                  error.message
-                );
-
-              } finally {
-                save.disabled =
-                  false;
-              }
+                false;
             }
+          }
+        );
+
+        actions.append(
+          editButton,
+          save,
+          cancel
+        );
+
+        edit.append(
+          actions
+        );
+
+        const deleteButton =
+          document.createElement(
+            "button"
           );
 
-          actions.append(
-            editButton,
-            save,
-            cancel
-          );
+        deleteButton.type =
+          "button";
 
-          edit.append(
-            actions
-          );
+        deleteButton.className =
+          "delete-icon-button";
 
-          const deleteButton =
-            document.createElement(
-              "button"
-            );
+        deleteButton.setAttribute(
+          "aria-label",
+          `${
+            user.username ||
+            user.name ||
+            "アカウント"
+          }を削除`
+        );
 
-          deleteButton.type =
-            "button";
+        deleteButton.title =
+          "アカウントを削除";
 
-          deleteButton.className =
-            "delete-icon-button";
+        deleteButton.innerHTML =
+          `
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
+            </svg>
+          `;
 
-          deleteButton.setAttribute(
-            "aria-label",
-            `${
+        deleteButton.addEventListener(
+          "click",
+          async () => {
+            const label =
               user.username ||
               user.name ||
-              "アカウント"
-            }を削除`
-          );
+              "このアカウント";
 
-          deleteButton.title =
-            "アカウントを削除";
+            const confirmed =
+              window.confirm(
+                `「${label}」を削除しますか？\nこの操作は取り消せません。`
+              );
 
-          deleteButton.innerHTML =
-            `
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h10l-.8 11H7.8L7 9Zm3 2v7h2v-7h-2Zm4 0v7h2v-7h-2Z" fill="currentColor"></path>
-              </svg>
-            `;
+            if (
+              !confirmed
+            ) {
+              return;
+            }
 
-          deleteButton.addEventListener(
-            "click",
-            async () => {
-              const label =
-                user.username ||
-                user.name ||
-                "このアカウント";
+            deleteButton.disabled =
+              true;
 
-              const confirmed =
-                window.confirm(
-                  `「${label}」を削除しますか？\nこの操作は取り消せません。`
-                );
+            try {
+              const {
+                response,
+                data,
+              } = await workerPost(
+                "/delete-admin",
+                {
+                  userId:
+                    user.userId,
+                },
+                sessionStorage.getItem(
+                  "admin_access_token"
+                )
+              );
 
               if (
-                !confirmed
+                !response.ok
               ) {
-                return;
+                throw new Error(
+                  data.error ||
+                  "アカウントを削除できませんでした。"
+                );
               }
+
+              await loadUsers();
+
+            } catch (error) {
+              alert(
+                error.message
+              );
 
               deleteButton.disabled =
-                true;
-
-              try {
-                const {
-                  response,
-                  data,
-                } =
-                  await workerPost(
-                    "/delete-admin",
-                    {
-                      userId:
-                        user.userId,
-                    },
-                    sessionStorage.getItem(
-                      "admin_access_token"
-                    )
-                  );
-
-                if (
-                  !response.ok
-                ) {
-                  throw new Error(
-                    data.error ||
-                    "アカウントを削除できませんでした。"
-                  );
-                }
-
-                await loadUsers();
-
-              } catch (error) {
-                alert(
-                  error.message
-                );
-
-                deleteButton.disabled =
-                  false;
-              }
+                false;
             }
-          );
-
-          remove.append(
-            deleteButton
-          );
-        }
-
-        row.append(
-          name,
-          id,
-          mode,
-          edit,
-          remove
+          }
         );
 
-        ui.usersBody.append(
-          row
+        remove.append(
+          deleteButton
         );
       }
-    );
+
+      row.append(
+        name,
+        id,
+        mode,
+        edit,
+        remove
+      );
+
+      ui.usersBody.append(
+        row
+      );
+    });
 
   } catch (error) {
     ui.usersStatus.textContent =
@@ -4345,30 +4065,24 @@ function updateCreateRequirements() {
   ui.createPasskey,
   ui.createEmailCheck,
   ui.createApp,
-].forEach(
-  element => {
-    element.addEventListener(
-      "change",
-      updateCreateRequirements
-    );
-  }
-);
+].forEach(element => {
+  element.addEventListener(
+    "change",
+    updateCreateRequirements
+  );
+});
 
 updateCreateRequirements();
 
-function setCreateDisabled(
-  value
-) {
+function setCreateDisabled(value) {
   ui.createForm
     .querySelectorAll(
       "input,button"
     )
-    .forEach(
-      element => {
-        element.disabled =
-          value;
-      }
-    );
+    .forEach(element => {
+      element.disabled =
+        value;
+    });
 }
 
 function resetAccountVerification() {
@@ -4429,30 +4143,26 @@ function updateProgress() {
   ui.accountProgress.textContent =
     pendingAccount
       .mfaMethods
-      .map(
-        method => {
-          if (
-            method === "passkey"
-          ) {
-            return `○ ${methodLabel(
-              method
-            )}`;
-          }
-
-          return `${
-            done.has(method)
-              ? "✓"
-              : method === current
-                ? "●"
-                : "○"
-          } ${methodLabel(
+      .map(method => {
+        if (
+          method === "passkey"
+        ) {
+          return `○ ${methodLabel(
             method
           )}`;
         }
-      )
-      .join(
-        "　"
-      );
+
+        return `${
+          done.has(method)
+            ? "✓"
+            : method === current
+              ? "●"
+              : "○"
+        } ${methodLabel(
+          method
+        )}`;
+      })
+      .join("　");
 }
 
 async function prepareAccountFactor() {
@@ -4485,13 +4195,8 @@ async function prepareAccountFactor() {
   ui.accountVerify.style.display =
     "block";
 
-  hide(
-    ui.accountStatus
-  );
-
-  hide(
-    ui.accountError
-  );
+  hide(ui.accountStatus);
+  hide(ui.accountError);
 
   ui.accountQr
     .classList
@@ -4531,19 +4236,18 @@ async function prepareAccountFactor() {
   const {
     response,
     data,
-  } =
-    await workerPost(
-      "/create-admin-factor-start",
-      {
-        stagingUserId:
-          account.stagingUserId,
+  } = await workerPost(
+    "/create-admin-factor-start",
+    {
+      stagingUserId:
+        account.stagingUserId,
 
-        method,
-      },
-      sessionStorage.getItem(
-        "admin_access_token"
-      )
-    );
+      method,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
 
   if (
     !response.ok
@@ -4627,9 +4331,7 @@ async function prepareAccountFactor() {
   ui.accountCode.focus();
 }
 
-async function completeAccountFactor(
-  code
-) {
+async function completeAccountFactor(code) {
   const account =
     pendingAccount;
 
@@ -4651,25 +4353,24 @@ async function completeAccountFactor(
   const {
     response,
     data,
-  } =
-    await workerPost(
-      "/create-admin-factor-complete",
-      {
-        stagingUserId:
-          account.stagingUserId,
+  } = await workerPost(
+    "/create-admin-factor-complete",
+    {
+      stagingUserId:
+        account.stagingUserId,
 
-        method,
+      method,
 
-        code,
+      code,
 
-        challengeId:
-          account.currentChallengeId ||
-          "",
-      },
-      sessionStorage.getItem(
-        "admin_access_token"
-      )
-    );
+      challengeId:
+        account.currentChallengeId ||
+        "",
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
 
   if (
     !response.ok
@@ -4693,7 +4394,6 @@ async function completeAccountFactor(
               account.verifiedMethods ||
               []
             ),
-
             method,
           ]),
         ];
@@ -4759,17 +4459,16 @@ async function finalizeAccount() {
   const {
     response,
     data,
-  } =
-    await workerPost(
-      "/create-admin-finalize",
-      {
-        stagingUserId:
-          account.stagingUserId,
-      },
-      sessionStorage.getItem(
-        "admin_access_token"
-      )
-    );
+  } = await workerPost(
+    "/create-admin-finalize",
+    {
+      stagingUserId:
+        account.stagingUserId,
+    },
+    sessionStorage.getItem(
+      "admin_access_token"
+    )
+  );
 
   if (
     !response.ok
@@ -4903,33 +4602,32 @@ ui.createForm.addEventListener(
       const {
         response,
         data,
-      } =
-        await workerPost(
-          "/create-admin",
-          {
-            fullName:
-              ui.createName.value.trim(),
+      } = await workerPost(
+        "/create-admin",
+        {
+          fullName:
+            ui.createName.value.trim(),
 
-            lastNameRoman:
-              ui.createLast.value.trim(),
+          lastNameRoman:
+            ui.createLast.value.trim(),
 
-            firstNameRoman:
-              ui.createFirst.value.trim(),
+          firstNameRoman:
+            ui.createFirst.value.trim(),
 
-            birthYear:
-              Number(
-                ui.createYear.value
-              ),
+          birthYear:
+            Number(
+              ui.createYear.value
+            ),
 
-            email,
+          email,
 
-            mfaMethods:
-              methods,
-          },
-          sessionStorage.getItem(
-            "admin_access_token"
-          )
-        );
+          mfaMethods:
+            methods,
+        },
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
 
       if (
         !response.ok
@@ -5086,6 +4784,7 @@ ui.logout.addEventListener(
 );
 
 initAuth();
+
 </script>
 
 </body>
