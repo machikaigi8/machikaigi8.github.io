@@ -182,6 +182,15 @@ textarea{
   margin:0 0 2px;
 }
 
+.passkey-note{
+  display:none;
+  margin-top:14px;
+  padding:12px;
+  border-left:4px solid var(--navy);
+  background:#EDF3FA;
+  line-height:1.7;
+}
+
 .selected-id{
   width:min(570px,100%);
   margin:0 auto 18px;
@@ -501,47 +510,28 @@ textarea:disabled{
 <main class="page">
 
   <div id="topbar" class="topbar">
-
     <strong id="user-name"></strong>
 
     <div class="top-actions">
-
-      <button
-        id="refresh"
-        class="sub"
-      >
+      <button id="refresh" class="sub">
         ↻ 更新
       </button>
 
-      <button
-        id="logout"
-        class="sub"
-      >
+      <button id="logout" class="sub">
         ログアウト
       </button>
-
     </div>
-
   </div>
 
-  <h1
-    id="page-title"
-    class="title"
-  >
+  <h1 id="page-title" class="title">
     管理者画面
   </h1>
 
-  <p
-    id="subtitle"
-    class="subtitle"
-  >
+  <p id="subtitle" class="subtitle">
     みんなのまち会議 管理者専用ページ
   </p>
 
-  <section
-    id="login-section"
-    class="panel"
-  >
+  <section id="login-section" class="panel">
 
     <div id="login-main">
 
@@ -549,17 +539,10 @@ textarea:disabled{
         ログイン
       </h2>
 
-      <form
-        id="login-id-form"
-        class="form"
-      >
+      <form id="login-id-form" class="form">
 
         <div class="row">
-
-          <label
-            class="label"
-            for="admin-id"
-          >
+          <label class="label" for="admin-id">
             ID
           </label>
 
@@ -569,7 +552,6 @@ textarea:disabled{
             autocomplete="username"
             required
           >
-
         </div>
 
         <button
@@ -583,10 +565,7 @@ textarea:disabled{
 
     </div>
 
-    <div
-      id="login-method"
-      class="hidden"
-    >
+    <div id="login-method" class="hidden">
 
       <h2 class="section-title">
         ログイン方法
@@ -604,17 +583,12 @@ textarea:disabled{
           class="login-method"
           type="button"
         >
-
           <img
             class="login-method-icon"
             src="passkey.webp"
             alt="パスキー"
           >
-
-          <span class="login-method-name">
-            パスキー
-          </span>
-
+          <span class="login-method-name">パスキー</span>
         </button>
 
         <button
@@ -622,17 +596,12 @@ textarea:disabled{
           class="login-method"
           type="button"
         >
-
           <img
             class="login-method-icon"
             src="mail.png"
             alt="メール認証"
           >
-
-          <span class="login-method-name">
-            メール認証
-          </span>
-
+          <span class="login-method-name">メール認証</span>
         </button>
 
         <button
@@ -640,17 +609,12 @@ textarea:disabled{
           class="login-method"
           type="button"
         >
-
           <img
             class="login-method-icon"
             src="guardian.jpg"
             alt="アプリ認証"
           >
-
-          <span class="login-method-name">
-            アプリ認証
-          </span>
-
+          <span class="login-method-name">アプリ認証</span>
         </button>
 
       </div>
@@ -666,10 +630,7 @@ textarea:disabled{
 
     </div>
 
-    <div
-      id="login-password"
-      class="hidden"
-    >
+    <div id="login-password" class="hidden">
 
       <h2
         id="login-password-title"
@@ -683,17 +644,10 @@ textarea:disabled{
         <strong id="login-password-id"></strong>
       </div>
 
-      <form
-        id="login-password-form"
-        class="form"
-      >
+      <form id="login-password-form" class="form">
 
         <div class="row">
-
-          <label
-            class="label"
-            for="admin-password"
-          >
+          <label class="label" for="admin-password">
             パスワード
           </label>
 
@@ -704,7 +658,6 @@ textarea:disabled{
             autocomplete="current-password"
             required
           >
-
         </div>
 
         <button
@@ -727,21 +680,32 @@ textarea:disabled{
 
     </div>
 
-    <div
-      id="login-mfa"
-      class="hidden"
-    >
+    <div id="login-mfa" class="hidden">
 
       <h2 class="section-title">
         認証
       </h2>
 
       <div class="form">
-
         <p
           id="login-mfa-message"
           class="hint"
         ></p>
+      </div>
+
+      <div
+        id="login-enroll"
+        class="enroll-area"
+      >
+
+        <p class="hint">
+          2FAS Authなどの認証アプリでQRコードを読み取ってください。
+        </p>
+
+        <div
+          id="login-qr"
+          class="qr"
+        ></div>
 
       </div>
 
@@ -802,17 +766,13 @@ textarea:disabled{
 
     </div>
 
-    <div
-      id="passkey-required"
-      class="hidden"
-    >
+    <div id="passkey-required" class="hidden">
 
       <h2 class="section-title">
         パスキーの設定
       </h2>
 
       <div class="form">
-
         <p
           id="passkey-required-message"
           class="hint"
@@ -825,7 +785,6 @@ textarea:disabled{
         >
           パスキーで続行
         </button>
-
       </div>
 
     </div>
@@ -842,19 +801,17 @@ textarea:disabled{
 
   </section>
 
-  <!-- ログイン枠の外側 -->
+  <!-- ログイン枠の外 -->
   <div
     id="login-home-link"
     class="bottom-nav"
   >
-
     <a
       class="sub"
       href="https://machikaigi8.github.io/"
     >
       ← HPトップへ戻る
     </a>
-
   </div>
 
   <section
@@ -930,14 +887,12 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
         <a
           class="sub"
           href="https://machikaigi8.github.io/"
         >
           ← HPトップへ戻る
         </a>
-
       </div>
 
     </section>
@@ -946,7 +901,6 @@ textarea:disabled{
       id="view-meeting"
       class="view"
     >
-
       <div class="card">
 
         <form
@@ -955,7 +909,6 @@ textarea:disabled{
         >
 
           <div class="row">
-
             <label class="label">
               開催日
             </label>
@@ -965,11 +918,9 @@ textarea:disabled{
               type="date"
               required
             >
-
           </div>
 
           <div class="row">
-
             <label class="label">
               開始時間
             </label>
@@ -979,11 +930,9 @@ textarea:disabled{
               type="time"
               required
             >
-
           </div>
 
           <div class="row">
-
             <label class="label">
               終了時間
             </label>
@@ -992,27 +941,22 @@ textarea:disabled{
               class="input"
               type="time"
             >
-
           </div>
 
           <div class="row">
-
             <label class="label">
               会場
             </label>
 
             <input class="input">
-
           </div>
 
           <div class="row">
-
             <label class="label">
               備考
             </label>
 
             <textarea class="textarea"></textarea>
-
           </div>
 
           <button
@@ -1032,14 +976,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1048,7 +987,6 @@ textarea:disabled{
       id="view-news"
       class="view"
     >
-
       <div class="card">
 
         <form
@@ -1057,7 +995,6 @@ textarea:disabled{
         >
 
           <div class="row">
-
             <label class="label">
               タイトル
             </label>
@@ -1066,11 +1003,9 @@ textarea:disabled{
               class="input"
               required
             >
-
           </div>
 
           <div class="row">
-
             <label class="label">
               公開日
             </label>
@@ -1080,11 +1015,9 @@ textarea:disabled{
               type="date"
               required
             >
-
           </div>
 
           <div class="row">
-
             <label class="label">
               本文
             </label>
@@ -1093,7 +1026,6 @@ textarea:disabled{
               class="textarea"
               required
             ></textarea>
-
           </div>
 
           <button
@@ -1113,14 +1045,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1129,7 +1056,6 @@ textarea:disabled{
       id="view-password"
       class="view"
     >
-
       <div class="card">
 
         <form
@@ -1193,14 +1119,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1209,7 +1130,6 @@ textarea:disabled{
       id="view-inquiries"
       class="view"
     >
-
       <div class="card">
 
         <p class="hint">
@@ -1220,14 +1140,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1236,7 +1151,6 @@ textarea:disabled{
       id="view-developer-request"
       class="view"
     >
-
       <div class="card">
 
         <form
@@ -1307,14 +1221,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1323,7 +1232,6 @@ textarea:disabled{
       id="view-developer"
       class="view"
     >
-
       <div class="card">
 
         <div class="menu-grid">
@@ -1365,14 +1273,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1381,7 +1284,6 @@ textarea:disabled{
       id="view-developer-responses"
       class="view"
     >
-
       <div class="card">
 
         <div
@@ -1399,14 +1301,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-view="developer"
-        >
+        <button class="sub" data-view="developer">
           ← デベロッパーメニューへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1415,7 +1312,6 @@ textarea:disabled{
       id="view-admin-users"
       class="view"
     >
-
       <div class="card">
 
         <div
@@ -1430,7 +1326,6 @@ textarea:disabled{
           <table class="table">
 
             <thead>
-
               <tr>
                 <th>名前</th>
                 <th>ID</th>
@@ -1438,7 +1333,6 @@ textarea:disabled{
                 <th>編集</th>
                 <th>削除</th>
               </tr>
-
             </thead>
 
             <tbody id="users-body"></tbody>
@@ -1450,14 +1344,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-view="developer"
-        >
+        <button class="sub" data-view="developer">
           ← デベロッパーメニューへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1466,7 +1355,6 @@ textarea:disabled{
       id="view-hp-update"
       class="view"
     >
-
       <div class="card">
 
         <p class="hint">
@@ -1476,14 +1364,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-home
-        >
+        <button class="sub" data-home>
           ← 管理者トップへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1503,11 +1386,7 @@ textarea:disabled{
           <div class="form-two-column">
 
             <div class="row">
-
-              <label
-                class="label"
-                for="create-name"
-              >
+              <label class="label" for="create-name">
                 氏名
               </label>
 
@@ -1517,15 +1396,10 @@ textarea:disabled{
                 maxlength="100"
                 required
               >
-
             </div>
 
             <div class="row">
-
-              <label
-                class="label"
-                for="create-year"
-              >
+              <label class="label" for="create-year">
                 生年
               </label>
 
@@ -1538,7 +1412,6 @@ textarea:disabled{
                 placeholder="例：2005"
                 required
               >
-
             </div>
 
           </div>
@@ -1546,11 +1419,7 @@ textarea:disabled{
           <div class="form-two-column">
 
             <div class="row">
-
-              <label
-                class="label"
-                for="create-last"
-              >
+              <label class="label" for="create-last">
                 姓（ローマ字）
               </label>
 
@@ -1560,15 +1429,10 @@ textarea:disabled{
                 placeholder="例：Souda"
                 required
               >
-
             </div>
 
             <div class="row">
-
-              <label
-                class="label"
-                for="create-first"
-              >
+              <label class="label" for="create-first">
                 名（ローマ字）
               </label>
 
@@ -1578,13 +1442,11 @@ textarea:disabled{
                 placeholder="例：Takaaki"
                 required
               >
-
             </div>
 
           </div>
 
           <div class="row">
-
             <label class="label">
               認証方法
             </label>
@@ -1592,70 +1454,38 @@ textarea:disabled{
             <div class="create-method-grid">
 
               <label class="create-method">
-
-                <img
-                  src="passkey.webp"
-                  alt="パスキー"
-                >
-
+                <img src="passkey.webp" alt="パスキー">
                 <input
                   id="create-passkey"
                   type="checkbox"
                   checked
                 >
-
-                <span>
-                  パスキー
-                </span>
-
+                <span>パスキー</span>
               </label>
 
               <label class="create-method">
-
-                <img
-                  src="mail.png"
-                  alt="メール認証"
-                >
-
+                <img src="mail.png" alt="メール認証">
                 <input
                   id="create-email-check"
                   type="checkbox"
                 >
-
-                <span>
-                  メール認証
-                </span>
-
+                <span>メール認証</span>
               </label>
 
               <label class="create-method">
-
-                <img
-                  src="guardian.jpg"
-                  alt="アプリ認証"
-                >
-
+                <img src="guardian.jpg" alt="アプリ認証">
                 <input
                   id="create-app"
                   type="checkbox"
                 >
-
-                <span>
-                  アプリ認証
-                </span>
-
+                <span>アプリ認証</span>
               </label>
 
             </div>
-
           </div>
 
           <div class="row">
-
-            <label
-              class="label"
-              for="create-email"
-            >
+            <label class="label" for="create-email">
               メールアドレス
 
               <span
@@ -1664,7 +1494,6 @@ textarea:disabled{
               >
                 必須
               </span>
-
             </label>
 
             <input
@@ -1673,7 +1502,6 @@ textarea:disabled{
               type="email"
               placeholder="例：user@example.com"
             >
-
           </div>
 
           <button
@@ -1764,9 +1592,7 @@ textarea:disabled{
             <span id="result-name"></span>
           </p>
 
-          <p>
-            ID
-          </p>
+          <p>ID</p>
 
           <div
             id="result-id"
@@ -1781,9 +1607,7 @@ textarea:disabled{
             IDをコピー
           </button>
 
-          <p>
-            初期パスワード
-          </p>
+          <p>初期パスワード</p>
 
           <div
             id="result-password"
@@ -1808,14 +1632,9 @@ textarea:disabled{
       </div>
 
       <div class="bottom-nav">
-
-        <button
-          class="sub"
-          data-view="developer"
-        >
+        <button class="sub" data-view="developer">
           ← デベロッパーメニューへ戻る
         </button>
-
       </div>
 
     </section>
@@ -1828,344 +1647,136 @@ textarea:disabled{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
-const AUTH0_DOMAIN =
-  "dev-8e2z74rs10plmrtk.us.auth0.com";
-
-const AUTH0_CLIENT_ID =
-  "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
-
-const AUTH0_REALM =
-  "Username-Password-Authentication";
-
-const API_AUDIENCE =
-  "https://machikaigi8-admin-api";
-
-const WORKER_URL =
-  "https://machikaigi-admin-api.taka-souda516.workers.dev";
-
-const OWNER_SUB =
-  "auth0|6ad6c756c6029c5d0a72e78a";
-
-const DUMMY_SUB =
-  "auth0|6ad712865703ba3cd5630025";
-
-const AUTH0_BASE =
-  `https://${AUTH0_DOMAIN}`;
-
+const AUTH0_DOMAIN = "dev-8e2z74rs10plmrtk.us.auth0.com";
+const AUTH0_CLIENT_ID = "vKm2kK5RZyra8FlRWDTFDK04AoCznwsc";
+const AUTH0_REALM = "Username-Password-Authentication";
+const API_AUDIENCE = "https://machikaigi8-admin-api";
+const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
+const OWNER_SUB = "auth0|6ad6c756c6029c5d0a72e78a";
+const DUMMY_SUB = "auth0|6ad712865703ba3cd5630025";
+const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
 const AUTH0_REDIRECT_URI =
   `${window.location.origin}${window.location.pathname}`;
-
 const PASSKEY_CLAIM =
   "https://machikaigi8.github.io/auth_method";
 
 const $ =
   id =>
-    document.getElementById(
-      id
-    );
+    document.getElementById(id);
 
 const ui = {
-  topbar:
-    $("topbar"),
-
-  userName:
-    $("user-name"),
-
-  refresh:
-    $("refresh"),
-
-  logout:
-    $("logout"),
-
-  title:
-    $("page-title"),
-
-  subtitle:
-    $("subtitle"),
-
-  loginSection:
-    $("login-section"),
-
-  loginHomeLink:
-    $("login-home-link"),
-
-  loginMain:
-    $("login-main"),
-
-  loginMethod:
-    $("login-method"),
-
-  loginPassword:
-    $("login-password"),
-
-  loginMfa:
-    $("login-mfa"),
-
-  passkeyRequired:
-    $("passkey-required"),
-
-  passkeyRequiredMessage:
-    $("passkey-required-message"),
-
-  passkeyRequiredButton:
-    $("passkey-required-button"),
-
-  loginIdForm:
-    $("login-id-form"),
-
-  adminId:
-    $("admin-id"),
-
-  loginSelectedId:
-    $("login-selected-id"),
-
-  loginPasskey:
-    $("login-passkey"),
-
-  loginEmail:
-    $("login-email"),
-
-  loginApp:
-    $("login-app"),
-
-  loginMethodBack:
-    $("login-method-back"),
-
-  loginPasswordTitle:
-    $("login-password-title"),
-
-  loginPasswordId:
-    $("login-password-id"),
-
-  loginPasswordForm:
-    $("login-password-form"),
-
-  adminPassword:
-    $("admin-password"),
-
-  loginPasswordButton:
-    $("login-password-button"),
-
-  loginPasswordBack:
-    $("login-password-back"),
-
-  loginBack:
-    $("login-back"),
-
-  authStatus:
-    $("auth-status"),
-
-  authError:
-    $("auth-error"),
-
-  loginMfaMessage:
-    $("login-mfa-message"),
-
-  loginCodeArea:
-    $("login-code-area"),
-
-  loginCodeForm:
-    $("login-code-form"),
-
-  loginCodeMessage:
-    $("login-code-message"),
-
-  loginCode:
-    $("login-code"),
-
-  loginCodeButton:
-    $("login-code-button"),
-
-  admin:
-    $("admin"),
-
-  developerHome:
-    $("developer-home"),
-
-  hpHome:
-    $("hp-home"),
-
-  meetingForm:
-    $("meeting-form"),
-
-  meetingStatus:
-    $("meeting-status"),
-
-  newsForm:
-    $("news-form"),
-
-  newsStatus:
-    $("news-status"),
-
-  passwordForm:
-    $("password-form"),
-
-  newPassword:
-    $("new-password"),
-
-  newPasswordConfirm:
-    $("new-password-confirm"),
-
-  passwordButton:
-    $("password-button"),
-
-  passwordStatus:
-    $("password-status"),
-
-  passwordError:
-    $("password-error"),
-
-  requestForm:
-    $("request-form"),
-
-  requestSubject:
-    $("request-subject"),
-
-  requestBody:
-    $("request-body"),
-
-  requestSend:
-    $("request-send"),
-
-  requestStatus:
-    $("request-status"),
-
-  myRequestsStatus:
-    $("my-requests-status"),
-
-  myRequests:
-    $("my-requests"),
-
-  allRequestsStatus:
-    $("all-requests-status"),
-
-  allRequests:
-    $("all-requests"),
-
-  usersStatus:
-    $("users-status"),
-
-  usersBody:
-    $("users-body"),
-
-  createForm:
-    $("create-form"),
-
-  createName:
-    $("create-name"),
-
-  createLast:
-    $("create-last"),
-
-  createFirst:
-    $("create-first"),
-
-  createYear:
-    $("create-year"),
-
-  createEmail:
-    $("create-email"),
-
-  createEmailRequired:
-    $("create-email-required"),
-
-  createPasskey:
-    $("create-passkey"),
-
-  createApp:
-    $("create-app"),
-
-  createEmailCheck:
-    $("create-email-check"),
-
-  createButton:
-    $("create-button"),
-
-  accountVerify:
-    $("account-verify"),
-
-  accountProgress:
-    $("account-progress"),
-
-  accountMessage:
-    $("account-message"),
-
-  accountQr:
-    $("account-qr"),
-
-  accountCodeForm:
-    $("account-code-form"),
-
-  accountCode:
-    $("account-code"),
-
-  accountCodeButton:
-    $("account-code-button"),
-
-  accountStatus:
-    $("account-status"),
-
-  accountError:
-    $("account-error"),
-
-  accountResult:
-    $("account-result"),
-
-  accountResultTitle:
-    $("account-result-title"),
-
-  resultName:
-    $("result-name"),
-
-  resultId:
-    $("result-id"),
-
-  resultPassword:
-    $("result-password"),
-
-  resultMfa:
-    $("result-mfa"),
-
-  copyId:
-    $("copy-id"),
-
-  copyPassword:
-    $("copy-password"),
+  topbar: $("topbar"),
+  userName: $("user-name"),
+  refresh: $("refresh"),
+  logout: $("logout"),
+  title: $("page-title"),
+  subtitle: $("subtitle"),
+  loginSection: $("login-section"),
+  loginHomeLink: $("login-home-link"),
+  loginMain: $("login-main"),
+  loginMethod: $("login-method"),
+  loginPassword: $("login-password"),
+  loginMfa: $("login-mfa"),
+  passkeyRequired: $("passkey-required"),
+  passkeyRequiredMessage: $("passkey-required-message"),
+  passkeyRequiredButton: $("passkey-required-button"),
+  loginIdForm: $("login-id-form"),
+  adminId: $("admin-id"),
+  loginSelectedId: $("login-selected-id"),
+  loginPasskey: $("login-passkey"),
+  loginEmail: $("login-email"),
+  loginApp: $("login-app"),
+  loginMethodBack: $("login-method-back"),
+  loginPasswordTitle: $("login-password-title"),
+  loginPasswordId: $("login-password-id"),
+  loginPasswordForm: $("login-password-form"),
+  adminPassword: $("admin-password"),
+  loginPasswordButton: $("login-password-button"),
+  loginPasswordBack: $("login-password-back"),
+  loginBack: $("login-back"),
+  authStatus: $("auth-status"),
+  authError: $("auth-error"),
+  loginMfaMessage: $("login-mfa-message"),
+  loginEnroll: $("login-enroll"),
+  loginQr: $("login-qr"),
+  loginCodeArea: $("login-code-area"),
+  loginCodeForm: $("login-code-form"),
+  loginCodeMessage: $("login-code-message"),
+  loginCode: $("login-code"),
+  loginCodeButton: $("login-code-button"),
+  admin: $("admin"),
+  developerHome: $("developer-home"),
+  hpHome: $("hp-home"),
+  meetingForm: $("meeting-form"),
+  meetingStatus: $("meeting-status"),
+  newsForm: $("news-form"),
+  newsStatus: $("news-status"),
+  passwordForm: $("password-form"),
+  newPassword: $("new-password"),
+  newPasswordConfirm: $("new-password-confirm"),
+  passwordButton: $("password-button"),
+  passwordStatus: $("password-status"),
+  passwordError: $("password-error"),
+  requestForm: $("request-form"),
+  requestSubject: $("request-subject"),
+  requestBody: $("request-body"),
+  requestSend: $("request-send"),
+  requestStatus: $("request-status"),
+  myRequestsStatus: $("my-requests-status"),
+  myRequests: $("my-requests"),
+  allRequestsStatus: $("all-requests-status"),
+  allRequests: $("all-requests"),
+  usersStatus: $("users-status"),
+  usersBody: $("users-body"),
+  createForm: $("create-form"),
+  createName: $("create-name"),
+  createLast: $("create-last"),
+  createFirst: $("create-first"),
+  createYear: $("create-year"),
+  createEmail: $("create-email"),
+  createEmailRequired: $("create-email-required"),
+  createPasskey: $("create-passkey"),
+  createApp: $("create-app"),
+  createEmailCheck: $("create-email-check"),
+  createButton: $("create-button"),
+  accountVerify: $("account-verify"),
+  accountProgress: $("account-progress"),
+  accountMessage: $("account-message"),
+  accountQr: $("account-qr"),
+  accountCodeForm: $("account-code-form"),
+  accountCode: $("account-code"),
+  accountCodeButton: $("account-code-button"),
+  accountStatus: $("account-status"),
+  accountError: $("account-error"),
+  accountResult: $("account-result"),
+  accountResultTitle: $("account-result-title"),
+  resultName: $("result-name"),
+  resultId: $("result-id"),
+  resultPassword: $("result-password"),
+  resultMfa: $("result-mfa"),
+  copyId: $("copy-id"),
+  copyPassword: $("copy-password"),
 };
 
-let auth0Client =
-  null;
+let auth0Client = null;
+let selectedLoginMethod = "";
+let loginAuth0Token = "";
+let loginChallengeId = "";
+let pendingAccount = null;
 
-let selectedLoginMethod =
-  "";
+const show = (
+  element,
+  message
+) => {
+  element.textContent =
+    message;
 
-let loginAuth0Token =
-  "";
-
-let loginChallengeId =
-  "";
-
-let pendingAccount =
-  null;
-
-const show =
-  (
-    element,
-    message
-  ) => {
-    element.textContent =
-      message;
-
-    element.style.display =
-      "block";
-  };
+  element.style.display =
+    "block";
+};
 
 const hide =
   element => {
-    if (!element) {
-      return;
-    }
-
     element.style.display =
       "none";
   };
@@ -2249,9 +1860,7 @@ function decodeJwt(
   try {
     let payload =
       token
-        .split(
-          "."
-        )[1]
+        .split(".")[1]
         .replace(
           /-/g,
           "+"
@@ -2347,17 +1956,16 @@ async function workerPost(
   body = {},
   token = ""
 ) {
-  const headers = {
-    "Content-Type":
-      "application/json",
-  };
+  // Authorizationヘッダーを使わず、
+  // text/plain の単純POSTにすることで
+  // CORS preflightを発生させない。
+  const envelope = {
+    authToken:
+      token || "",
 
-  if (
-    token
-  ) {
-    headers.Authorization =
-      `Bearer ${token}`;
-  }
+    data:
+      body || {},
+  };
 
   let response;
 
@@ -2372,20 +1980,24 @@ async function workerPost(
           mode:
             "cors",
 
-          cache:
-            "no-store",
+          credentials:
+            "omit",
 
-          headers,
+          headers: {
+            "Content-Type":
+              "text/plain;charset=UTF-8",
+          },
 
           body:
             JSON.stringify(
-              body
+              envelope
             ),
         }
       );
 
   } catch (error) {
     console.error(
+      "Worker fetch failed:",
       error
     );
 
@@ -2462,8 +2074,15 @@ function resetLoginVerification() {
     "";
 
   hide(
+    ui.loginEnroll
+  );
+
+  hide(
     ui.loginCodeArea
   );
+
+  ui.loginQr.innerHTML =
+    "";
 
   ui.loginCode.value =
     "";
@@ -2932,8 +2551,7 @@ ui.loginPasswordForm.addEventListener(
         !data.access_token
       ) {
         if (
-          data.error ===
-          "invalid_grant"
+          data.error === "invalid_grant"
         ) {
           throw new Error(
             "IDまたはパスワードが違います。"
@@ -2968,12 +2586,15 @@ ui.loginPasswordForm.addEventListener(
         "認証";
 
       hide(
+        ui.loginEnroll
+      );
+
+      hide(
         ui.loginCodeArea
       );
 
       if (
-        selectedLoginMethod ===
-        "email"
+        selectedLoginMethod === "email"
       ) {
         authStatus(
           "認証コードを送信しています…"
@@ -3106,8 +2727,7 @@ ui.loginCodeForm.addEventListener(
       let result;
 
       if (
-        selectedLoginMethod ===
-        "email"
+        selectedLoginMethod === "email"
       ) {
         if (
           !loginChallengeId
@@ -3122,7 +2742,6 @@ ui.loginCodeForm.addEventListener(
             "/login-email-verify",
             {
               code,
-
               challengeId:
                 loginChallengeId,
             },
@@ -3130,8 +2749,7 @@ ui.loginCodeForm.addEventListener(
           );
 
       } else if (
-        selectedLoginMethod ===
-        "app"
+        selectedLoginMethod === "app"
       ) {
         result =
           await workerPost(
@@ -3299,22 +2917,19 @@ function showView(
   );
 
   if (
-    name ===
-    "developer-request"
+    name === "developer-request"
   ) {
     loadMyRequests();
   }
 
   if (
-    name ===
-    "developer-responses"
+    name === "developer-responses"
   ) {
     loadAllRequests();
   }
 
   if (
-    name ===
-    "admin-users"
+    name === "admin-users"
   ) {
     loadUsers();
   }
@@ -3503,8 +3118,7 @@ function restore() {
 
   if (
     !token ||
-    Date.now() >=
-      expires
+    Date.now() >= expires
   ) {
     clearSession();
 
@@ -3581,8 +3195,7 @@ async function finishPasskeyLogin() {
 
   if (
     status.enrolled &&
-    authMethod !==
-      "passkey"
+    authMethod !== "passkey"
   ) {
     clearAuthenticatedSession();
 
@@ -3607,8 +3220,7 @@ async function finishPasskeyLogin() {
   }
 
   if (
-    authMethod !==
-    "passkey"
+    authMethod !== "passkey"
   ) {
     clearAuthenticatedSession();
 
@@ -3616,15 +3228,13 @@ async function finishPasskeyLogin() {
 
     sessionStorage.setItem(
       "passkey_flow_stage",
-      stage ===
-      "confirm"
+      stage === "confirm"
         ? "confirm"
         : "initial"
     );
 
     showPasskeyRequiredScreen(
-      stage ===
-      "confirm"
+      stage === "confirm"
         ? "初回設定を完了するには、今登録したパスキーを使ってもう一度ログインしてください。"
         : "パスキーでのログインを確認できませんでした。登録済みのパスキーを使ってログインしてください。"
     );
@@ -3684,12 +3294,8 @@ async function initAuth() {
       );
 
     if (
-      params.has(
-        "code"
-      ) &&
-      params.has(
-        "state"
-      )
+      params.has("code") &&
+      params.has("state")
     ) {
       await auth0Client
         .handleRedirectCallback();
@@ -3706,9 +3312,7 @@ async function initAuth() {
     }
 
     if (
-      params.has(
-        "error"
-      )
+      params.has("error")
     ) {
       const description =
         params.get(
@@ -3737,8 +3341,7 @@ async function initAuth() {
     if (
       sessionStorage.getItem(
         "passkey_flow_stage"
-      ) ===
-        "confirm" &&
+      ) === "confirm" &&
       sessionStorage.getItem(
         "pending_admin_id"
       )
@@ -3822,8 +3425,7 @@ ui.passwordForm.addEventListener(
       ui.newPasswordConfirm.value;
 
     if (
-      password !==
-      confirm
+      password !== confirm
     ) {
       return show(
         ui.passwordError,
@@ -3832,8 +3434,7 @@ ui.passwordForm.addEventListener(
     }
 
     if (
-      password.length <
-        8 ||
+      password.length < 8 ||
       !/[A-Za-z]/.test(
         password
       ) ||
@@ -3907,12 +3508,9 @@ function formatDate(
 
   const date =
     new Date(
-      value.endsWith(
-        "Z"
-      )
+      value.endsWith("Z")
         ? value
-        : value +
-          "Z"
+        : value + "Z"
     );
 
   return Number.isNaN(
@@ -4834,8 +4432,7 @@ function updateProgress() {
       .map(
         method => {
           if (
-            method ===
-            "passkey"
+            method === "passkey"
           ) {
             return `○ ${methodLabel(
               method
@@ -4843,12 +4440,9 @@ function updateProgress() {
           }
 
           return `${
-            done.has(
-              method
-            )
+            done.has(method)
               ? "✓"
-              : method ===
-                current
+              : method === current
                 ? "●"
                 : "○"
           } ${methodLabel(
@@ -4918,8 +4512,7 @@ async function prepareAccountFactor() {
     "";
 
   if (
-    method ===
-    "passkey"
+    method === "passkey"
   ) {
     account.currentIndex +=
       1;
@@ -4968,8 +4561,7 @@ async function prepareAccountFactor() {
   );
 
   if (
-    method ===
-    "email"
+    method === "email"
   ) {
     account.currentChallengeId =
       data.challengeId ||
@@ -5101,6 +4693,7 @@ async function completeAccountFactor(
               account.verifiedMethods ||
               []
             ),
+
             method,
           ]),
         ];
@@ -5289,12 +4882,8 @@ ui.createForm.addEventListener(
 
     if (
       (
-        methods.includes(
-          "passkey"
-        ) ||
-        methods.includes(
-          "email"
-        )
+        methods.includes("passkey") ||
+        methods.includes("email")
       ) &&
       !email
     ) {
