@@ -1012,15 +1012,10 @@
                     await fetch(
                         MEETING_API_URL,
                         {
-                            method: "POST",
+                            method: "GET",
                             mode: "cors",
                             credentials: "omit",
-                            headers: {
-                                "Content-Type":
-                                    "text/plain;charset=UTF-8"
-                            },
-                            body:
-                                JSON.stringify({})
+                            cache: "no-store"
                         }
                     );
 
