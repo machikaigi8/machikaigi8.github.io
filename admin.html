@@ -320,6 +320,21 @@ textarea:disabled{
   margin-bottom:18px;
 }
 
+.bottom-nav{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:22px;
+}
+
+.bottom-nav .sub{
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
 .mfa-options,
 .create-options{
   display:grid;
@@ -807,6 +822,15 @@ textarea:disabled{
       class="error"
     ></div>
 
+    <div class="bottom-nav">
+      <a
+        class="sub"
+        href="https://machikaigi8.github.io/"
+      >
+        ← HPトップへ戻る
+      </a>
+    </div>
+
   </section>
 
   <section
@@ -881,19 +905,21 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <a
+          class="sub"
+          href="https://machikaigi8.github.io/"
+        >
+          ← HPトップへ戻る
+        </a>
+      </div>
+
     </section>
 
     <section
       id="view-meeting"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -969,19 +995,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-news"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -1040,19 +1065,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-password"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -1116,19 +1140,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-inquiries"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -1139,19 +1162,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-developer-request"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -1222,19 +1244,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-developer"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
 
       <div class="card">
 
@@ -1276,19 +1297,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-developer-responses"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-view="developer"
-      >
-        ← デベロッパーメニューへ戻る
-      </button>
 
       <div class="card">
 
@@ -1306,19 +1326,18 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-view="developer">
+          ← デベロッパーメニューへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
       id="view-admin-users"
       class="view"
     >
-
-      <button
-        class="sub back"
-        data-view="developer"
-      >
-        ← デベロッパーメニューへ戻る
-      </button>
 
       <div class="card">
 
@@ -1351,6 +1370,12 @@ textarea:disabled{
 
       </div>
 
+      <div class="bottom-nav">
+        <button class="sub" data-view="developer">
+          ← デベロッパーメニューへ戻る
+        </button>
+      </div>
+
     </section>
 
     <section
@@ -1358,19 +1383,18 @@ textarea:disabled{
       class="view"
     >
 
-      <button
-        class="sub back"
-        data-home
-      >
-        ← 管理者トップへ戻る
-      </button>
-
       <div class="card">
 
         <p class="hint">
           HP更新機能は次に接続します。
         </p>
 
+      </div>
+
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
       </div>
 
     </section>
@@ -1459,29 +1483,35 @@ textarea:disabled{
 
               <label class="create-method">
                 <img src="passkey.webp" alt="パスキー">
+
                 <input
                   id="create-passkey"
                   type="checkbox"
                   checked
                 >
+
                 <span>パスキー</span>
               </label>
 
               <label class="create-method">
                 <img src="mail.png" alt="メール認証">
+
                 <input
                   id="create-email-check"
                   type="checkbox"
                 >
+
                 <span>メール認証</span>
               </label>
 
               <label class="create-method">
                 <img src="guardian.jpg" alt="アプリ認証">
+
                 <input
                   id="create-app"
                   type="checkbox"
                 >
+
                 <span>アプリ認証</span>
               </label>
 
@@ -1491,6 +1521,7 @@ textarea:disabled{
           <div class="row">
             <label class="label" for="create-email">
               メールアドレス
+
               <span
                 id="create-email-required"
                 class="required-mark"
@@ -1634,13 +1665,11 @@ textarea:disabled{
 
       </div>
 
-      <button
-        class="sub"
-        data-view="developer"
-        style="margin-top:18px"
-      >
-        ← デベロッパーメニューへ戻る
-      </button>
+      <div class="bottom-nav">
+        <button class="sub" data-view="developer">
+          ← デベロッパーメニューへ戻る
+        </button>
+      </div>
 
     </section>
 
@@ -1660,102 +1689,285 @@ const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
 const OWNER_SUB = "auth0|6ad6c756c6029c5d0a72e78a";
 const DUMMY_SUB = "auth0|6ad712865703ba3cd5630025";
 const AUTH0_BASE = `https://${AUTH0_DOMAIN}`;
-const AUTH0_REDIRECT_URI = `${window.location.origin}${window.location.pathname}`;
-const PASSKEY_CLAIM = "https://machikaigi8.github.io/auth_method";
+const AUTH0_REDIRECT_URI =
+  `${window.location.origin}${window.location.pathname}`;
+const PASSKEY_CLAIM =
+  "https://machikaigi8.github.io/auth_method";
 
-const $ = id => document.getElementById(id);
+const $ =
+  id =>
+    document.getElementById(id);
 
 const ui = {
-  topbar: $("topbar"),
-  userName: $("user-name"),
-  refresh: $("refresh"),
-  logout: $("logout"),
-  title: $("page-title"),
-  subtitle: $("subtitle"),
-  loginSection: $("login-section"),
-  loginMain: $("login-main"),
-  loginMethod: $("login-method"),
-  loginPassword: $("login-password"),
-  loginMfa: $("login-mfa"),
-  passkeyRequired: $("passkey-required"),
-  passkeyRequiredMessage: $("passkey-required-message"),
-  passkeyRequiredButton: $("passkey-required-button"),
-  loginIdForm: $("login-id-form"),
-  adminId: $("admin-id"),
-  loginSelectedId: $("login-selected-id"),
-  loginPasskey: $("login-passkey"),
-  loginEmail: $("login-email"),
-  loginApp: $("login-app"),
-  loginMethodBack: $("login-method-back"),
-  loginPasswordTitle: $("login-password-title"),
-  loginPasswordId: $("login-password-id"),
-  loginPasswordForm: $("login-password-form"),
-  adminPassword: $("admin-password"),
-  loginPasswordButton: $("login-password-button"),
-  loginPasswordBack: $("login-password-back"),
-  loginBack: $("login-back"),
-  authStatus: $("auth-status"),
-  authError: $("auth-error"),
-  loginMfaMessage: $("login-mfa-message"),
-  loginEnroll: $("login-enroll"),
-  loginQr: $("login-qr"),
-  loginCodeArea: $("login-code-area"),
-  loginCodeForm: $("login-code-form"),
-  loginCodeMessage: $("login-code-message"),
-  loginCode: $("login-code"),
-  loginCodeButton: $("login-code-button"),
-  admin: $("admin"),
-  developerHome: $("developer-home"),
-  hpHome: $("hp-home"),
-  meetingForm: $("meeting-form"),
-  meetingStatus: $("meeting-status"),
-  newsForm: $("news-form"),
-  newsStatus: $("news-status"),
-  passwordForm: $("password-form"),
-  newPassword: $("new-password"),
-  newPasswordConfirm: $("new-password-confirm"),
-  passwordButton: $("password-button"),
-  passwordStatus: $("password-status"),
-  passwordError: $("password-error"),
-  requestForm: $("request-form"),
-  requestSubject: $("request-subject"),
-  requestBody: $("request-body"),
-  requestSend: $("request-send"),
-  requestStatus: $("request-status"),
-  myRequestsStatus: $("my-requests-status"),
-  myRequests: $("my-requests"),
-  allRequestsStatus: $("all-requests-status"),
-  allRequests: $("all-requests"),
-  usersStatus: $("users-status"),
-  usersBody: $("users-body"),
-  createForm: $("create-form"),
-  createName: $("create-name"),
-  createLast: $("create-last"),
-  createFirst: $("create-first"),
-  createYear: $("create-year"),
-  createEmail: $("create-email"),
-  createEmailRequired: $("create-email-required"),
-  createPasskey: $("create-passkey"),
-  createApp: $("create-app"),
-  createEmailCheck: $("create-email-check"),
-  createButton: $("create-button"),
-  accountVerify: $("account-verify"),
-  accountProgress: $("account-progress"),
-  accountMessage: $("account-message"),
-  accountQr: $("account-qr"),
-  accountCodeForm: $("account-code-form"),
-  accountCode: $("account-code"),
-  accountCodeButton: $("account-code-button"),
-  accountStatus: $("account-status"),
-  accountError: $("account-error"),
-  accountResult: $("account-result"),
-  accountResultTitle: $("account-result-title"),
-  resultName: $("result-name"),
-  resultId: $("result-id"),
-  resultPassword: $("result-password"),
-  resultMfa: $("result-mfa"),
-  copyId: $("copy-id"),
-  copyPassword: $("copy-password"),
+  topbar:
+    $("topbar"),
+
+  userName:
+    $("user-name"),
+
+  refresh:
+    $("refresh"),
+
+  logout:
+    $("logout"),
+
+  title:
+    $("page-title"),
+
+  subtitle:
+    $("subtitle"),
+
+  loginSection:
+    $("login-section"),
+
+  loginMain:
+    $("login-main"),
+
+  loginMethod:
+    $("login-method"),
+
+  loginPassword:
+    $("login-password"),
+
+  loginMfa:
+    $("login-mfa"),
+
+  passkeyRequired:
+    $("passkey-required"),
+
+  passkeyRequiredMessage:
+    $("passkey-required-message"),
+
+  passkeyRequiredButton:
+    $("passkey-required-button"),
+
+  loginIdForm:
+    $("login-id-form"),
+
+  adminId:
+    $("admin-id"),
+
+  loginSelectedId:
+    $("login-selected-id"),
+
+  loginPasskey:
+    $("login-passkey"),
+
+  loginEmail:
+    $("login-email"),
+
+  loginApp:
+    $("login-app"),
+
+  loginMethodBack:
+    $("login-method-back"),
+
+  loginPasswordTitle:
+    $("login-password-title"),
+
+  loginPasswordId:
+    $("login-password-id"),
+
+  loginPasswordForm:
+    $("login-password-form"),
+
+  adminPassword:
+    $("admin-password"),
+
+  loginPasswordButton:
+    $("login-password-button"),
+
+  loginPasswordBack:
+    $("login-password-back"),
+
+  loginBack:
+    $("login-back"),
+
+  authStatus:
+    $("auth-status"),
+
+  authError:
+    $("auth-error"),
+
+  loginMfaMessage:
+    $("login-mfa-message"),
+
+  loginEnroll:
+    $("login-enroll"),
+
+  loginQr:
+    $("login-qr"),
+
+  loginCodeArea:
+    $("login-code-area"),
+
+  loginCodeForm:
+    $("login-code-form"),
+
+  loginCodeMessage:
+    $("login-code-message"),
+
+  loginCode:
+    $("login-code"),
+
+  loginCodeButton:
+    $("login-code-button"),
+
+  admin:
+    $("admin"),
+
+  developerHome:
+    $("developer-home"),
+
+  hpHome:
+    $("hp-home"),
+
+  meetingForm:
+    $("meeting-form"),
+
+  meetingStatus:
+    $("meeting-status"),
+
+  newsForm:
+    $("news-form"),
+
+  newsStatus:
+    $("news-status"),
+
+  passwordForm:
+    $("password-form"),
+
+  newPassword:
+    $("new-password"),
+
+  newPasswordConfirm:
+    $("new-password-confirm"),
+
+  passwordButton:
+    $("password-button"),
+
+  passwordStatus:
+    $("password-status"),
+
+  passwordError:
+    $("password-error"),
+
+  requestForm:
+    $("request-form"),
+
+  requestSubject:
+    $("request-subject"),
+
+  requestBody:
+    $("request-body"),
+
+  requestSend:
+    $("request-send"),
+
+  requestStatus:
+    $("request-status"),
+
+  myRequestsStatus:
+    $("my-requests-status"),
+
+  myRequests:
+    $("my-requests"),
+
+  allRequestsStatus:
+    $("all-requests-status"),
+
+  allRequests:
+    $("all-requests"),
+
+  usersStatus:
+    $("users-status"),
+
+  usersBody:
+    $("users-body"),
+
+  createForm:
+    $("create-form"),
+
+  createName:
+    $("create-name"),
+
+  createLast:
+    $("create-last"),
+
+  createFirst:
+    $("create-first"),
+
+  createYear:
+    $("create-year"),
+
+  createEmail:
+    $("create-email"),
+
+  createEmailRequired:
+    $("create-email-required"),
+
+  createPasskey:
+    $("create-passkey"),
+
+  createApp:
+    $("create-app"),
+
+  createEmailCheck:
+    $("create-email-check"),
+
+  createButton:
+    $("create-button"),
+
+  accountVerify:
+    $("account-verify"),
+
+  accountProgress:
+    $("account-progress"),
+
+  accountMessage:
+    $("account-message"),
+
+  accountQr:
+    $("account-qr"),
+
+  accountCodeForm:
+    $("account-code-form"),
+
+  accountCode:
+    $("account-code"),
+
+  accountCodeButton:
+    $("account-code-button"),
+
+  accountStatus:
+    $("account-status"),
+
+  accountError:
+    $("account-error"),
+
+  accountResult:
+    $("account-result"),
+
+  accountResultTitle:
+    $("account-result-title"),
+
+  resultName:
+    $("result-name"),
+
+  resultId:
+    $("result-id"),
+
+  resultPassword:
+    $("result-password"),
+
+  resultMfa:
+    $("result-mfa"),
+
+  copyId:
+    $("copy-id"),
+
+  copyPassword:
+    $("copy-password"),
 };
 
 let auth0Client = null;
@@ -1764,44 +1976,88 @@ let loginAuth0Token = "";
 let loginChallengeId = "";
 let pendingAccount = null;
 
-const show = (element, message) => {
-  element.textContent = message;
-  element.style.display = "block";
-};
+const show =
+  (
+    element,
+    message
+  ) => {
+    element.textContent =
+      message;
 
-const hide = element => {
-  element.style.display = "none";
-};
+    element.style.display =
+      "block";
+  };
 
-const authStatus = message => {
-  hide(ui.authError);
-  show(ui.authStatus, message);
-};
+const hide =
+  element => {
+    element.style.display =
+      "none";
+  };
 
-const authError = message => {
-  hide(ui.authStatus);
-  show(ui.authError, message);
-};
+const authStatus =
+  message => {
+    hide(
+      ui.authError
+    );
 
-const accountStatus = message => {
-  hide(ui.accountError);
-  show(ui.accountStatus, message);
-};
+    show(
+      ui.authStatus,
+      message
+    );
+  };
 
-const accountError = message => {
-  hide(ui.accountStatus);
-  show(ui.accountError, message);
-};
+const authError =
+  message => {
+    hide(
+      ui.authStatus
+    );
 
-async function readJson(response) {
-  const text = await response.text();
+    show(
+      ui.authError,
+      message
+    );
+  };
 
-  if (!text) {
+const accountStatus =
+  message => {
+    hide(
+      ui.accountError
+    );
+
+    show(
+      ui.accountStatus,
+      message
+    );
+  };
+
+const accountError =
+  message => {
+    hide(
+      ui.accountStatus
+    );
+
+    show(
+      ui.accountError,
+      message
+    );
+  };
+
+async function readJson(
+  response
+) {
+  const text =
+    await response.text();
+
+  if (
+    !text
+  ) {
     return {};
   }
 
   try {
-    return JSON.parse(text);
+    return JSON.parse(
+      text
+    );
   } catch {
     return {
       error_description:
@@ -1810,44 +2066,73 @@ async function readJson(response) {
   }
 }
 
-function decodeJwt(token) {
+function decodeJwt(
+  token
+) {
   try {
     let payload =
       token
         .split(".")[1]
-        .replace(/-/g, "+")
-        .replace(/_/g, "/");
+        .replace(
+          /-/g,
+          "+"
+        )
+        .replace(
+          /_/g,
+          "/"
+        );
 
-    payload += "=".repeat(
-      (4 - payload.length % 4) % 4
-    );
+    payload +=
+      "=".repeat(
+        (
+          4 -
+          payload.length %
+          4
+        ) %
+        4
+      );
 
     return JSON.parse(
       new TextDecoder().decode(
         Uint8Array.from(
-          atob(payload),
-          c => c.charCodeAt(0)
+          atob(
+            payload
+          ),
+          c =>
+            c.charCodeAt(
+              0
+            )
         )
       )
     );
+
   } catch {
     return {};
   }
 }
 
-async function passwordLogin(username, password) {
+async function passwordLogin(
+  username,
+  password
+) {
   const body =
     new URLSearchParams({
       grant_type:
         "http://auth0.com/oauth/grant-type/password-realm",
+
       client_id:
         AUTH0_CLIENT_ID,
+
       username,
+
       password,
+
       realm:
         AUTH0_REALM,
+
       audience:
         API_AUDIENCE,
+
       scope:
         "openid profile",
     });
@@ -1856,17 +2141,21 @@ async function passwordLogin(username, password) {
     await fetch(
       `${AUTH0_BASE}/oauth/token`,
       {
-        method: "POST",
+        method:
+          "POST",
+
         headers: {
           "Content-Type":
             "application/x-www-form-urlencoded",
         },
+
         body,
       }
     );
 
   return {
     response,
+
     data:
       await readJson(
         response
@@ -1884,7 +2173,9 @@ async function workerPost(
       "application/json",
   };
 
-  if (token) {
+  if (
+    token
+  ) {
     headers.Authorization =
       `Bearer ${token}`;
   }
@@ -1896,16 +2187,22 @@ async function workerPost(
       await fetch(
         `${WORKER_URL}${path}`,
         {
-          method: "POST",
+          method:
+            "POST",
+
           headers,
+
           body:
             JSON.stringify(
               body
             ),
         }
       );
+
   } catch (error) {
-    console.error(error);
+    console.error(
+      error
+    );
 
     throw new Error(
       `管理APIに接続できませんでした。Worker URL: ${WORKER_URL}`
@@ -1914,6 +2211,7 @@ async function workerPost(
 
   return {
     response,
+
     data:
       await readJson(
         response
@@ -1921,24 +2219,23 @@ async function workerPost(
   };
 }
 
-function methodLabel(method) {
+function methodLabel(
+  method
+) {
   if (
-    method ===
-    "passkey"
+    method === "passkey"
   ) {
     return "パスキー";
   }
 
   if (
-    method ===
-    "email"
+    method === "email"
   ) {
     return "メール認証";
   }
 
   if (
-    method ===
-    "app"
+    method === "app"
   ) {
     return "アプリ認証";
   }
@@ -1946,7 +2243,9 @@ function methodLabel(method) {
   return method;
 }
 
-function showLoginStep(step) {
+function showLoginStep(
+  step
+) {
   [
     ui.loginMain,
     ui.loginMethod,
@@ -1966,8 +2265,11 @@ function showLoginStep(step) {
 }
 
 function resetLoginVerification() {
-  loginAuth0Token = "";
-  loginChallengeId = "";
+  loginAuth0Token =
+    "";
+
+  loginChallengeId =
+    "";
 
   hide(
     ui.loginEnroll
@@ -1977,13 +2279,22 @@ function resetLoginVerification() {
     ui.loginCodeArea
   );
 
-  ui.loginQr.innerHTML = "";
-  ui.loginCode.value = "";
-  ui.loginMfaMessage.textContent = "";
-  ui.loginCodeMessage.textContent = "";
+  ui.loginQr.innerHTML =
+    "";
+
+  ui.loginCode.value =
+    "";
+
+  ui.loginMfaMessage.textContent =
+    "";
+
+  ui.loginCodeMessage.textContent =
+    "";
 }
 
-async function checkPasskeyStatus(auth0Token) {
+async function checkPasskeyStatus(
+  auth0Token
+) {
   const {
     response,
     data,
@@ -1994,7 +2305,9 @@ async function checkPasskeyStatus(auth0Token) {
       auth0Token
     );
 
-  if (!response.ok) {
+  if (
+    !response.ok
+  ) {
     throw new Error(
       data.error ||
       "パスキー登録状態を確認できませんでした。"
@@ -2004,7 +2317,9 @@ async function checkPasskeyStatus(auth0Token) {
   return data;
 }
 
-function showPasskeyRequiredScreen(message) {
+function showPasskeyRequiredScreen(
+  message
+) {
   resetLoginVerification();
 
   showLoginStep(
@@ -2017,8 +2332,13 @@ function showPasskeyRequiredScreen(message) {
   ui.passkeyRequiredMessage.textContent =
     message;
 
-  hide(ui.authStatus);
-  hide(ui.authError);
+  hide(
+    ui.authStatus
+  );
+
+  hide(
+    ui.authError
+  );
 }
 
 async function requirePasskeyEnrollmentBeforeAlternateLogin(
@@ -2111,10 +2431,17 @@ function saveWorkerSession(
 }
 
 async function startPasskeyUniversalLogin() {
-  hide(ui.authStatus);
-  hide(ui.authError);
+  hide(
+    ui.authStatus
+  );
 
-  if (!auth0Client) {
+  hide(
+    ui.authError
+  );
+
+  if (
+    !auth0Client
+  ) {
     throw new Error(
       "パスキー認証を初期化できていません。ページを再読み込みしてください。"
     );
@@ -2127,7 +2454,9 @@ async function startPasskeyUniversalLogin() {
     ) ||
     "";
 
-  if (!username) {
+  if (
+    !username
+  ) {
     throw new Error(
       "IDを入力してください。"
     );
@@ -2171,13 +2500,20 @@ ui.loginIdForm.addEventListener(
   event => {
     event.preventDefault();
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
 
     const username =
       ui.adminId.value.trim();
 
-    if (!username) {
+    if (
+      !username
+    ) {
       return authError(
         "IDを入力してください。"
       );
@@ -2189,7 +2525,8 @@ ui.loginIdForm.addEventListener(
     ui.loginPasswordId.textContent =
       username;
 
-    selectedLoginMethod = "";
+    selectedLoginMethod =
+      "";
 
     resetLoginVerification();
 
@@ -2202,7 +2539,8 @@ ui.loginIdForm.addEventListener(
 ui.loginMethodBack.addEventListener(
   "click",
   () => {
-    selectedLoginMethod = "";
+    selectedLoginMethod =
+      "";
 
     resetLoginVerification();
 
@@ -2210,8 +2548,13 @@ ui.loginMethodBack.addEventListener(
       ui.loginMain
     );
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
 
     ui.adminId.focus();
   }
@@ -2220,7 +2563,8 @@ ui.loginMethodBack.addEventListener(
 ui.loginPasswordBack.addEventListener(
   "click",
   () => {
-    ui.adminPassword.value = "";
+    ui.adminPassword.value =
+      "";
 
     resetLoginVerification();
 
@@ -2228,8 +2572,13 @@ ui.loginPasswordBack.addEventListener(
       ui.loginMethod
     );
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
   }
 );
 
@@ -2245,14 +2594,20 @@ ui.loginEmail.addEventListener(
     ui.loginPasswordId.textContent =
       ui.adminId.value.trim();
 
-    ui.adminPassword.value = "";
+    ui.adminPassword.value =
+      "";
 
     showLoginStep(
       ui.loginPassword
     );
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
 
     ui.adminPassword.focus();
   }
@@ -2270,14 +2625,20 @@ ui.loginApp.addEventListener(
     ui.loginPasswordId.textContent =
       ui.adminId.value.trim();
 
-    ui.adminPassword.value = "";
+    ui.adminPassword.value =
+      "";
 
     showLoginStep(
       ui.loginPassword
     );
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
 
     ui.adminPassword.focus();
   }
@@ -2296,6 +2657,7 @@ ui.loginPasskey.addEventListener(
       );
 
       await startPasskeyUniversalLogin();
+
     } catch (error) {
       authError(
         error.message ||
@@ -2327,6 +2689,7 @@ ui.passkeyRequiredButton.addEventListener(
       }
 
       await startPasskeyUniversalLogin();
+
     } catch (error) {
       authError(
         error.message ||
@@ -2344,8 +2707,13 @@ ui.loginPasswordForm.addEventListener(
   async event => {
     event.preventDefault();
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
 
     if (
       ![
@@ -2373,7 +2741,8 @@ ui.loginPasswordForm.addEventListener(
           ui.adminPassword.value
         );
 
-      ui.adminPassword.value = "";
+      ui.adminPassword.value =
+        "";
 
       if (
         !response.ok ||
@@ -2415,8 +2784,13 @@ ui.loginPasswordForm.addEventListener(
       ui.title.textContent =
         "認証";
 
-      hide(ui.loginEnroll);
-      hide(ui.loginCodeArea);
+      hide(
+        ui.loginEnroll
+      );
+
+      hide(
+        ui.loginCodeArea
+      );
 
       if (
         selectedLoginMethod ===
@@ -2463,6 +2837,7 @@ ui.loginPasswordForm.addEventListener(
         );
 
         ui.loginCode.focus();
+
       } else {
         ui.loginMfaMessage.textContent =
           "アプリ認証";
@@ -2475,6 +2850,7 @@ ui.loginPasswordForm.addEventListener(
 
         ui.loginCode.focus();
       }
+
     } catch (error) {
       showLoginStep(
         ui.loginPassword
@@ -2484,6 +2860,7 @@ ui.loginPasswordForm.addEventListener(
         error.message ||
         "ログイン処理に失敗しました。"
       );
+
     } finally {
       ui.loginPasswordButton.disabled =
         false;
@@ -2503,8 +2880,13 @@ ui.loginBack.addEventListener(
     ui.title.textContent =
       "管理者画面";
 
-    hide(ui.authStatus);
-    hide(ui.authError);
+    hide(
+      ui.authStatus
+    );
+
+    hide(
+      ui.authError
+    );
   }
 );
 
@@ -2537,7 +2919,9 @@ ui.loginCodeForm.addEventListener(
     ui.loginCodeButton.disabled =
       true;
 
-    hide(ui.authError);
+    hide(
+      ui.authError
+    );
 
     try {
       let result;
@@ -2564,6 +2948,7 @@ ui.loginCodeForm.addEventListener(
             },
             loginAuth0Token
           );
+
       } else if (
         selectedLoginMethod ===
         "app"
@@ -2576,6 +2961,7 @@ ui.loginCodeForm.addEventListener(
             },
             loginAuth0Token
           );
+
       } else {
         throw new Error(
           "ログイン方法を選び直してください。"
@@ -2599,11 +2985,13 @@ ui.loginCodeForm.addEventListener(
       resetLoginVerification();
 
       showAdmin();
+
     } catch (error) {
       authError(
         error.message ||
         "認証できませんでした。"
       );
+
     } finally {
       ui.loginCodeButton.disabled =
         false;
@@ -2648,7 +3036,9 @@ document
     }
   );
 
-function showView(name) {
+function showView(
+  name
+) {
   const sub =
     sessionStorage.getItem(
       "admin_sub"
@@ -2661,10 +3051,13 @@ function showView(name) {
       "developer-responses",
       "admin-users",
       "create-admin",
-    ].includes(name) &&
+    ].includes(
+      name
+    ) &&
     sub !== OWNER_SUB
   ) {
-    name = "home";
+    name =
+      "home";
   }
 
   const titles = {
@@ -2719,7 +3112,8 @@ function showView(name) {
   );
 
   $(
-    "view-" + name
+    "view-" +
+    name
   )?.classList.add(
     "active"
   );
@@ -2746,7 +3140,8 @@ function showView(name) {
   }
 
   window.scrollTo({
-    top: 0,
+    top:
+      0,
     behavior:
       "smooth",
   });
@@ -2921,11 +3316,12 @@ function restore() {
 
   if (
     !token ||
-    Date.now() >=
-      expires
+    Date.now() >= expires
   ) {
     clearSession();
+
     showLogin();
+
   } else {
     showAdmin();
   }
@@ -2997,8 +3393,7 @@ async function finishPasskeyLogin() {
 
   if (
     status.enrolled &&
-    authMethod !==
-      "passkey"
+    authMethod !== "passkey"
   ) {
     clearAuthenticatedSession();
 
@@ -3017,12 +3412,7 @@ async function finishPasskeyLogin() {
       ""
     );
 
-    await auth0Client.logout({
-      logoutParams: {
-        returnTo:
-          AUTH0_REDIRECT_URI,
-      },
-    });
+    await startPasskeyUniversalLogin();
 
     return;
   }
@@ -3149,17 +3539,18 @@ async function initAuth() {
     if (
       sessionStorage.getItem(
         "passkey_flow_stage"
-      ) ===
-        "confirm" &&
+      ) === "confirm" &&
       sessionStorage.getItem(
         "pending_admin_id"
       )
     ) {
       await startPasskeyUniversalLogin();
+
       return;
     }
 
     restore();
+
   } catch (error) {
     console.error(
       error
@@ -3232,8 +3623,7 @@ ui.passwordForm.addEventListener(
       ui.newPasswordConfirm.value;
 
     if (
-      password !==
-      confirm
+      password !== confirm
     ) {
       return show(
         ui.passwordError,
@@ -3242,8 +3632,7 @@ ui.passwordForm.addEventListener(
     }
 
     if (
-      password.length <
-        8 ||
+      password.length < 8 ||
       !/[A-Za-z]/.test(
         password
       ) ||
@@ -3292,11 +3681,13 @@ ui.passwordForm.addEventListener(
       authStatus(
         "パスワードを変更しました。新しいパスワードでログインしてください。"
       );
+
     } catch (error) {
       show(
         ui.passwordError,
         error.message
       );
+
     } finally {
       ui.passwordButton.disabled =
         false;
@@ -3304,8 +3695,12 @@ ui.passwordForm.addEventListener(
   }
 );
 
-function formatDate(value) {
-  if (!value) {
+function formatDate(
+  value
+) {
+  if (
+    !value
+  ) {
     return "";
   }
 
@@ -3313,7 +3708,8 @@ function formatDate(value) {
     new Date(
       value.endsWith("Z")
         ? value
-        : value + "Z"
+        : value +
+          "Z"
     );
 
   return Number.isNaN(
@@ -3405,7 +3801,9 @@ function requestCard(
     body
   );
 
-  if (owner) {
+  if (
+    owner
+  ) {
     const textarea =
       document.createElement(
         "textarea"
@@ -3458,7 +3856,6 @@ function requestCard(
               {
                 id:
                   item.id,
-
                 response:
                   textarea.value.trim(),
               },
@@ -3477,10 +3874,12 @@ function requestCard(
           }
 
           await loadAllRequests();
+
         } catch (error) {
           alert(
             error.message
           );
+
         } finally {
           button.disabled =
             false;
@@ -3492,6 +3891,7 @@ function requestCard(
       textarea,
       button
     );
+
   } else {
     const answer =
       document.createElement(
@@ -3560,6 +3960,7 @@ async function loadMyRequests() {
           )
         )
     );
+
   } catch (error) {
     ui.myRequestsStatus.textContent =
       error.message;
@@ -3612,6 +4013,7 @@ async function loadAllRequests() {
           )
         )
     );
+
   } catch (error) {
     ui.allRequestsStatus.textContent =
       error.message;
@@ -3673,11 +4075,13 @@ ui.requestForm.addEventListener(
       );
 
       await loadMyRequests();
+
     } catch (error) {
       show(
         ui.requestStatus,
         error.message
       );
+
     } finally {
       ui.requestSend.disabled =
         false;
@@ -3791,6 +4195,7 @@ async function loadUsers() {
 
           remove.textContent =
             "—";
+
         } else {
           const actions =
             document.createElement(
@@ -3939,6 +4344,7 @@ async function loadUsers() {
                 editButton.classList.remove(
                   "hidden"
                 );
+
               } catch (error) {
                 check.checked =
                   original;
@@ -3946,6 +4352,7 @@ async function loadUsers() {
                 alert(
                   error.message
                 );
+
               } finally {
                 save.disabled =
                   false;
@@ -4041,6 +4448,7 @@ async function loadUsers() {
                 }
 
                 await loadUsers();
+
               } catch (error) {
                 alert(
                   error.message
@@ -4070,6 +4478,7 @@ async function loadUsers() {
         );
       }
     );
+
   } catch (error) {
     ui.usersStatus.textContent =
       error.message;
@@ -4210,8 +4619,7 @@ function updateProgress() {
   const current =
     pendingAccount
       .mfaMethods[
-        pendingAccount
-          .currentIndex
+        pendingAccount.currentIndex
       ] ||
     "";
 
@@ -4221,8 +4629,7 @@ function updateProgress() {
       .map(
         method => {
           if (
-            method ===
-            "passkey"
+            method === "passkey"
           ) {
             return `○ ${methodLabel(
               method
@@ -4230,12 +4637,9 @@ function updateProgress() {
           }
 
           return `${
-            done.has(
-              method
-            )
+            done.has(method)
               ? "✓"
-              : method ===
-                current
+              : method === current
                 ? "●"
                 : "○"
           } ${methodLabel(
@@ -4305,8 +4709,7 @@ async function prepareAccountFactor() {
     "";
 
   if (
-    method ===
-    "passkey"
+    method === "passkey"
   ) {
     account.currentIndex +=
       1;
@@ -4331,7 +4734,6 @@ async function prepareAccountFactor() {
       {
         stagingUserId:
           account.stagingUserId,
-
         method,
       },
       sessionStorage.getItem(
@@ -4355,8 +4757,7 @@ async function prepareAccountFactor() {
   );
 
   if (
-    method ===
-    "email"
+    method === "email"
   ) {
     account.currentChallengeId =
       data.challengeId ||
@@ -4395,10 +4796,10 @@ async function prepareAccountFactor() {
     {
       text:
         data.barcodeUri,
-
-      width: 200,
-
-      height: 200,
+      width:
+        200,
+      height:
+        200,
     }
   );
 
@@ -4450,11 +4851,8 @@ async function completeAccountFactor(
       {
         stagingUserId:
           account.stagingUserId,
-
         method,
-
         code,
-
         challengeId:
           account.currentChallengeId ||
           "",
@@ -4482,10 +4880,7 @@ async function completeAccountFactor(
       ? data.verifiedMethods
       : [
           ...new Set([
-            ...(
-              account.verifiedMethods ||
-              []
-            ),
+            ...(account.verifiedMethods || []),
             method,
           ]),
         ];
@@ -4528,6 +4923,7 @@ async function completeAccountFactor(
     account.mfaMethods.length
   ) {
     await finalizeAccount();
+
   } else {
     await prepareAccountFactor();
   }
@@ -4673,12 +5069,8 @@ ui.createForm.addEventListener(
 
     if (
       (
-        methods.includes(
-          "passkey"
-        ) ||
-        methods.includes(
-          "email"
-        )
+        methods.includes("passkey") ||
+        methods.includes("email")
       ) &&
       !email
     ) {
@@ -4764,6 +5156,7 @@ ui.createForm.addEventListener(
       );
 
       await prepareAccountFactor();
+
     } catch (error) {
       setCreateDisabled(
         false
@@ -4775,6 +5168,7 @@ ui.createForm.addEventListener(
         error.message ||
         "アカウント認証を開始できませんでした。"
       );
+
     } finally {
       if (
         !pendingAccount
@@ -4820,11 +5214,13 @@ ui.accountCodeForm.addEventListener(
       await completeAccountFactor(
         code
       );
+
     } catch (error) {
       accountError(
         error.message ||
         "認証できませんでした。"
       );
+
     } finally {
       ui.accountCodeButton.disabled =
         false;
@@ -4865,38 +5261,14 @@ ui.refresh.addEventListener(
 
 ui.logout.addEventListener(
   "click",
-  async () => {
-    const authMode =
-      sessionStorage.getItem(
-        "admin_auth_mode"
-      );
-
+  () => {
     clearSession();
 
     resetAccountVerification();
 
-    if (
-      authMode ===
-        "passkey" &&
-      auth0Client
-    ) {
-      try {
-        await auth0Client.logout({
-          logoutParams: {
-            returnTo:
-              AUTH0_REDIRECT_URI,
-          },
-        });
-
-        return;
-      } catch (error) {
-        console.error(
-          error
-        );
-      }
-    }
-
-    showLogin();
+    window.location.replace(
+      AUTH0_REDIRECT_URI
+    );
   }
 );
 
