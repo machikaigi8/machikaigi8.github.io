@@ -431,7 +431,6 @@ textarea:disabled{
   white-space:pre-wrap;
 }
 
-
 .login-settings-list{
   display:grid;
   gap:12px;
@@ -611,7 +610,6 @@ textarea:disabled{
   font-family:Consolas,monospace;
   word-break:break-all;
 }
-
 
 .delete-icon-button{
   width:40px;
@@ -1080,7 +1078,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <a
           class="sub"
@@ -1170,7 +1167,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -1240,7 +1236,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -1591,7 +1586,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -1673,7 +1667,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -1726,7 +1719,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -1755,7 +1747,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-view="developer">
           ← デベロッパーメニューへ戻る
@@ -1872,7 +1863,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-view="developer">
           ← デベロッパーメニューへ戻る
@@ -1893,7 +1883,6 @@ textarea:disabled{
 
       </div>
 
-    
       <div class="bottom-nav">
         <button class="sub" data-home>
           ← 管理者トップへ戻る
@@ -2408,8 +2397,6 @@ async function passwordLogin(username, password) {
 }
 
 async function workerPost(path, body = {}, token = "") {
-  // Authorizationヘッダーやapplication/jsonを使うとCORS preflightが発生するため、
-  // 認証トークンも本文へ入れ、text/plainの単純POSTとして送信する。
   const envelope = {
     authToken: token || "",
     data: body || {},
@@ -2974,7 +2961,6 @@ ui.newsForm.addEventListener("submit", event => {
   event.preventDefault();
   if (!isDummy()) show(ui.newsStatus, "画面は完成しています。実際のニュース保存先は次に接続します。");
 });
-
 
 function loginSettingsMessage(message, isError = false) {
   hide(ui.loginSettingsStatus);
