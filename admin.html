@@ -538,6 +538,12 @@ textarea:disabled{
   background:#E4F4E8;
 }
 
+.request-status-badge.delete-pending{
+  color:#8A3A00;
+  background:#FFE4BF;
+  border:1px solid #E0A35D;
+}
+
 .request-original{
   margin-top:14px;
   padding:14px;
@@ -5658,7 +5664,7 @@ async function performRequestMessageAction(path, payload, reloadOwner) {
     sessionStorage.getItem("admin_access_token")
   );
   if (!response.ok) {
-    throw new Error(data.error || "メッセージを処理できませんでした。");
+    throw new Error(data.error || "要望を処理できませんでした。");
   }
   if (reloadOwner) await loadAllRequests();
   else await loadMyRequests();
@@ -5684,90 +5690,6 @@ function messageBubble(message, owner = false) {
 
   if (message.hasImage) {
     appendRequestImage(bubble, "message", message.id, message.imageName || "");
-  }
-
-  if (Number(message.id) > 0) {
-    const actions = document.createElement("div");
-    actions.className = "request-message-actions";
-
-    if (owner) {
-      if (message.deleteState === "pending") {
-        const note = document.createElement("span");
-        note.className = "request-message-delete-note";
-        note.textContent = `送信者から削除申請中${message.deleteRequestedAt ? `（${formatDate(message.deleteRequestedAt)}）` : ""}`;
-
-        const approve = requestMessageActionButton("削除を承認", "approve");
-        const reject = requestMessageActionButton("申請を却下");
-
-        approve.addEventListener("click", async () => {
-          if (!confirm("このメッセージを完全に削除しますか？\n添付画像も削除され、元に戻せません。")) return;
-          approve.disabled = reject.disabled = true;
-          try {
-            await performRequestMessageAction(
-              "/developer-request-message-delete-decision",
-              { messageId: message.id, decision: "approve" },
-              true
-            );
-          } catch (error) {
-            alert(error.message);
-            approve.disabled = reject.disabled = false;
-          }
-        });
-
-        reject.addEventListener("click", async () => {
-          if (!confirm("削除申請を却下して、送信者側にメッセージを再表示しますか？")) return;
-          approve.disabled = reject.disabled = true;
-          try {
-            await performRequestMessageAction(
-              "/developer-request-message-delete-decision",
-              { messageId: message.id, decision: "reject" },
-              true
-            );
-          } catch (error) {
-            alert(error.message);
-            approve.disabled = reject.disabled = false;
-          }
-        });
-
-        actions.append(note, approve, reject);
-      } else {
-        const remove = requestMessageActionButton("削除", "approve");
-        remove.addEventListener("click", async () => {
-          if (!confirm("このメッセージを削除しますか？\n添付画像も削除され、元に戻せません。")) return;
-          remove.disabled = true;
-          try {
-            await performRequestMessageAction(
-              "/developer-request-message-delete",
-              { messageId: message.id },
-              true
-            );
-          } catch (error) {
-            alert(error.message);
-            remove.disabled = false;
-          }
-        });
-        actions.append(remove);
-      }
-    } else if (role === "requester") {
-      const requestDelete = requestMessageActionButton("削除申請");
-      requestDelete.addEventListener("click", async () => {
-        if (!confirm("このメッセージの削除を申請しますか？\n申請後はあなたの画面では非表示になり、デベロッパーの承認後に完全削除されます。")) return;
-        requestDelete.disabled = true;
-        try {
-          await performRequestMessageAction(
-            "/developer-request-message-delete-request",
-            { messageId: message.id },
-            false
-          );
-        } catch (error) {
-          alert(error.message);
-          requestDelete.disabled = false;
-        }
-      });
-      actions.append(requestDelete);
-    }
-
-    if (actions.childNodes.length) bubble.append(actions);
   }
 
   return bubble;
@@ -5854,6 +5776,7 @@ function requestCard(item, owner) {
   const card = document.createElement("article");
   card.className = "request-card";
   card.dataset.requestStatus = item.status === "resolved" ? "resolved" : "unresolved";
+  card.dataset.requestDeleteState = item.deleteState === "pending" ? "pending" : "none";
 
   const statusRow = document.createElement("div");
   statusRow.className = "request-status-row";
@@ -5863,6 +5786,14 @@ function requestCard(item, owner) {
   heading.style.margin = "0";
 
   statusRow.append(heading, makeRequestStatusBadge(item.status));
+
+  if (item.deleteState === "pending") {
+    const deleteBadge = document.createElement("span");
+    deleteBadge.className = "request-status-badge delete-pending";
+    deleteBadge.textContent = "削除申請中";
+    statusRow.append(deleteBadge);
+  }
+
   card.append(statusRow);
 
   const meta = document.createElement("div");
@@ -5921,38 +5852,120 @@ function requestCard(item, owner) {
     const ownerActions = document.createElement("div");
     ownerActions.className = "request-owner-actions";
 
-    const statusButton = document.createElement("button");
-    statusButton.className = "sub";
-    statusButton.type = "button";
-    statusButton.textContent = item.status === "resolved"
-      ? "未解決に戻す"
-      : "解決済みにする";
+    if (item.deleteState === "pending") {
+      const note = document.createElement("span");
+      note.className = "request-message-delete-note";
+      note.textContent = `送信者から要望全体の削除申請中${item.deleteRequestedAt ? `（${formatDate(item.deleteRequestedAt)}）` : ""}`;
 
-    statusButton.addEventListener("click", async () => {
-      statusButton.disabled = true;
-      try {
-        const nextStatus = item.status === "resolved" ? "unresolved" : "resolved";
-        const { response, data } = await workerPost(
-          "/developer-request-status",
-          { id: item.id, status: nextStatus },
-          sessionStorage.getItem("admin_access_token")
-        );
-        if (!response.ok) {
-          throw new Error(data.error || "状態を変更できませんでした。");
+      const approveDelete = requestMessageActionButton("削除を承認", "approve");
+      const rejectDelete = requestMessageActionButton("申請を却下");
+
+      approveDelete.addEventListener("click", async () => {
+        if (!confirm("この要望を完全に削除しますか？\n元の要望・全メッセージ・すべての添付画像が削除され、元に戻せません。")) return;
+        approveDelete.disabled = rejectDelete.disabled = true;
+        try {
+          await performRequestMessageAction(
+            "/developer-request-delete-decision",
+            { id: item.id, decision: "approve" },
+            true
+          );
+        } catch (error) {
+          alert(error.message);
+          approveDelete.disabled = rejectDelete.disabled = false;
         }
-        await loadAllRequests();
+      });
+
+      rejectDelete.addEventListener("click", async () => {
+        if (!confirm("削除申請を却下して、送信者側にこの要望を再表示しますか？")) return;
+        approveDelete.disabled = rejectDelete.disabled = true;
+        try {
+          await performRequestMessageAction(
+            "/developer-request-delete-decision",
+            { id: item.id, decision: "reject" },
+            true
+          );
+        } catch (error) {
+          alert(error.message);
+          approveDelete.disabled = rejectDelete.disabled = false;
+        }
+      });
+
+      ownerActions.append(note, approveDelete, rejectDelete);
+    } else {
+      const statusButton = document.createElement("button");
+      statusButton.className = "sub";
+      statusButton.type = "button";
+      statusButton.textContent = item.status === "resolved"
+        ? "未解決に戻す"
+        : "解決済みにする";
+
+      statusButton.addEventListener("click", async () => {
+        statusButton.disabled = true;
+        try {
+          const nextStatus = item.status === "resolved" ? "unresolved" : "resolved";
+          const { response, data } = await workerPost(
+            "/developer-request-status",
+            { id: item.id, status: nextStatus },
+            sessionStorage.getItem("admin_access_token")
+          );
+          if (!response.ok) {
+            throw new Error(data.error || "状態を変更できませんでした。");
+          }
+          await loadAllRequests();
+        } catch (error) {
+          alert(error.message);
+        } finally {
+          statusButton.disabled = false;
+        }
+      });
+
+      const deleteButton = requestMessageActionButton("要望を削除", "approve");
+      deleteButton.addEventListener("click", async () => {
+        if (!confirm("この要望を完全に削除しますか？\n元の要望・全メッセージ・すべての添付画像が削除され、元に戻せません。")) return;
+        deleteButton.disabled = true;
+        try {
+          await performRequestMessageAction(
+            "/developer-request-delete",
+            { id: item.id },
+            true
+          );
+        } catch (error) {
+          alert(error.message);
+          deleteButton.disabled = false;
+        }
+      });
+
+      ownerActions.append(statusButton, deleteButton);
+    }
+
+    card.append(ownerActions);
+  } else {
+    const requesterActions = document.createElement("div");
+    requesterActions.className = "request-owner-actions";
+
+    const deleteRequestButton = requestMessageActionButton("要望を削除申請", "approve");
+    deleteRequestButton.addEventListener("click", async () => {
+      if (!confirm("この要望全体の削除を申請しますか？\n申請後はあなたの画面から要望全体が見えなくなります。デベロッパーが承認すると、元の要望・全メッセージ・添付画像が完全削除されます。")) return;
+      deleteRequestButton.disabled = true;
+      try {
+        await performRequestMessageAction(
+          "/developer-request-delete-request",
+          { id: item.id },
+          false
+        );
       } catch (error) {
         alert(error.message);
-      } finally {
-        statusButton.disabled = false;
+        deleteRequestButton.disabled = false;
       }
     });
 
-    ownerActions.append(statusButton);
-    card.append(ownerActions);
+    requesterActions.append(deleteRequestButton);
+    card.append(requesterActions);
   }
 
-  addThreadComposer(card, item, owner);
+  if (item.deleteState !== "pending") {
+    addThreadComposer(card, item, owner);
+  }
   return card;
 }
 
@@ -5965,7 +5978,9 @@ function applyDeveloperRequestFilter() {
   });
 
   ui.allRequests.querySelectorAll(".request-card").forEach(card => {
-    card.hidden = developerRequestFilter !== "all" &&
+    const isDeletePending = card.dataset.requestDeleteState === "pending";
+    card.hidden = !isDeletePending &&
+      developerRequestFilter !== "all" &&
       card.dataset.requestStatus !== developerRequestFilter;
   });
 }
