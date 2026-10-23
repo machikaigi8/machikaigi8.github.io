@@ -487,6 +487,186 @@ textarea:disabled{
   white-space:pre-wrap;
 }
 
+
+.request-filter-bar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:0 0 16px;
+}
+
+.request-filter-button{
+  border:1px solid #A0ACBC;
+  background:#fff;
+  color:var(--navy);
+  padding:8px 14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.request-filter-button.active{
+  background:var(--navy);
+  color:#fff;
+  border-color:var(--navy);
+}
+
+.request-status-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.request-status-badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:3px 10px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.request-status-badge.unresolved{
+  color:#8A3A00;
+  background:#FFF0D9;
+}
+
+.request-status-badge.resolved{
+  color:#215A2D;
+  background:#E4F4E8;
+}
+
+.request-original{
+  margin-top:14px;
+  padding:14px;
+  background:#F7F8FA;
+  border-left:4px solid #7B8797;
+}
+
+.request-original-label{
+  margin-bottom:7px;
+  color:#5C6775;
+  font-size:13px;
+  font-weight:800;
+}
+
+.request-original-body{
+  white-space:pre-wrap;
+  line-height:1.7;
+}
+
+.request-thread{
+  display:grid;
+  gap:10px;
+  margin-top:16px;
+}
+
+.request-message{
+  max-width:84%;
+  padding:11px 13px;
+  border-radius:12px;
+  box-sizing:border-box;
+}
+
+.request-message.requester{
+  justify-self:start;
+  background:#F3F4F6;
+  border:1px solid #D7DBE0;
+}
+
+.request-message.developer{
+  justify-self:end;
+  background:#EAF2FB;
+  border:1px solid #B8CAE0;
+}
+
+.request-message-meta{
+  margin-bottom:5px;
+  font-size:12px;
+  color:#66717F;
+  font-weight:700;
+}
+
+.request-message-body{
+  white-space:pre-wrap;
+  line-height:1.65;
+}
+
+.request-image{
+  display:block;
+  max-width:min(100%, 560px);
+  max-height:420px;
+  margin-top:9px;
+  object-fit:contain;
+  border:1px solid #D5D9DE;
+  background:#F4F4F4;
+  cursor:zoom-in;
+}
+
+.request-image-preview{
+  display:none;
+  margin-top:10px;
+}
+
+.request-image-preview.active{
+  display:block;
+}
+
+.request-image-preview img{
+  display:block;
+  max-width:320px;
+  max-height:220px;
+  object-fit:contain;
+  border:1px solid #C7CDD5;
+  background:#F4F4F4;
+}
+
+.request-thread-form{
+  margin-top:16px;
+  padding-top:14px;
+  border-top:1px solid #D8DDE4;
+}
+
+.request-thread-form .textarea{
+  min-height:92px;
+}
+
+.request-thread-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+
+.request-file-label{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  cursor:pointer;
+  font-weight:700;
+  color:var(--navy);
+}
+
+.request-file-label input{
+  max-width:260px;
+}
+
+.request-owner-actions{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:14px;
+}
+
+@media (max-width: 720px){
+  .request-message{ max-width:96%; }
+  .request-status-row{ align-items:flex-start; flex-direction:column; }
+}
+
 .login-settings-list{
   display:grid;
   gap:12px;
@@ -2271,6 +2451,23 @@ textarea:disabled{
 
           </div>
 
+
+          <div class="row">
+            <label class="label" for="request-image">
+              画像（任意）
+            </label>
+            <input
+              id="request-image"
+              class="input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            >
+            <p class="hint">
+              JPG・PNG・WebP、8MB以下。画面のスクリーンショットも送れます。
+            </p>
+            <div id="request-image-preview" class="request-image-preview"></div>
+          </div>
+
           <button
             id="request-send"
             class="button"
@@ -2368,6 +2565,12 @@ textarea:disabled{
       class="view"
     >
       <div class="card">
+
+        <div class="request-filter-bar" id="request-filter-bar">
+          <button type="button" class="request-filter-button active" data-request-filter="unresolved">未解決</button>
+          <button type="button" class="request-filter-button" data-request-filter="resolved">解決済み</button>
+          <button type="button" class="request-filter-button" data-request-filter="all">すべて</button>
+        </div>
 
         <div
           id="all-requests-status"
@@ -3034,6 +3237,8 @@ const ui = {
   requestForm: $("request-form"),
   requestSubject: $("request-subject"),
   requestBody: $("request-body"),
+  requestImage: $("request-image"),
+  requestImagePreview: $("request-image-preview"),
   requestSend: $("request-send"),
   requestStatus: $("request-status"),
   myRequestsStatus: $("my-requests-status"),
@@ -5347,103 +5552,292 @@ function formatDate(value) {
       ).format(date);
 }
 
-function requestCard(item, owner) {
-  const card = document.createElement("article");
+let developerRequestFilter = "unresolved";
+const requestObjectUrls = new Set();
 
-  card.className = "request-card";
+function clearRequestObjectUrls() {
+  for (const url of requestObjectUrls) {
+    URL.revokeObjectURL(url);
+  }
+  requestObjectUrls.clear();
+}
 
-  const heading = document.createElement("h3");
+function requestStatusLabel(status) {
+  return status === "resolved" ? "解決済み" : "未解決";
+}
 
-  heading.textContent =
-    item.subject || "（件名なし）";
+function makeRequestStatusBadge(status) {
+  const badge = document.createElement("span");
+  const normalized = status === "resolved" ? "resolved" : "unresolved";
+  badge.className = `request-status-badge ${normalized}`;
+  badge.textContent = requestStatusLabel(normalized);
+  return badge;
+}
 
-  card.append(heading);
-
-  const meta = document.createElement("div");
-
-  meta.className = "hint";
-
-  meta.textContent = owner
-    ? `${item.requesterName || "—"} / ${item.requesterUsername || "—"}　${formatDate(item.createdAt)}`
-    : `送信日時：${formatDate(item.createdAt)}`;
-
-  card.append(meta);
-
-  const body = document.createElement("div");
-
-  body.style.whiteSpace = "pre-wrap";
-  body.textContent = item.body || "";
-
-  card.append(body);
-
-  if (owner) {
-    const textarea = document.createElement("textarea");
-
-    textarea.className = "textarea";
-    textarea.value = item.response || "";
-
-    const button = document.createElement("button");
-
-    button.className = "button";
-    button.type = "button";
-    button.textContent =
-      item.response ? "回答を更新" : "回答を保存";
-
-    button.addEventListener(
-      "click",
-      async () => {
-        if (!textarea.value.trim()) {
-          return alert("回答を入力してください。");
-        }
-
-        button.disabled = true;
-
-        try {
-          const { response, data } = await workerPost(
-            "/developer-request-answer",
-            {
-              id: item.id,
-              response: textarea.value.trim(),
-            },
-            sessionStorage.getItem("admin_access_token")
-          );
-
-          if (!response.ok) {
-            throw new Error(
-              data.error ||
-              "回答を保存できませんでした。"
-            );
-          }
-
-          await loadAllRequests();
-        } catch (error) {
-          alert(error.message);
-        } finally {
-          button.disabled = false;
-        }
+async function loadProtectedRequestImage(img, type, id) {
+  try {
+    const token = sessionStorage.getItem("admin_access_token") || "";
+    const response = await fetch(
+      `${WORKER_URL}/developer-request-file/${encodeURIComponent(type)}/${encodeURIComponent(id)}`,
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
 
-    card.append(
-      textarea,
-      button
-    );
-  } else {
-    const answer = document.createElement("div");
+    if (!response.ok) {
+      throw new Error("画像を取得できませんでした。");
+    }
 
-    answer.className = "request-answer";
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    requestObjectUrls.add(url);
+    img.src = url;
+    img.addEventListener("click", () => window.open(url, "_blank", "noopener"));
+  } catch (error) {
+    img.replaceWith(Object.assign(document.createElement("div"), {
+      className: "hint",
+      textContent: error.message || "画像を表示できませんでした。",
+    }));
+  }
+}
 
-    answer.textContent = item.response
-      ? `回答\n${item.response}`
-      : "回答待ち";
+function appendRequestImage(container, type, id, fileName = "") {
+  const img = document.createElement("img");
+  img.className = "request-image";
+  img.alt = fileName ? `添付画像：${fileName}` : "添付画像";
+  container.append(img);
+  loadProtectedRequestImage(img, type, id);
+}
 
-    card.append(answer);
+function messageBubble(message) {
+  const bubble = document.createElement("div");
+  const role = message.senderRole === "developer" ? "developer" : "requester";
+  bubble.className = `request-message ${role}`;
+
+  const meta = document.createElement("div");
+  meta.className = "request-message-meta";
+  const roleLabel = role === "developer" ? "デベロッパー" : "送信者";
+  meta.textContent = `${roleLabel}：${message.senderName || "—"}　${formatDate(message.createdAt)}`;
+  bubble.append(meta);
+
+  if (message.body) {
+    const body = document.createElement("div");
+    body.className = "request-message-body";
+    body.textContent = message.body;
+    bubble.append(body);
   }
 
+  if (message.hasImage) {
+    appendRequestImage(bubble, "message", message.id, message.imageName || "");
+  }
+
+  return bubble;
+}
+
+function addThreadComposer(card, item, owner) {
+  if (isDummy()) {
+    return;
+  }
+
+  const form = document.createElement("form");
+  form.className = "request-thread-form";
+
+  const textarea = document.createElement("textarea");
+  textarea.className = "textarea";
+  textarea.maxLength = 4000;
+  textarea.placeholder = owner
+    ? "送信者へのメッセージを入力"
+    : "デベロッパーへの追加メッセージを入力";
+
+  const actions = document.createElement("div");
+  actions.className = "request-thread-actions";
+
+  const fileLabel = document.createElement("label");
+  fileLabel.className = "request-file-label";
+  fileLabel.textContent = "画像：";
+
+  const file = document.createElement("input");
+  file.type = "file";
+  file.accept = "image/jpeg,image/png,image/webp";
+  fileLabel.append(file);
+
+  const send = document.createElement("button");
+  send.className = "button";
+  send.type = "submit";
+  send.textContent = owner ? "返信を送信" : "メッセージを送信";
+
+  actions.append(fileLabel, send);
+  form.append(textarea, actions);
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const message = textarea.value.trim();
+    const image = file.files?.[0] || null;
+
+    if (!message && !image) {
+      return alert("メッセージまたは画像を入力してください。");
+    }
+
+    const formData = new FormData();
+    formData.append("id", String(item.id));
+    formData.append("message", message);
+    if (image) formData.append("image", image);
+
+    send.disabled = true;
+    try {
+      const { response, data } = await workerPostForm(
+        "/developer-request-message",
+        formData,
+        sessionStorage.getItem("admin_access_token")
+      );
+
+      if (!response.ok) {
+        throw new Error(data.error || "メッセージを送信できませんでした。");
+      }
+
+      if (owner) {
+        await loadAllRequests();
+      } else {
+        await loadMyRequests();
+      }
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      send.disabled = false;
+    }
+  });
+
+  card.append(form);
+}
+
+function requestCard(item, owner) {
+  const card = document.createElement("article");
+  card.className = "request-card";
+  card.dataset.requestStatus = item.status === "resolved" ? "resolved" : "unresolved";
+
+  const statusRow = document.createElement("div");
+  statusRow.className = "request-status-row";
+
+  const heading = document.createElement("h3");
+  heading.textContent = item.subject || "（件名なし）";
+  heading.style.margin = "0";
+
+  statusRow.append(heading, makeRequestStatusBadge(item.status));
+  card.append(statusRow);
+
+  const meta = document.createElement("div");
+  meta.className = "hint";
+  meta.textContent = owner
+    ? `送信者：${item.requesterName || "—"} / ${item.requesterUsername || "—"}　送信日時：${formatDate(item.createdAt)}`
+    : `送信日時：${formatDate(item.createdAt)}`;
+  card.append(meta);
+
+  const original = document.createElement("div");
+  original.className = "request-original";
+
+  const originalLabel = document.createElement("div");
+  originalLabel.className = "request-original-label";
+  originalLabel.textContent = "送信した要望（編集不可）";
+
+  const originalBody = document.createElement("div");
+  originalBody.className = "request-original-body";
+  originalBody.textContent = item.body || "";
+  original.append(originalLabel, originalBody);
+
+  if (item.hasInitialImage) {
+    appendRequestImage(original, "request", item.id, item.initialImageName || "");
+  }
+
+  card.append(original);
+
+  const thread = document.createElement("div");
+  thread.className = "request-thread";
+
+  if (item.response) {
+    thread.append(messageBubble({
+      id: 0,
+      senderRole: "developer",
+      senderName: "デベロッパー",
+      body: item.response,
+      createdAt: item.answeredAt,
+      hasImage: false,
+    }));
+  }
+
+  (item.messages || []).forEach(message => {
+    thread.append(messageBubble(message));
+  });
+
+  if (!item.response && !(item.messages || []).length) {
+    const empty = document.createElement("div");
+    empty.className = "hint";
+    empty.textContent = "まだメッセージはありません。";
+    thread.append(empty);
+  }
+
+  card.append(thread);
+
+  if (owner) {
+    const ownerActions = document.createElement("div");
+    ownerActions.className = "request-owner-actions";
+
+    const statusButton = document.createElement("button");
+    statusButton.className = "sub";
+    statusButton.type = "button";
+    statusButton.textContent = item.status === "resolved"
+      ? "未解決に戻す"
+      : "解決済みにする";
+
+    statusButton.addEventListener("click", async () => {
+      statusButton.disabled = true;
+      try {
+        const nextStatus = item.status === "resolved" ? "unresolved" : "resolved";
+        const { response, data } = await workerPost(
+          "/developer-request-status",
+          { id: item.id, status: nextStatus },
+          sessionStorage.getItem("admin_access_token")
+        );
+        if (!response.ok) {
+          throw new Error(data.error || "状態を変更できませんでした。");
+        }
+        await loadAllRequests();
+      } catch (error) {
+        alert(error.message);
+      } finally {
+        statusButton.disabled = false;
+      }
+    });
+
+    ownerActions.append(statusButton);
+    card.append(ownerActions);
+  }
+
+  addThreadComposer(card, item, owner);
   return card;
 }
 
+function applyDeveloperRequestFilter() {
+  document.querySelectorAll("#request-filter-bar [data-request-filter]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.requestFilter === developerRequestFilter
+    );
+  });
+
+  ui.allRequests.querySelectorAll(".request-card").forEach(card => {
+    card.hidden = developerRequestFilter !== "all" &&
+      card.dataset.requestStatus !== developerRequestFilter;
+  });
+}
+
 async function loadMyRequests() {
+  clearRequestObjectUrls();
   ui.myRequestsStatus.textContent = "読み込み中...";
   ui.myRequests.innerHTML = "";
 
@@ -5455,28 +5849,23 @@ async function loadMyRequests() {
     );
 
     if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "要望一覧を取得できませんでした。"
-      );
+      throw new Error(data.error || "要望一覧を取得できませんでした。");
     }
 
-    ui.myRequestsStatus.textContent =
-      data.requests?.length
-        ? ""
-        : "送信済みの要望はありません。";
+    ui.myRequestsStatus.textContent = data.requests?.length
+      ? ""
+      : "送信済みの要望はありません。";
 
-    (data.requests || []).forEach(item =>
-      ui.myRequests.append(
-        requestCard(item, false)
-      )
-    );
+    (data.requests || []).forEach(item => {
+      ui.myRequests.append(requestCard(item, false));
+    });
   } catch (error) {
     ui.myRequestsStatus.textContent = error.message;
   }
 }
 
 async function loadAllRequests() {
+  clearRequestObjectUrls();
   ui.allRequestsStatus.textContent = "読み込み中...";
   ui.allRequests.innerHTML = "";
 
@@ -5488,26 +5877,55 @@ async function loadAllRequests() {
     );
 
     if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "要望一覧を取得できませんでした。"
-      );
+      throw new Error(data.error || "要望一覧を取得できませんでした。");
     }
 
-    ui.allRequestsStatus.textContent =
-      data.requests?.length
-        ? ""
-        : "届いている要望はありません。";
+    ui.allRequestsStatus.textContent = data.requests?.length
+      ? ""
+      : "届いている要望はありません。";
 
-    (data.requests || []).forEach(item =>
-      ui.allRequests.append(
-        requestCard(item, true)
-      )
-    );
+    (data.requests || []).forEach(item => {
+      ui.allRequests.append(requestCard(item, true));
+    });
+
+    applyDeveloperRequestFilter();
   } catch (error) {
     ui.allRequestsStatus.textContent = error.message;
   }
 }
+
+document.querySelectorAll("#request-filter-bar [data-request-filter]").forEach(button => {
+  button.addEventListener("click", () => {
+    developerRequestFilter = button.dataset.requestFilter || "unresolved";
+    applyDeveloperRequestFilter();
+  });
+});
+
+ui.requestImage.addEventListener("change", () => {
+  ui.requestImagePreview.innerHTML = "";
+  ui.requestImagePreview.classList.remove("active");
+
+  const file = ui.requestImage.files?.[0];
+  if (!file) return;
+
+  if (!/^image\/(jpeg|png|webp)$/i.test(file.type)) {
+    ui.requestImage.value = "";
+    return alert("JPG・PNG・WebPの画像を選択してください。");
+  }
+
+  if (file.size > 8 * 1024 * 1024) {
+    ui.requestImage.value = "";
+    return alert("画像は8MB以下にしてください。");
+  }
+
+  const img = document.createElement("img");
+  const url = URL.createObjectURL(file);
+  img.src = url;
+  img.alt = "添付画像プレビュー";
+  img.onload = () => URL.revokeObjectURL(url);
+  ui.requestImagePreview.append(img);
+  ui.requestImagePreview.classList.add("active");
+});
 
 ui.requestForm.addEventListener(
   "submit",
@@ -5519,41 +5937,33 @@ ui.requestForm.addEventListener(
     }
 
     ui.requestSend.disabled = true;
-
-    show(
-      ui.requestStatus,
-      "送信しています…"
-    );
+    show(ui.requestStatus, "送信しています…");
 
     try {
-      const { response, data } = await workerPost(
+      const formData = new FormData();
+      formData.append("subject", ui.requestSubject.value.trim());
+      formData.append("body", ui.requestBody.value.trim());
+
+      const image = ui.requestImage.files?.[0];
+      if (image) formData.append("image", image);
+
+      const { response, data } = await workerPostForm(
         "/developer-request-create",
-        {
-          subject: ui.requestSubject.value.trim(),
-          body: ui.requestBody.value.trim(),
-        },
+        formData,
         sessionStorage.getItem("admin_access_token")
       );
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "送信できませんでした。"
-        );
+        throw new Error(data.error || "送信できませんでした。");
       }
 
       ui.requestForm.reset();
-
-      show(
-        ui.requestStatus,
-        "要望を送信しました。"
-      );
-
+      ui.requestImagePreview.innerHTML = "";
+      ui.requestImagePreview.classList.remove("active");
+      show(ui.requestStatus, "要望を送信しました。");
       await loadMyRequests();
     } catch (error) {
-      show(
-        ui.requestStatus,
-        error.message
-      );
+      show(ui.requestStatus, error.message);
     } finally {
       ui.requestSend.disabled = false;
     }
