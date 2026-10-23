@@ -1019,6 +1019,9 @@
             document.querySelector(".schedule-jump-button");
 
 
+        const meetingCard =
+            document.getElementById("next-meeting");
+
         const meetingDateText =
             document.getElementById("meeting-date-text");
 
@@ -1324,11 +1327,9 @@
             clipUnderHeader(subtitleLine);
             clipUnderHeader(message);
 
-            // 「次回まち会議は」の見出しは残し、
-            // その下の日時・場所・地図だけを黄帯に重なる分だけカットする。
-            clipUnderHeader(meetingDateText);
-            clipUnderHeader(meetingPlaceBlock);
-            clipUnderHeader(meetingMapBlock);
+            // 次回まち会議の四角枠全体を、
+            // 黄帯に重なる分だけ上からカットする。
+            clipUnderHeader(meetingCard);
 
             updateMainHeight();
             updateScheduleButton();
