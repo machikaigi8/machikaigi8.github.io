@@ -1007,21 +1007,11 @@ textarea:disabled{
   margin:14px 0;
 }
 
-.news-layout-height-control{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.news-layout-readout{
+  margin:0;
   color:var(--navy);
+  font-size:13px;
   font-weight:700;
-}
-
-.news-layout-height-control input{
-  width:190px;
-}
-
-.news-layout-height-control output{
-  min-width:58px;
-  text-align:right;
 }
 
 .news-layout-stage-shell{
@@ -1038,64 +1028,76 @@ textarea:disabled{
   left:14px;
   top:14px;
   width:1000px;
-  height:800px;
-  overflow:hidden;
+  min-height:560px;
+  padding:42px;
+  box-sizing:border-box;
+  overflow:visible;
   background:#FFFDF7;
   border:1px solid #8E9BAE;
   box-shadow:0 4px 16px rgba(0,0,0,.08);
   transform-origin:top left;
-  touch-action:none;
-  user-select:none;
+  font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+  font-size:18px;
+  line-height:1.9;
+  color:#111;
 }
 
-.news-layout-object{
-  position:absolute;
-  box-sizing:border-box;
-  border:2px solid transparent;
-  cursor:move;
-  touch-action:none;
-}
-
-.news-layout-object:hover,
-.news-layout-object.selected{
-  border-color:#2463A8;
-  box-shadow:0 0 0 1px rgba(36,99,168,.18);
-}
-
-.news-layout-object.selected::before{
+.news-layout-stage::after{
   content:"";
-  position:absolute;
-  inset:-7px;
-  border:1px dashed rgba(36,99,168,.55);
-  pointer-events:none;
-}
-
-.news-text-object{
-  padding:8px 10px;
-  background:rgba(255,255,255,.72);
+  display:block;
+  clear:both;
 }
 
 .news-text-preview{
-  width:100%;
-  height:100%;
-  overflow:hidden;
   white-space:pre-wrap;
   overflow-wrap:anywhere;
-  color:#111;
-  font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
-  font-size:18px;
-  line-height:1.8;
+  font:inherit;
+  line-height:inherit;
+  color:inherit;
   user-select:none;
-  pointer-events:none;
 }
 
 .news-image-object{
-  background:rgba(238,241,245,.82);
+  position:relative;
+  z-index:2;
+  box-sizing:border-box;
+  border:2px solid #2463A8;
+  background:rgba(238,241,245,.9);
+  cursor:move;
+  touch-action:none;
+  user-select:none;
+}
+
+.news-image-object[data-side="left"]{
+  float:left;
+  margin-right:22px;
+  margin-left:0;
+}
+
+.news-image-object[data-side="right"]{
+  float:right;
+  margin-left:22px;
+  margin-right:0;
+}
+
+.news-image-object::before{
+  content:"写真：ドラッグで移動";
+  position:absolute;
+  left:0;
+  top:-28px;
+  padding:3px 8px;
+  background:#2463A8;
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  line-height:1.4;
+  white-space:nowrap;
+  pointer-events:none;
 }
 
 .news-image-object img{
   width:100%;
-  height:100%;
+  height:auto;
   display:block;
   object-fit:contain;
   pointer-events:none;
@@ -1104,40 +1106,19 @@ textarea:disabled{
 
 .news-resize-handle{
   position:absolute;
-  width:12px;
-  height:12px;
+  width:14px;
+  height:14px;
   background:#fff;
   border:2px solid #2463A8;
   border-radius:50%;
   z-index:4;
+  touch-action:none;
 }
 
-.news-resize-handle[data-handle="nw"]{left:-7px;top:-7px;cursor:nwse-resize}
-.news-resize-handle[data-handle="ne"]{right:-7px;top:-7px;cursor:nesw-resize}
-.news-resize-handle[data-handle="sw"]{left:-7px;bottom:-7px;cursor:nesw-resize}
-.news-resize-handle[data-handle="se"]{right:-7px;bottom:-7px;cursor:nwse-resize}
-.news-resize-handle[data-handle="n"]{left:50%;top:-7px;transform:translateX(-50%);cursor:ns-resize}
-.news-resize-handle[data-handle="s"]{left:50%;bottom:-7px;transform:translateX(-50%);cursor:ns-resize}
-.news-resize-handle[data-handle="w"]{left:-7px;top:50%;transform:translateY(-50%);cursor:ew-resize}
-.news-resize-handle[data-handle="e"]{right:-7px;top:50%;transform:translateY(-50%);cursor:ew-resize}
-
-.news-object-label{
-  position:absolute;
-  left:0;
-  top:-27px;
-  display:none;
-  padding:3px 8px;
-  background:#2463A8;
-  color:#fff;
-  font-size:12px;
-  font-weight:700;
-  white-space:nowrap;
-  pointer-events:none;
-}
-
-.news-layout-object.selected .news-object-label{
-  display:block;
-}
+.news-resize-handle[data-handle="nw"]{left:-8px;top:-8px;cursor:nwse-resize}
+.news-resize-handle[data-handle="ne"]{right:-8px;top:-8px;cursor:nesw-resize}
+.news-resize-handle[data-handle="sw"]{left:-8px;bottom:-8px;cursor:nesw-resize}
+.news-resize-handle[data-handle="se"]{right:-8px;bottom:-8px;cursor:nwse-resize}
 
 .news-layout-fixed-note{
   margin:12px 0 0;
@@ -1158,22 +1139,40 @@ textarea:disabled{
   .news-layout-toolbar{
     align-items:flex-start;
   }
+}
 
-  .news-layout-height-control{
-    width:100%;
-    flex-wrap:wrap;
-  }
 
-  .news-layout-height-control input{
-    flex:1;
-    min-width:170px;
-  }
+/* 更新・再読み込み時は管理画面を表示せず、空白画面にする */
+html.admin-blank-screen,
+html.admin-blank-screen body{
+  background:#fff !important;
+}
+
+html.admin-blank-screen body{
+  display:none !important;
 }
 
 </style>
 
 <script>
 (() => {
+  const navigationEntry = performance.getEntriesByType("navigation")[0];
+  const isReload = navigationEntry?.type === "reload";
+  const forceBlankOnce =
+    sessionStorage.getItem("admin_force_blank_once") === "1";
+
+  if (forceBlankOnce) {
+    sessionStorage.removeItem("admin_force_blank_once");
+  }
+
+  window.__ADMIN_BLANK_ON_REFRESH__ =
+    Boolean(isReload || forceBlankOnce);
+
+  if (window.__ADMIN_BLANK_ON_REFRESH__) {
+    document.documentElement.classList.add("admin-blank-screen");
+    return;
+  }
+
   const params = new URLSearchParams(window.location.search);
 
   const isAuthCallback =
@@ -1823,7 +1822,7 @@ textarea:disabled{
             <h3>写真ニュースのレイアウト</h3>
 
             <p class="news-layout-help">
-              PowerPointのように、本文と写真を直接ドラッグして配置できます。青い枠を選択し、周囲の丸いハンドルをドラッグすると大きさを変更できます。
+              本文は記事幅いっぱいに固定されます。写真だけをドラッグして上下・左右へ移動でき、四隅の丸いハンドルで拡大・縮小できます。写真の位置に合わせて本文が自動で回り込みます。
             </p>
 
             <div class="news-layout-toolbar">
@@ -1832,21 +1831,15 @@ textarea:disabled{
                 class="sub"
                 type="button"
               >
-                初期配置に戻す
+                写真を初期位置に戻す
               </button>
 
-              <label class="news-layout-height-control" for="news-canvas-height">
-                記事エリアの高さ
-                <input
-                  id="news-canvas-height"
-                  type="range"
-                  min="500"
-                  max="1600"
-                  step="20"
-                  value="800"
-                >
-                <output id="news-canvas-height-value">800px</output>
-              </label>
+              <p
+                id="news-layout-readout"
+                class="news-layout-readout"
+              >
+                写真：左側・幅42%
+              </p>
             </div>
 
             <div
@@ -1858,49 +1851,29 @@ textarea:disabled{
                 class="news-layout-stage"
               >
                 <div
-                  id="news-text-box"
-                  class="news-layout-object news-text-object selected"
-                  data-layout-object="text"
-                >
-                  <span class="news-object-label">本文</span>
-                  <div
-                    id="news-text-preview"
-                    class="news-text-preview"
-                  ></div>
-                  <span class="news-resize-handle" data-handle="nw"></span>
-                  <span class="news-resize-handle" data-handle="n"></span>
-                  <span class="news-resize-handle" data-handle="ne"></span>
-                  <span class="news-resize-handle" data-handle="e"></span>
-                  <span class="news-resize-handle" data-handle="se"></span>
-                  <span class="news-resize-handle" data-handle="s"></span>
-                  <span class="news-resize-handle" data-handle="sw"></span>
-                  <span class="news-resize-handle" data-handle="w"></span>
-                </div>
-
-                <div
                   id="news-image-box"
-                  class="news-layout-object news-image-object"
-                  data-layout-object="image"
+                  class="news-image-object"
+                  data-side="left"
                 >
-                  <span class="news-object-label">写真</span>
                   <img
                     id="news-preview-image"
                     alt="ニュース写真のプレビュー"
                   >
                   <span class="news-resize-handle" data-handle="nw"></span>
-                  <span class="news-resize-handle" data-handle="n"></span>
                   <span class="news-resize-handle" data-handle="ne"></span>
-                  <span class="news-resize-handle" data-handle="e"></span>
-                  <span class="news-resize-handle" data-handle="se"></span>
-                  <span class="news-resize-handle" data-handle="s"></span>
                   <span class="news-resize-handle" data-handle="sw"></span>
-                  <span class="news-resize-handle" data-handle="w"></span>
+                  <span class="news-resize-handle" data-handle="se"></span>
                 </div>
+
+                <div
+                  id="news-text-preview"
+                  class="news-text-preview"
+                ></div>
               </div>
             </div>
 
             <p class="news-layout-fixed-note">
-              本文のフォントと文字サイズは固定です。公開時も本文は18pxで表示され、フォント種類・文字サイズの変更機能はありません。
+              本文は常に記事幅いっぱいの通常レイアウトで、フォント種類と文字サイズは固定です。本文は18pxで表示されます。写真だけを移動・拡大縮小でき、公開ページでも同じ位置で文字が写真の周囲に回り込みます。
             </p>
           </div>
 
@@ -3040,11 +3013,9 @@ const ui = {
   newsFileSummary: $("news-file-summary"),
   newsImageEditor: $("news-image-editor"),
   newsLayoutReset: $("news-layout-reset"),
-  newsCanvasHeight: $("news-canvas-height"),
-  newsCanvasHeightValue: $("news-canvas-height-value"),
+  newsLayoutReadout: $("news-layout-readout"),
   newsLayoutStageShell: $("news-layout-stage-shell"),
   newsLayoutStage: $("news-layout-stage"),
-  newsTextBox: $("news-text-box"),
   newsTextPreview: $("news-text-preview"),
   newsImageBox: $("news-image-box"),
   newsPreviewImage: $("news-preview-image"),
@@ -4457,13 +4428,12 @@ ui.meetingForm.addEventListener(
 let newsPreviewObjectUrl = "";
 
 const NEWS_LAYOUT_DEFAULT = Object.freeze({
-  canvasHeight: 800,
-  text: { x: 4, y: 6, width: 53, height: 78 },
-  image: { x: 61, y: 9, width: 35, height: 48 },
+  side: "left",
+  width: 42,
+  top: 0,
 });
 
-let newsLayoutState = JSON.parse(JSON.stringify(NEWS_LAYOUT_DEFAULT));
-let newsSelectedObject = "text";
+let newsLayoutState = { ...NEWS_LAYOUT_DEFAULT };
 
 function isNewsImageFile(file) {
   return !!file && ["image/jpeg", "image/png", "image/webp"].includes(file.type);
@@ -4476,25 +4446,21 @@ function clearNewsPreviewUrl() {
   }
 }
 
-function cloneNewsLayoutDefault() {
-  return JSON.parse(JSON.stringify(NEWS_LAYOUT_DEFAULT));
-}
-
 function clampNewsLayoutNumber(value, min, max) {
   return Math.min(max, Math.max(min, Number(value) || 0));
 }
 
-function setNewsSelectedObject(name) {
-  newsSelectedObject = name;
-  ui.newsTextBox.classList.toggle("selected", name === "text");
-  ui.newsImageBox.classList.toggle("selected", name === "image");
+function newsEditorScale() {
+  const rect = ui.newsLayoutStage.getBoundingClientRect();
+  return rect.width > 0 ? rect.width / 1000 : 1;
 }
 
-function applyNewsObjectLayout(element, layout) {
-  element.style.left = `${layout.x}%`;
-  element.style.top = `${layout.y}%`;
-  element.style.width = `${layout.width}%`;
-  element.style.height = `${layout.height}%`;
+function updateNewsLayoutShellHeight() {
+  requestAnimationFrame(() => {
+    const scale = newsEditorScale();
+    const stageHeight = Math.max(560, ui.newsLayoutStage.scrollHeight);
+    ui.newsLayoutStageShell.style.height = `${Math.ceil(stageHeight * scale + 28)}px`;
+  });
 }
 
 function applyNewsLayoutState() {
@@ -4505,106 +4471,85 @@ function applyNewsLayoutState() {
   const scale = Math.min(1, availableWidth / 1000);
 
   ui.newsLayoutStage.style.width = "1000px";
-  ui.newsLayoutStage.style.height = `${newsLayoutState.canvasHeight}px`;
   ui.newsLayoutStage.style.transform = `scale(${scale})`;
-  ui.newsLayoutStageShell.style.height = `${Math.ceil(newsLayoutState.canvasHeight * scale + 28)}px`;
-  ui.newsCanvasHeight.value = String(newsLayoutState.canvasHeight);
-  ui.newsCanvasHeightValue.textContent = `${newsLayoutState.canvasHeight}px`;
-  applyNewsObjectLayout(ui.newsTextBox, newsLayoutState.text);
-  applyNewsObjectLayout(ui.newsImageBox, newsLayoutState.image);
+
+  ui.newsImageBox.dataset.side = newsLayoutState.side;
+  ui.newsImageBox.style.width = `${newsLayoutState.width}%`;
+  ui.newsImageBox.style.marginTop = `${newsLayoutState.top}px`;
+
+  if (ui.newsLayoutReadout) {
+    const sideText = newsLayoutState.side === "right" ? "右側" : "左側";
+    ui.newsLayoutReadout.textContent = `写真：${sideText}・幅${Math.round(newsLayoutState.width)}%`;
+  }
+
+  updateNewsLayoutShellHeight();
 }
 
-function resetNewsManualLayout() {
-  newsLayoutState = cloneNewsLayoutDefault();
-  setNewsSelectedObject("text");
+function resetNewsWrapLayout() {
+  newsLayoutState = { ...NEWS_LAYOUT_DEFAULT };
   applyNewsLayoutState();
 }
 
 function updateNewsBodyPreview() {
-  ui.newsTextPreview.textContent = ui.newsBody.value || "本文がここに表示されます。";
+  ui.newsTextPreview.textContent = ui.newsBody.value || "本文がここに表示されます。写真をドラッグすると、文字が写真の周囲に自動で回り込みます。";
+  updateNewsLayoutShellHeight();
 }
 
 function newsLayoutSnapshot() {
   return {
-    version: 2,
-    type: "manual",
-    canvasHeight: Math.round(newsLayoutState.canvasHeight),
-    text: {
-      x: Number(newsLayoutState.text.x.toFixed(3)),
-      y: Number(newsLayoutState.text.y.toFixed(3)),
-      width: Number(newsLayoutState.text.width.toFixed(3)),
-      height: Number(newsLayoutState.text.height.toFixed(3)),
-      fontSize: 18,
-    },
+    version: 3,
+    type: "wrap",
+    fontSize: 18,
+    wrap: "inside",
     image: {
-      x: Number(newsLayoutState.image.x.toFixed(3)),
-      y: Number(newsLayoutState.image.y.toFixed(3)),
-      width: Number(newsLayoutState.image.width.toFixed(3)),
-      height: Number(newsLayoutState.image.height.toFixed(3)),
+      side: newsLayoutState.side === "right" ? "right" : "left",
+      width: Number(newsLayoutState.width.toFixed(2)),
+      top: Math.round(newsLayoutState.top),
       fit: "contain",
     },
   };
 }
 
-function beginNewsObjectPointer(event, objectName) {
+function beginNewsImagePointer(event) {
   if (event.button !== undefined && event.button !== 0) return;
 
-  const stage = ui.newsLayoutStage;
-  const target = objectName === "text" ? ui.newsTextBox : ui.newsImageBox;
+  const target = ui.newsImageBox;
   const handle = event.target.closest(".news-resize-handle")?.dataset.handle || "";
-  const stageRect = stage.getBoundingClientRect();
-  const start = { ...newsLayoutState[objectName] };
+  const stageRect = ui.newsLayoutStage.getBoundingClientRect();
+  const scale = Math.max(0.01, stageRect.width / 1000);
+  const start = { ...newsLayoutState };
   const startX = event.clientX;
   const startY = event.clientY;
-  const minWidth = objectName === "text" ? 20 : 10;
-  const minHeight = objectName === "text" ? 14 : 10;
 
-  setNewsSelectedObject(objectName);
   event.preventDefault();
   target.setPointerCapture?.(event.pointerId);
 
   const move = moveEvent => {
-    const dx = ((moveEvent.clientX - startX) / stageRect.width) * 100;
-    const dy = ((moveEvent.clientY - startY) / stageRect.height) * 100;
-    const next = { ...start };
-
-    if (!handle) {
-      next.x = clampNewsLayoutNumber(start.x + dx, 0, 100 - start.width);
-      next.y = clampNewsLayoutNumber(start.y + dy, 0, 100 - start.height);
+    if (handle) {
+      const dx = (moveEvent.clientX - startX) / scale;
+      const direction = handle.includes("w") ? -1 : 1;
+      const widthPx = (start.width / 100) * 1000 + dx * direction;
+      newsLayoutState.width = clampNewsLayoutNumber(
+        (widthPx / 1000) * 100,
+        18,
+        90
+      );
     } else {
-      const hasW = handle.includes("w");
-      const hasE = handle.includes("e");
-      const hasN = handle.includes("n");
-      const hasS = handle.includes("s");
+      const dy = (moveEvent.clientY - startY) / scale;
+      newsLayoutState.top = clampNewsLayoutNumber(start.top + dy, 0, 1800);
 
-      if (hasE) {
-        next.width = clampNewsLayoutNumber(start.width + dx, minWidth, 100 - start.x);
-      }
-      if (hasS) {
-        next.height = clampNewsLayoutNumber(start.height + dy, minHeight, 100 - start.y);
-      }
-      if (hasW) {
-        const right = start.x + start.width;
-        next.x = clampNewsLayoutNumber(start.x + dx, 0, right - minWidth);
-        next.width = right - next.x;
-      }
-      if (hasN) {
-        const bottom = start.y + start.height;
-        next.y = clampNewsLayoutNumber(start.y + dy, 0, bottom - minHeight);
-        next.height = bottom - next.y;
-      }
+      const pointerX = moveEvent.clientX - stageRect.left;
+      newsLayoutState.side = pointerX < stageRect.width / 2 ? "left" : "right";
     }
 
-    newsLayoutState[objectName] = next;
-    applyNewsObjectLayout(target, next);
+    applyNewsLayoutState();
   };
 
-  const end = endEvent => {
+  const end = () => {
     target.releasePointerCapture?.(event.pointerId);
     window.removeEventListener("pointermove", move);
     window.removeEventListener("pointerup", end);
     window.removeEventListener("pointercancel", end);
-    endEvent?.preventDefault?.();
   };
 
   window.addEventListener("pointermove", move);
@@ -4612,27 +4557,12 @@ function beginNewsObjectPointer(event, objectName) {
   window.addEventListener("pointercancel", end);
 }
 
-ui.newsTextBox.addEventListener("pointerdown", event => {
-  beginNewsObjectPointer(event, "text");
-});
-
-ui.newsImageBox.addEventListener("pointerdown", event => {
-  beginNewsObjectPointer(event, "image");
-});
+ui.newsImageBox.addEventListener("pointerdown", beginNewsImagePointer);
 
 ui.newsBody.addEventListener("input", updateNewsBodyPreview);
 
 ui.newsLayoutReset.addEventListener("click", () => {
-  resetNewsManualLayout();
-});
-
-ui.newsCanvasHeight.addEventListener("input", () => {
-  newsLayoutState.canvasHeight = clampNewsLayoutNumber(
-    ui.newsCanvasHeight.value,
-    500,
-    1600
-  );
-  applyNewsLayoutState();
+  resetNewsWrapLayout();
 });
 
 window.addEventListener("resize", () => {
@@ -4648,9 +4578,13 @@ function resetNewsFormUi() {
   ui.newsFileSummary.textContent = "";
   ui.newsImageEditor.classList.remove("active");
   ui.newsPreviewImage.removeAttribute("src");
-  resetNewsManualLayout();
+  resetNewsWrapLayout();
   updateNewsBodyPreview();
 }
+
+ui.newsPreviewImage.addEventListener("load", () => {
+  updateNewsLayoutShellHeight();
+});
 
 ui.newsFile.addEventListener("change", () => {
   hide(ui.newsStatus);
@@ -4672,7 +4606,7 @@ ui.newsFile.addEventListener("change", () => {
     newsPreviewObjectUrl = URL.createObjectURL(file);
     ui.newsPreviewImage.src = newsPreviewObjectUrl;
     ui.newsImageEditor.classList.add("active");
-    resetNewsManualLayout();
+    resetNewsWrapLayout();
     updateNewsBodyPreview();
     requestAnimationFrame(applyNewsLayoutState);
   } else {
@@ -4681,7 +4615,7 @@ ui.newsFile.addEventListener("change", () => {
   }
 });
 
-resetNewsManualLayout();
+resetNewsWrapLayout();
 updateNewsBodyPreview();
 
 ui.newsForm.addEventListener("submit", async event => {
@@ -7328,6 +7262,11 @@ ui.refresh.addEventListener(
       );
     }
 
+    sessionStorage.setItem(
+      "admin_force_blank_once",
+      "1"
+    );
+
     location.reload();
   }
 );
@@ -7344,7 +7283,9 @@ ui.logout.addEventListener(
   }
 );
 
-initAuth();
+if (!window.__ADMIN_BLANK_ON_REFRESH__) {
+  initAuth();
+}
 
 </script>
 
