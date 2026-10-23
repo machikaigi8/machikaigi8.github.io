@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ニュース｜みんなのまち会議</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif}
+.header{position:sticky;top:0;z-index:100;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:24px 34px 18px;background:rgba(255,220,100,.92)}
+.title{margin:0;color:#001E00;font-size:46px;font-family:"HGP創英ﾌﾟﾚｾﾞﾝｽEB",sans-serif;white-space:nowrap}
+.nav{display:flex;gap:28px;flex-wrap:wrap}.nav a{color:#111;text-decoration:none;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:20px}.nav a:hover{text-decoration:underline}
+.main{width:min(1180px,calc(100% - 32px));margin:46px auto 80px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px;border-bottom:4px solid #145E20;padding-bottom:14px}.page-head h1{margin:0;font-size:38px;color:#145E20}.back{color:#145E20;font-weight:700}
+.news-list{display:grid;gap:22px}.news-card{display:grid;grid-template-columns:260px 1fr;gap:22px;border:2px solid #145E20;border-radius:22px;overflow:hidden;background:#fff;text-decoration:none;color:#111}.news-card-media{width:100%;height:180px;object-fit:cover;background:#EEF1F5}.news-card-pdf{height:180px;display:flex;align-items:center;justify-content:center;background:#EEF1F5;color:#145E20;font-size:32px;font-weight:700}.news-card-body{padding:20px 22px 20px 0}.news-date{margin:0 0 8px;color:#627066;font-size:14px}.news-card-title{margin:0 0 10px;font-size:24px;line-height:1.45}.news-excerpt{margin:0;color:#333;line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.empty{padding:30px;border:2px solid #D3D8D3;border-radius:18px;text-align:center;color:#627066}
+.article{background:#fff;border:2px solid #145E20;border-radius:24px;padding:34px}.article-date{margin:0 0 10px;color:#627066}.article-title{margin:0 0 28px;font-size:36px;line-height:1.45}.article-body{margin:0 0 32px;font-size:18px;line-height:2;white-space:pre-wrap}.article-media{overflow:hidden;background:#EEF1F5}.article-media img{width:100%;height:100%;display:block;object-fit:cover}.pdf-frame{width:100%;height:75vh;min-height:520px;border:1px solid #AAB5C4}.pdf-open{display:inline-block;margin-top:14px;padding:10px 16px;border:2px solid #145E20;color:#145E20;font-weight:700;text-decoration:none}.status{text-align:center;padding:30px;color:#627066}
+@media(max-width:768px){.header{display:block;padding:18px 20px 14px}.title{font-size:30px}.nav{margin-top:12px;gap:14px}.nav a{font-size:13px}.main{margin-top:28px}.page-head h1{font-size:30px}.news-card{grid-template-columns:1fr}.news-card-media,.news-card-pdf{height:220px}.news-card-body{padding:0 18px 20px}.article{padding:22px 16px}.article-title{font-size:29px}.article-body{font-size:17px}.pdf-frame{min-height:420px}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="title">みんなのまち会議</div>
+  <nav class="nav">
+    <a href="index.html">トップ</a>
+    <a href="news.html">ニュース</a>
+    <a href="about.html">まち会議とは</a>
+    <a href="organization.html">団体概要</a>
+    <a href="contact.html">お問い合わせ</a>
+  </nav>
+</header>
+<main class="main">
+  <div class="page-head">
+    <h1 id="page-heading">ニュース</h1>
+    <a id="back-link" class="back" href="index.html">← トップへ戻る</a>
+  </div>
+  <div id="news-root" class="status">ニュースを読み込んでいます…</div>
+</main>
+<script>
+const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
+const NEWS_API_URL = `${WORKER_URL}/news-public`;
+const NEWS_FILE_BASE_URL = `${WORKER_URL}/news-file/`;
+const root = document.getElementById("news-root");
+const heading = document.getElementById("page-heading");
+const backLink = document.getElementById("back-link");
+
+function formatNewsDate(value) {
+  if (!value) return "";
+  const date = new Date(value.endsWith("Z") || /[+-]\d\d:\d\d$/.test(value) ? value : `${value.replace(" ", "T")}Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("ja-JP", {year:"numeric",month:"2-digit",day:"2-digit",timeZone:"Asia/Tokyo"}).format(date);
+}
+
+function newsFileUrl(id) {
+  return `${NEWS_FILE_BASE_URL}${encodeURIComponent(id)}`;
+}
+
+function makeListCard(item) {
+  const link = document.createElement("a");
+  link.className = "news-card";
+  link.href = `news.html?id=${encodeURIComponent(item.id)}`;
+
+  if (item.fileType === "image") {
+    const image = document.createElement("img");
+    image.className = "news-card-media";
+    image.src = newsFileUrl(item.id);
+    image.alt = "";
+    image.loading = "lazy";
+    image.style.objectPosition = `${item.layout?.x ?? 50}% ${item.layout?.y ?? 50}%`;
+    link.append(image);
+  } else {
+    const pdf = document.createElement("div");
+    pdf.className = "news-card-pdf";
+    pdf.textContent = "PDF";
+    link.append(pdf);
+  }
+
+  const body = document.createElement("div");
+  body.className = "news-card-body";
+  const date = document.createElement("p");
+  date.className = "news-date";
+  date.textContent = formatNewsDate(item.createdAt);
+  const title = document.createElement("h2");
+  title.className = "news-card-title";
+  title.textContent = item.title || "（タイトルなし）";
+  const excerpt = document.createElement("p");
+  excerpt.className = "news-excerpt";
+  excerpt.textContent = item.body || "";
+  body.append(date,title,excerpt);
+  link.append(body);
+  return link;
+}
+
+function renderImage(item, article) {
+  const layout = item.layout || {};
+  const media = document.createElement("div");
+  media.className = "article-media";
+  const width = layout.mode === "full" ? 100 : Math.min(100, Math.max(40, Number(layout.width || 70)));
+  media.style.width = `${width}%`;
+  media.style.height = `${Math.min(700, Math.max(180, Number(layout.height || 360)))}px`;
+  if (layout.mode === "right") {
+    media.style.marginLeft = "auto";
+    media.style.marginRight = "0";
+  } else if (layout.mode === "center") {
+    media.style.marginLeft = "auto";
+    media.style.marginRight = "auto";
+  } else {
+    media.style.marginLeft = "0";
+    media.style.marginRight = "auto";
+  }
+  const image = document.createElement("img");
+  image.src = newsFileUrl(item.id);
+  image.alt = item.title || "ニュース写真";
+  image.style.objectPosition = `${layout.x ?? 50}% ${layout.y ?? 50}%`;
+  media.append(image);
+  article.append(media);
+}
+
+function renderPdf(item, article) {
+  const frame = document.createElement("iframe");
+  frame.className = "pdf-frame";
+  frame.src = newsFileUrl(item.id);
+  frame.title = item.fileName || "ニュースPDF";
+  article.append(frame);
+  const open = document.createElement("a");
+  open.className = "pdf-open";
+  open.href = newsFileUrl(item.id);
+  open.target = "_blank";
+  open.rel = "noopener noreferrer";
+  open.textContent = "PDFを別画面で開く";
+  article.append(open);
+}
+
+async function loadList() {
+  const response = await fetch(`${NEWS_API_URL}?limit=100`, {method:"GET",mode:"cors",credentials:"omit"});
+  const data = await response.json();
+  if (!response.ok || !data.ok) throw new Error(data.error || "ニュースを取得できませんでした。");
+  root.className = "news-list";
+  root.innerHTML = "";
+  if (!data.news?.length) {
+    root.className = "empty";
+    root.textContent = "現在掲載中のニュースはありません。";
+    return;
+  }
+  data.news.forEach(item => root.append(makeListCard(item)));
+}
+
+async function loadDetail(id) {
+  const response = await fetch(`${NEWS_API_URL}?id=${encodeURIComponent(id)}`, {method:"GET",mode:"cors",credentials:"omit"});
+  const data = await response.json();
+  if (!response.ok || !data.ok || !data.news) throw new Error(data.error || "ニュースを取得できませんでした。");
+  const item = data.news;
+  document.title = `${item.title}｜みんなのまち会議`;
+  heading.textContent = "ニュース";
+  backLink.href = "news.html";
+  backLink.textContent = "← ニュース一覧へ戻る";
+  root.className = "";
+  root.innerHTML = "";
+  const article = document.createElement("article");
+  article.className = "article";
+  const date = document.createElement("p");
+  date.className = "article-date";
+  date.textContent = formatNewsDate(item.createdAt);
+  const title = document.createElement("h1");
+  title.className = "article-title";
+  title.textContent = item.title || "（タイトルなし）";
+  const body = document.createElement("p");
+  body.className = "article-body";
+  body.textContent = item.body || "";
+  article.append(date,title,body);
+  if (item.fileType === "image") renderImage(item,article);
+  else renderPdf(item,article);
+  root.append(article);
+}
+
+(async()=>{
+  try {
+    const id = new URLSearchParams(location.search).get("id");
+    if (id) await loadDetail(id);
+    else await loadList();
+  } catch (error) {
+    console.error(error);
+    root.className = "empty";
+    root.textContent = error.message || "ニュースを読み込めませんでした。";
+  }
+})();
+</script>
+</body>
+</html>
