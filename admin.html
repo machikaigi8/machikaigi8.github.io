@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="auth-booting">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -710,6 +710,11 @@ textarea:disabled{
 .login-loading-screen.active,
 .auth-callback-loading .login-loading-screen{
   display:flex;
+}
+
+
+.auth-booting .page{
+  visibility:hidden;
 }
 
 .auth-callback-loading .page{
@@ -3191,6 +3196,7 @@ function showLoginLoading() {
 function hideLoginLoading() {
   ui.loginLoadingScreen.classList.remove("active");
   document.documentElement.classList.remove("auth-callback-loading");
+  document.documentElement.classList.remove("auth-booting");
 }
 
 function render2FASDownloadQrs() {
