@@ -1363,6 +1363,140 @@ textarea:disabled{
 
 
 
+
+    .inquiry-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .inquiry-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .inquiry-card {
+      border: 1px solid #dedbd0;
+      border-radius: 16px;
+      padding: 18px;
+      background: #fff;
+      box-shadow: 0 5px 16px rgba(0, 0, 0, 0.035);
+    }
+
+    .inquiry-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .inquiry-name {
+      margin: 0;
+      font-size: 20px;
+      color: #17351d;
+    }
+
+    .inquiry-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 68px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f1eee4;
+      color: #5f5a4e;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .inquiry-badge.replied {
+      background: #e6f4e9;
+      color: #245e31;
+    }
+
+    .inquiry-meta {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 12px;
+      color: #68645b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .inquiry-message {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding: 14px;
+      border-radius: 12px;
+      background: #fffdf7;
+      border: 1px solid #ece7da;
+      line-height: 1.8;
+    }
+
+    .inquiry-replies {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .inquiry-reply-item {
+      padding: 12px 14px;
+      border-left: 4px solid #d9c15c;
+      border-radius: 8px;
+      background: #fbfaf5;
+    }
+
+    .inquiry-reply-meta {
+      margin-bottom: 6px;
+      color: #6c685f;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .inquiry-reply-body {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.7;
+    }
+
+    .inquiry-reply-item.failed {
+      border-left-color: #b85b5b;
+      background: #fff6f6;
+    }
+
+    .inquiry-reply-error {
+      margin-top: 6px;
+      color: #9b3333;
+      font-size: 12px;
+    }
+
+    .inquiry-reply-form {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #ece7da;
+    }
+
+    .inquiry-reply-form .textarea {
+      min-height: 120px;
+    }
+
+    .inquiry-reply-form .button {
+      justify-self: start;
+    }
+
+    .inquiry-readonly-note {
+      margin-top: 14px;
+      color: #777066;
+      font-size: 13px;
+    }
+
 </style>
 
 <script>
@@ -2430,10 +2564,32 @@ textarea:disabled{
     >
       <div class="card">
 
-        <p class="hint">
-          現在のお問い合わせフォームはメール送信方式です。
-          一覧表示には保存先の接続が必要です。
-        </p>
+        <div class="inquiry-toolbar">
+          <p class="hint">
+            contact.html から届いたお問い合わせを表示します。
+            返信メールを送信できるのは共同管理者のみです。
+          </p>
+
+          <button
+            id="inquiries-refresh"
+            class="sub"
+            type="button"
+          >
+            更新
+          </button>
+        </div>
+
+        <div
+          id="inquiries-status"
+          class="hint"
+        >
+          読み込み中...
+        </div>
+
+        <div
+          id="inquiries-list"
+          class="inquiry-list"
+        ></div>
 
       </div>
 
@@ -3269,6 +3425,9 @@ const ui = {
   settingsAppVerify: $("settings-app-verify"),
   passwordToggle: $("password-toggle"),
   settingsPasswordArea: $("settings-password-area"),
+  inquiriesRefresh: $("inquiries-refresh"),
+  inquiriesStatus: $("inquiries-status"),
+  inquiriesList: $("inquiries-list"),
   requestForm: $("request-form"),
   requestSubject: $("request-subject"),
   requestBody: $("request-body"),
@@ -3908,6 +4067,7 @@ function showView(name) {
   if (name === "admin-users") loadUsers();
   if (name === "login-settings") loadLoginSettings();
   if (name === "meeting") loadMeetingSettings();
+  if (name === "inquiries") loadInquiries();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -5563,6 +5723,480 @@ ui.passwordForm.addEventListener(
     }
   }
 );
+
+
+function inquiryMetaText(item) {
+  const parts = [
+    `${item.prefecture || ""}${item.city || ""}`,
+    item.gender || "",
+    item.age || "",
+    item.occupation || "",
+  ].filter(Boolean);
+
+  return parts.join(" ／ ");
+}
+
+function inquiryStatusBadge(item) {
+  const sentReplies =
+    (item.replies || []).filter(
+      reply =>
+        reply.deliveryStatus === "sent"
+    );
+
+  const badge =
+    document.createElement(
+      "span"
+    );
+
+  badge.className =
+    "inquiry-badge" +
+    (
+      sentReplies.length
+        ? " replied"
+        : ""
+    );
+
+  badge.textContent =
+    sentReplies.length
+      ? "返信済み"
+      : "未返信";
+
+  return badge;
+}
+
+function inquiryReplyItem(reply) {
+  const item =
+    document.createElement(
+      "div"
+    );
+
+  item.className =
+    "inquiry-reply-item" +
+    (
+      reply.deliveryStatus === "failed"
+        ? " failed"
+        : ""
+    );
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+  meta.className =
+    "inquiry-reply-meta";
+
+  const statusLabel =
+    reply.deliveryStatus === "failed"
+      ? "送信失敗"
+      : reply.deliveryStatus === "pending"
+        ? "送信処理中"
+        : "送信済み";
+
+  meta.textContent =
+    `${reply.responderName || "共同管理者"} ／ ${formatDate(reply.sentAt || reply.createdAt)} ／ ${statusLabel}`;
+
+  const body =
+    document.createElement(
+      "div"
+    );
+
+  body.className =
+    "inquiry-reply-body";
+
+  body.textContent =
+    reply.body || "";
+
+  item.append(
+    meta,
+    body
+  );
+
+  if (
+    reply.deliveryStatus === "failed" &&
+    reply.errorMessage
+  ) {
+    const error =
+      document.createElement(
+        "div"
+      );
+
+    error.className =
+      "inquiry-reply-error";
+
+    error.textContent =
+      reply.errorMessage;
+
+    item.append(
+      error
+    );
+  }
+
+  return item;
+}
+
+function inquiryCard(
+  item,
+  canReply
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "inquiry-card";
+
+  const head =
+    document.createElement(
+      "div"
+    );
+
+  head.className =
+    "inquiry-card-head";
+
+  const left =
+    document.createElement(
+      "div"
+    );
+
+  const name =
+    document.createElement(
+      "h3"
+    );
+
+  name.className =
+    "inquiry-name";
+
+  name.textContent =
+    item.name || "お名前未設定";
+
+  const date =
+    document.createElement(
+      "div"
+    );
+
+  date.className =
+    "hint";
+
+  date.textContent =
+    formatDate(
+      item.createdAt
+    );
+
+  left.append(
+    name,
+    date
+  );
+
+  head.append(
+    left,
+    inquiryStatusBadge(item)
+  );
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+  meta.className =
+    "inquiry-meta";
+
+  const email =
+    document.createElement(
+      "div"
+    );
+
+  email.textContent =
+    `メール：${item.email || ""}`;
+
+  const profile =
+    document.createElement(
+      "div"
+    );
+
+  const profileText =
+    inquiryMetaText(item);
+
+  profile.textContent =
+    profileText
+      ? `属性：${profileText}`
+      : "属性：未入力";
+
+  meta.append(
+    email,
+    profile
+  );
+
+  const message =
+    document.createElement(
+      "div"
+    );
+
+  message.className =
+    "inquiry-message";
+
+  message.textContent =
+    item.message || "";
+
+  card.append(
+    head,
+    meta,
+    message
+  );
+
+  const replies =
+    document.createElement(
+      "div"
+    );
+
+  replies.className =
+    "inquiry-replies";
+
+  (item.replies || []).forEach(
+    reply =>
+      replies.append(
+        inquiryReplyItem(
+          reply
+        )
+      )
+  );
+
+  if (
+    item.replies?.length
+  ) {
+    card.append(
+      replies
+    );
+  }
+
+  if (canReply) {
+    const form =
+      document.createElement(
+        "form"
+      );
+
+    form.className =
+      "inquiry-reply-form";
+
+    const label =
+      document.createElement(
+        "label"
+      );
+
+    label.className =
+      "label";
+
+    label.textContent =
+      "返信内容";
+
+    const textarea =
+      document.createElement(
+        "textarea"
+      );
+
+    textarea.className =
+      "textarea";
+
+    textarea.maxLength =
+      4000;
+
+    textarea.required =
+      true;
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.className =
+      "button";
+
+    button.type =
+      "submit";
+
+    button.textContent =
+      "メールで返信";
+
+    const status =
+      document.createElement(
+        "div"
+      );
+
+    status.className =
+      "status";
+
+    form.append(
+      label,
+      textarea,
+      button,
+      status
+    );
+
+    form.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        const body =
+          textarea.value.trim();
+
+        if (!body) {
+          show(
+            status,
+            "返信内容を入力してください。"
+          );
+          return;
+        }
+
+        button.disabled =
+          true;
+
+        show(
+          status,
+          "返信メールを送信しています…"
+        );
+
+        try {
+          const {
+            response,
+            data,
+          } =
+            await workerPost(
+              "/contact-inquiry-reply",
+              {
+                id:
+                  item.id,
+                body,
+              },
+              sessionStorage.getItem(
+                "admin_access_token"
+              )
+            );
+
+          if (
+            !response.ok
+          ) {
+            throw new Error(
+              data.error ||
+              "返信メールを送信できませんでした。"
+            );
+          }
+
+          textarea.value =
+            "";
+
+          show(
+            status,
+            "返信メールを送信しました。"
+          );
+
+          await loadInquiries();
+
+        } catch (error) {
+          show(
+            status,
+            error.message
+          );
+        } finally {
+          button.disabled =
+            false;
+        }
+      }
+    );
+
+    card.append(
+      form
+    );
+  } else {
+    const note =
+      document.createElement(
+        "div"
+      );
+
+    note.className =
+      "inquiry-readonly-note";
+
+    note.textContent =
+      "返信を送信できるのは共同管理者のみです。";
+
+    card.append(
+      note
+    );
+  }
+
+  return card;
+}
+
+async function loadInquiries() {
+  if (
+    !ui.inquiriesStatus ||
+    !ui.inquiriesList
+  ) {
+    return;
+  }
+
+  ui.inquiriesStatus.textContent =
+    "読み込み中...";
+
+  ui.inquiriesList.innerHTML =
+    "";
+
+  try {
+    const {
+      response,
+      data,
+    } =
+      await workerPost(
+        "/contact-inquiries",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data.error ||
+        "お問い合わせ一覧を取得できませんでした。"
+      );
+    }
+
+    const inquiries =
+      data.inquiries || [];
+
+    ui.inquiriesStatus.textContent =
+      inquiries.length
+        ? (
+            data.canReply
+              ? "共同管理者として返信できます。"
+              : "閲覧のみできます。返信は共同管理者のみ可能です。"
+          )
+        : "お問い合わせはまだありません。";
+
+    inquiries.forEach(
+      item =>
+        ui.inquiriesList.append(
+          inquiryCard(
+            item,
+            data.canReply === true
+          )
+        )
+    );
+
+  } catch (error) {
+    ui.inquiriesStatus.textContent =
+      error.message;
+  }
+}
+
+ui.inquiriesRefresh
+  ?.addEventListener(
+    "click",
+    loadInquiries
+  );
 
 function formatDate(value) {
   if (!value) {
