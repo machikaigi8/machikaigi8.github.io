@@ -13,10 +13,10 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
 .nav{display:flex;gap:28px;flex-wrap:wrap}.nav a{color:#111;text-decoration:none;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:20px}.nav a:hover{text-decoration:underline}
 .main{width:min(1180px,calc(100% - 32px));margin:46px auto 80px}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:28px;border-bottom:4px solid #145E20;padding-bottom:14px}.page-head h1{margin:0;font-size:38px;color:#145E20}.back{color:#145E20;font-weight:700}
-.news-list{display:grid;gap:22px}.news-card{display:grid;grid-template-columns:260px 1fr;gap:22px;border:2px solid #145E20;border-radius:22px;overflow:hidden;background:#fff;text-decoration:none;color:#111}.news-card-media{width:100%;height:180px;object-fit:cover;background:#EEF1F5}.news-card-pdf{height:180px;display:flex;align-items:center;justify-content:center;background:#EEF1F5;color:#145E20;font-size:32px;font-weight:700}.news-card-body{padding:20px 22px 20px 0}.news-date{margin:0 0 8px;color:#627066;font-size:14px}.news-card-title{margin:0 0 10px;font-size:24px;line-height:1.45}.news-excerpt{margin:0;color:#333;line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.empty{padding:30px;border:2px solid #D3D8D3;border-radius:18px;text-align:center;color:#627066}
-.article{background:#fff;border:2px solid #145E20;border-radius:24px;padding:34px}.article-date{margin:0 0 10px;color:#627066}.article-title{margin:0 0 28px;font-size:36px;line-height:1.45}.article-body{margin:0 0 32px;font-size:18px;line-height:2;white-space:pre-wrap}.article-media{overflow:hidden;background:#EEF1F5}.article-media img{width:100%;height:100%;display:block;object-fit:cover}.pdf-frame{width:100%;height:75vh;min-height:520px;border:1px solid #AAB5C4}.pdf-open{display:inline-block;margin-top:14px;padding:10px 16px;border:2px solid #145E20;color:#145E20;font-weight:700;text-decoration:none}.status{text-align:center;padding:30px;color:#627066}
-@media(max-width:768px){.header{display:block;padding:18px 20px 14px}.title{font-size:30px}.nav{margin-top:12px;gap:14px}.nav a{font-size:13px}.main{margin-top:28px}.page-head h1{font-size:30px}.news-card{grid-template-columns:1fr}.news-card-media,.news-card-pdf{height:220px}.news-card-body{padding:0 18px 20px}.article{padding:22px 16px}.article-title{font-size:29px}.article-body{font-size:17px}.pdf-frame{min-height:420px}}
+.news-list{display:grid;gap:22px}.news-card{display:grid;grid-template-columns:260px 1fr;gap:22px;border:2px solid #145E20;border-radius:22px;overflow:hidden;background:#fff;text-decoration:none;color:#111}.news-card-media{width:100%;height:180px;object-fit:cover;background:#EEF1F5}.news-card-pdf{height:180px;display:flex;align-items:center;justify-content:center;background:#EEF1F5;color:#145E20;font-size:32px;font-weight:700}.news-card-body{padding:20px 22px 20px 0}.news-date{margin:0 0 8px;color:#627066;font-size:14px}.news-card-title{margin:0 0 10px;font-size:24px;line-height:1.45}.news-excerpt{margin:0;color:#333;line-height:1.8;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.empty{padding:30px;border:2px solid #D3D8D3;border-radius:18px;text-align:center;color:#627066}
+.article{background:#fff;border:2px solid #145E20;border-radius:24px;padding:34px}.article-date{margin:0 0 10px;color:#627066}.article-title{margin:0 0 28px;font-size:36px;line-height:1.45}.article-body{margin:0 0 32px;font-size:18px;line-height:2;white-space:pre-wrap}
+.article-layout-viewport{position:relative;width:100%;overflow:hidden}.article-layout-stage{position:absolute;left:0;top:0;width:1000px;background:#FFFDF7;overflow:hidden;transform-origin:top left}.article-layout-text{position:absolute;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;font-size:18px;line-height:1.8;color:#111}.article-layout-image{position:absolute;display:block;object-fit:contain}.article-media{overflow:hidden;background:#EEF1F5}.article-media img{width:100%;height:100%;display:block;object-fit:cover}.pdf-frame{width:100%;height:75vh;min-height:520px;border:1px solid #AAB5C4}.pdf-open{display:inline-block;margin-top:14px;padding:10px 16px;border:2px solid #145E20;color:#145E20;font-weight:700;text-decoration:none}.status{text-align:center;padding:30px;color:#627066}
+@media(max-width:768px){.header{display:block;padding:18px 20px 14px}.title{font-size:30px}.nav{margin-top:12px;gap:14px}.nav a{font-size:13px}.main{margin-top:28px}.page-head h1{font-size:30px}.news-card{grid-template-columns:1fr}.news-card-media,.news-card-pdf{height:220px}.news-card-body{padding:0 18px 20px}.article{padding:22px 16px}.article-title{font-size:29px}.pdf-frame{min-height:420px}}
 </style>
 </head>
 <body>
@@ -67,7 +67,6 @@ function makeListCard(item) {
     image.src = newsFileUrl(item.id);
     image.alt = "";
     image.loading = "lazy";
-    image.style.objectPosition = `${item.layout?.x ?? 50}% ${item.layout?.y ?? 50}%`;
     link.append(image);
   } else {
     const pdf = document.createElement("div");
@@ -92,8 +91,64 @@ function makeListCard(item) {
   return link;
 }
 
-function renderImage(item, article) {
+function applyManualBox(element, box) {
+  element.style.left = `${box.x}%`;
+  element.style.top = `${box.y}%`;
+  element.style.width = `${box.width}%`;
+  element.style.height = `${box.height}%`;
+}
+
+function renderManualImageArticle(item, article) {
+  const layout = item.layout;
+  const canvasHeight = Math.min(1600, Math.max(500, Number(layout.canvasHeight || 800)));
+  const viewport = document.createElement("div");
+  viewport.className = "article-layout-viewport";
+
+  const stage = document.createElement("div");
+  stage.className = "article-layout-stage";
+  stage.style.height = `${canvasHeight}px`;
+
+  const text = document.createElement("div");
+  text.className = "article-layout-text";
+  text.textContent = item.body || "";
+  applyManualBox(text, layout.text);
+
+  const image = document.createElement("img");
+  image.className = "article-layout-image";
+  image.src = newsFileUrl(item.id);
+  image.alt = item.title || "ニュース写真";
+  image.loading = "eager";
+  applyManualBox(image, layout.image);
+
+  const fit = () => {
+    const available = Math.max(280, viewport.clientWidth);
+    const scale = Math.min(1, available / 1000);
+    const left = Math.max(0, (available - 1000) / 2);
+    stage.style.left = `${left}px`;
+    stage.style.transform = `scale(${scale})`;
+    viewport.style.height = `${Math.ceil(canvasHeight * scale)}px`;
+  };
+
+  stage.append(text, image);
+  viewport.append(stage);
+  article.append(viewport);
+  requestAnimationFrame(fit);
+
+  if ("ResizeObserver" in window) {
+    const observer = new ResizeObserver(fit);
+    observer.observe(viewport);
+  } else {
+    window.addEventListener("resize", fit);
+  }
+}
+
+function renderLegacyImage(item, article) {
   const layout = item.layout || {};
+  const body = document.createElement("p");
+  body.className = "article-body";
+  body.textContent = item.body || "";
+  article.append(body);
+
   const media = document.createElement("div");
   media.className = "article-media";
   const width = layout.mode === "full" ? 100 : Math.min(100, Math.max(40, Number(layout.width || 70)));
@@ -118,6 +173,11 @@ function renderImage(item, article) {
 }
 
 function renderPdf(item, article) {
+  const body = document.createElement("p");
+  body.className = "article-body";
+  body.textContent = item.body || "";
+  article.append(body);
+
   const frame = document.createElement("iframe");
   frame.className = "pdf-frame";
   frame.src = newsFileUrl(item.id);
@@ -165,12 +225,16 @@ async function loadDetail(id) {
   const title = document.createElement("h1");
   title.className = "article-title";
   title.textContent = item.title || "（タイトルなし）";
-  const body = document.createElement("p");
-  body.className = "article-body";
-  body.textContent = item.body || "";
-  article.append(date,title,body);
-  if (item.fileType === "image") renderImage(item,article);
-  else renderPdf(item,article);
+  article.append(date,title);
+
+  if (item.fileType === "image" && item.layout?.type === "manual") {
+    renderManualImageArticle(item, article);
+  } else if (item.fileType === "image") {
+    renderLegacyImage(item, article);
+  } else {
+    renderPdf(item, article);
+  }
+
   root.append(article);
 }
 
