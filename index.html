@@ -1031,6 +1031,12 @@
         const meetingMapFrame =
             document.getElementById("meeting-map-frame");
 
+        const meetingPlaceBlock =
+            document.querySelector(".meeting-place");
+
+        const meetingMapBlock =
+            document.querySelector(".meeting-map");
+
         const MEETING_API_URL =
             "https://machikaigi-admin-api.taka-souda516.workers.dev/meeting-public";
 
@@ -1317,6 +1323,12 @@
         function updateLayout() {
             clipUnderHeader(subtitleLine);
             clipUnderHeader(message);
+
+            // 「次回まち会議は」の見出しは残し、
+            // その下の日時・場所・地図だけを黄帯に重なる分だけカットする。
+            clipUnderHeader(meetingDateText);
+            clipUnderHeader(meetingPlaceBlock);
+            clipUnderHeader(meetingMapBlock);
 
             updateMainHeight();
             updateScheduleButton();
