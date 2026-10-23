@@ -1469,6 +1469,33 @@ textarea:disabled{
       background: #fff6f6;
     }
 
+    .inquiry-reply-item.inbound {
+      border-style: dashed;
+    }
+
+    .inquiry-email-fields {
+      display: grid;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .inquiry-email-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .inquiry-email-field .input[readonly] {
+      opacity: 0.8;
+      cursor: default;
+    }
+
+    .inquiry-email-note {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #4f5963;
+    }
+
     .inquiry-reply-error {
       margin-top: 6px;
       color: #9b3333;
@@ -5728,11 +5755,20 @@ function inquiryMetaText(item) {
 }
 
 function inquiryStatusBadge(item) {
+  const replies =
+    item.replies || [];
+
   const sentReplies =
-    (item.replies || []).filter(
+    replies.filter(
       reply =>
+        reply.direction !== "inbound" &&
         reply.deliveryStatus === "sent"
     );
+
+  const latest =
+    replies.length
+      ? replies[replies.length - 1]
+      : null;
 
   const badge =
     document.createElement(
@@ -5747,12 +5783,58 @@ function inquiryStatusBadge(item) {
         : ""
     );
 
-  badge.textContent =
-    sentReplies.length
-      ? "返信済み"
-      : "未返信";
+  if (
+    latest?.direction ===
+    "inbound"
+  ) {
+    badge.textContent =
+      "返信あり";
+  } else {
+    badge.textContent =
+      sentReplies.length
+        ? "返信済み"
+        : "未返信";
+  }
 
   return badge;
+}
+
+function defaultInquirySubject(item) {
+  const replies =
+    item.replies || [];
+
+  const latestSubject =
+    [...replies]
+      .reverse()
+      .find(
+        reply =>
+          reply.subject
+      )?.subject || "";
+
+  if (latestSubject) {
+    return /^re\s*:/i.test(
+      latestSubject
+    )
+      ? latestSubject
+      : `Re: ${latestSubject}`;
+  }
+
+  return "Re: 【みんなのまち会議】お問い合わせ";
+}
+
+function defaultInquiryBody(item) {
+  const name =
+    item.name ||
+    "お問い合わせ送信者";
+
+  return (
+    `${name} 様\n\n` +
+    `みんなのまち会議へお問い合わせいただき、ありがとうございます。\n\n` +
+    `\n\n` +
+    `――――――――――\n` +
+    `みんなのまち会議\n` +
+    `このメールは管理者画面から送信されています。`
+  );
 }
 
 function inquiryReplyItem(reply) {
@@ -5761,11 +5843,20 @@ function inquiryReplyItem(reply) {
       "div"
     );
 
+  const inbound =
+    reply.direction ===
+    "inbound";
+
   item.className =
     "inquiry-reply-item" +
     (
       reply.deliveryStatus === "failed"
         ? " failed"
+        : ""
+    ) +
+    (
+      inbound
+        ? " inbound"
         : ""
     );
 
@@ -5777,15 +5868,43 @@ function inquiryReplyItem(reply) {
   meta.className =
     "inquiry-reply-meta";
 
-  const statusLabel =
+  let statusLabel =
+    "送信済み";
+
+  if (inbound) {
+    statusLabel =
+      "相手からのメール返信";
+  } else if (
     reply.deliveryStatus === "failed"
-      ? "送信失敗"
-      : reply.deliveryStatus === "pending"
-        ? "送信処理中"
-        : "送信済み";
+  ) {
+    statusLabel =
+      "送信失敗";
+  } else if (
+    reply.deliveryStatus === "pending"
+  ) {
+    statusLabel =
+      "送信処理中";
+  }
 
   meta.textContent =
-    `${reply.responderName || "共同管理者"} ／ ${formatDate(reply.sentAt || reply.createdAt)} ／ ${statusLabel}`;
+    `${reply.responderName || (inbound ? "お問い合わせ送信者" : "共同管理者")} ／ ${formatDate(reply.sentAt || reply.createdAt)} ／ ${statusLabel}`;
+
+  item.append(meta);
+
+  if (reply.subject) {
+    const subject =
+      document.createElement(
+        "div"
+      );
+
+    subject.className =
+      "inquiry-reply-meta";
+
+    subject.textContent =
+      `件名：${reply.subject}`;
+
+    item.append(subject);
+  }
 
   const body =
     document.createElement(
@@ -5798,10 +5917,7 @@ function inquiryReplyItem(reply) {
   body.textContent =
     reply.body || "";
 
-  item.append(
-    meta,
-    body
-  );
+  item.append(body);
 
   if (
     reply.deliveryStatus === "failed" &&
@@ -5818,9 +5934,7 @@ function inquiryReplyItem(reply) {
     error.textContent =
       reply.errorMessage;
 
-    item.append(
-      error
-    );
+    item.append(error);
   }
 
   return item;
@@ -5828,7 +5942,8 @@ function inquiryReplyItem(reply) {
 
 function inquiryCard(
   item,
-  canReply
+  canReply,
+  mailConfig = {}
 ) {
   const card =
     document.createElement(
@@ -5970,16 +6085,126 @@ function inquiryCard(
     form.className =
       "inquiry-reply-form";
 
-    const label =
+    const fields =
+      document.createElement(
+        "div"
+      );
+
+    fields.className =
+      "inquiry-email-fields";
+
+    function addEmailField(
+      labelText,
+      value,
+      options = {}
+    ) {
+      const wrap =
+        document.createElement(
+          "div"
+        );
+
+      wrap.className =
+        "inquiry-email-field";
+
+      const label =
+        document.createElement(
+          "label"
+        );
+
+      label.className =
+        "label";
+      label.textContent =
+        labelText;
+
+      const input =
+        document.createElement(
+          "input"
+        );
+
+      input.className =
+        "input";
+      input.type =
+        "text";
+      input.value =
+        value || "";
+
+      if (options.readonly) {
+        input.readOnly =
+          true;
+      }
+
+      if (options.maxLength) {
+        input.maxLength =
+          options.maxLength;
+      }
+
+      wrap.append(
+        label,
+        input
+      );
+
+      fields.append(wrap);
+
+      return input;
+    }
+
+    const senderText =
+      mailConfig.mailSenderEmail
+        ? `${mailConfig.mailSenderName || "みんなのまち会議"} <${mailConfig.mailSenderEmail}>`
+        : (mailConfig.mailSenderName || "みんなのまち会議");
+
+    addEmailField(
+      "差出人",
+      senderText,
+      {
+        readonly: true,
+      }
+    );
+
+    addEmailField(
+      "宛先",
+      `${item.name || ""} <${item.email || ""}>`,
+      {
+        readonly: true,
+      }
+    );
+
+    addEmailField(
+      "返信先（Reply-To）",
+      item.replyToEmail ||
+        mailConfig.mailSenderEmail ||
+        "",
+      {
+        readonly: true,
+      }
+    );
+
+    const subjectInput =
+      addEmailField(
+        "件名",
+        defaultInquirySubject(item),
+        {
+          maxLength: 200,
+        }
+      );
+
+    const bodyWrap =
+      document.createElement(
+        "div"
+      );
+
+    bodyWrap.className =
+      "inquiry-email-field";
+
+    const bodyLabel =
       document.createElement(
         "label"
       );
 
-    label.className =
+    bodyLabel.className =
       "label";
-
-    label.textContent =
-      "返信内容";
+    bodyLabel.textContent =
+      "本文";
 
     const textarea =
       document.createElement(
@@ -5988,12 +6213,32 @@ function inquiryCard(
 
     textarea.className =
       "textarea";
-
     textarea.maxLength =
-      4000;
-
+      8000;
     textarea.required =
       true;
+    textarea.value =
+      defaultInquiryBody(item);
+
+    bodyWrap.append(
+      bodyLabel,
+      textarea
+    );
+
+    fields.append(bodyWrap);
+
+    const note =
+      document.createElement(
+        "p"
+      );
+
+    note.className =
+      "inquiry-email-note";
+
+    note.textContent =
+      mailConfig.inboundEnabled
+        ? "件名と本文は編集できます。ここに表示されている件名・本文が、そのまま相手へ送信されます。相手がこのメールへ返信すると、このお問い合わせ内に自動で表示されます。"
+        : "件名と本文は編集できます。ここに表示されている件名・本文が、そのまま相手へ送信されます。メール返信の自動取込は現在未設定です。";
 
     const button =
       document.createElement(
@@ -6007,7 +6252,7 @@ function inquiryCard(
       "submit";
 
     button.textContent =
-      "メールで返信";
+      "この内容でメール送信";
 
     const status =
       document.createElement(
@@ -6018,8 +6263,8 @@ function inquiryCard(
       "status";
 
     form.append(
-      label,
-      textarea,
+      fields,
+      note,
       button,
       status
     );
@@ -6029,13 +6274,24 @@ function inquiryCard(
       async event => {
         event.preventDefault();
 
+        const subject =
+          subjectInput.value.trim();
+
         const body =
           textarea.value.trim();
+
+        if (!subject) {
+          show(
+            status,
+            "件名を入力してください。"
+          );
+          return;
+        }
 
         if (!body) {
           show(
             status,
-            "返信内容を入力してください。"
+            "本文を入力してください。"
           );
           return;
         }
@@ -6058,6 +6314,7 @@ function inquiryCard(
               {
                 id:
                   item.id,
+                subject,
                 body,
               },
               sessionStorage.getItem(
@@ -6073,9 +6330,6 @@ function inquiryCard(
               "返信メールを送信できませんでした。"
             );
           }
-
-          textarea.value =
-            "";
 
           show(
             status,
@@ -6099,6 +6353,7 @@ function inquiryCard(
     card.append(
       form
     );
+
   } else {
     const note =
       document.createElement(
@@ -6162,7 +6417,11 @@ async function loadInquiries() {
       inquiries.length
         ? (
             data.canReply
-              ? "共同管理者権限で返信できます。"
+              ? (
+                  data.inboundEnabled
+                    ? "共同管理者権限で返信できます。相手からのメール返信も自動で取り込みます。"
+                    : "共同管理者権限で返信できます。メール返信の自動取込は未設定です。"
+                )
               : "閲覧のみできます。返信は共同管理者（デベロッパーを含む）のみ可能です。"
           )
         : "お問い合わせはまだありません。";
@@ -6172,7 +6431,15 @@ async function loadInquiries() {
         ui.inquiriesList.append(
           inquiryCard(
             item,
-            data.canReply === true
+            data.canReply === true,
+            {
+              mailSenderName:
+                data.mailSenderName || "みんなのまち会議",
+              mailSenderEmail:
+                data.mailSenderEmail || "",
+              inboundEnabled:
+                data.inboundEnabled === true,
+            }
           )
         )
     );
