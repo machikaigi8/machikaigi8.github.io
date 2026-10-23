@@ -1142,37 +1142,11 @@ textarea:disabled{
 }
 
 
-/* 更新・再読み込み時は管理画面を表示せず、空白画面にする */
-html.admin-blank-screen,
-html.admin-blank-screen body{
-  background:#fff !important;
-}
-
-html.admin-blank-screen body{
-  display:none !important;
-}
 
 </style>
 
 <script>
 (() => {
-  const navigationEntry = performance.getEntriesByType("navigation")[0];
-  const isReload = navigationEntry?.type === "reload";
-  const forceBlankOnce =
-    sessionStorage.getItem("admin_force_blank_once") === "1";
-
-  if (forceBlankOnce) {
-    sessionStorage.removeItem("admin_force_blank_once");
-  }
-
-  window.__ADMIN_BLANK_ON_REFRESH__ =
-    Boolean(isReload || forceBlankOnce);
-
-  if (window.__ADMIN_BLANK_ON_REFRESH__) {
-    document.documentElement.classList.add("admin-blank-screen");
-    return;
-  }
-
   const params = new URLSearchParams(window.location.search);
 
   const isAuthCallback =
@@ -7262,11 +7236,6 @@ ui.refresh.addEventListener(
       );
     }
 
-    sessionStorage.setItem(
-      "admin_force_blank_once",
-      "1"
-    );
-
     location.reload();
   }
 );
@@ -7283,9 +7252,7 @@ ui.logout.addEventListener(
   }
 );
 
-if (!window.__ADMIN_BLANK_ON_REFRESH__) {
-  initAuth();
-}
+initAuth();
 
 </script>
 
