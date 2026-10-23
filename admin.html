@@ -948,6 +948,97 @@ textarea:disabled{
     justify-content:flex-start;
   }
 }
+
+
+.news-file-input-note{
+  margin-top:8px;
+  font-size:13px;
+  line-height:1.7;
+  color:var(--muted);
+}
+
+.news-file-summary{
+  display:none;
+  margin-top:12px;
+  padding:12px 14px;
+  border:1px solid #A0ACBC;
+  background:#fff;
+  color:var(--text);
+  line-height:1.6;
+}
+
+.news-file-summary.active{
+  display:block;
+}
+
+.news-image-editor{
+  display:none;
+  margin-top:22px;
+  padding:18px;
+  border:2px solid var(--navy);
+  background:#fff;
+}
+
+.news-image-editor.active{
+  display:block;
+}
+
+.news-image-editor h3{
+  margin:0 0 8px;
+  color:var(--navy);
+}
+
+.news-preview-stage{
+  width:100%;
+  min-height:220px;
+  margin:16px 0 20px;
+  padding:14px;
+  background:#EEF1F5;
+  border:1px solid #A0ACBC;
+  overflow:hidden;
+}
+
+.news-preview-media{
+  overflow:hidden;
+  background:#DDE3EB;
+}
+
+.news-preview-media img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+.news-layout-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 18px;
+}
+
+.news-layout-controls .row{
+  margin-bottom:0;
+}
+
+.news-range-line{
+  display:grid;
+  grid-template-columns:1fr 58px;
+  align-items:center;
+  gap:10px;
+}
+
+.news-range-line output{
+  text-align:right;
+  color:var(--navy);
+  font-weight:700;
+}
+
+@media(max-width:700px){
+  .news-layout-controls{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 
 <script>
@@ -1546,44 +1637,172 @@ textarea:disabled{
         >
 
           <div class="row">
-            <label class="label">
+            <label class="label" for="news-title">
               タイトル
             </label>
 
             <input
+              id="news-title"
               class="input"
+              maxlength="150"
               required
             >
           </div>
 
           <div class="row">
-            <label class="label">
-              公開日
-            </label>
-
-            <input
-              class="input"
-              type="date"
-              required
-            >
-          </div>
-
-          <div class="row">
-            <label class="label">
+            <label class="label" for="news-body">
               本文
             </label>
 
             <textarea
+              id="news-body"
               class="textarea"
+              maxlength="20000"
               required
             ></textarea>
+          </div>
+
+          <div class="row">
+            <label class="label" for="news-file">
+              ファイル
+            </label>
+
+            <input
+              id="news-file"
+              class="input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,application/pdf"
+              required
+            >
+
+            <p class="news-file-input-note">
+              JPG・PNG・WebPの写真、またはPDFを1つアップロードできます。最大15MBです。
+            </p>
+
+            <div
+              id="news-file-summary"
+              class="news-file-summary"
+            ></div>
+          </div>
+
+          <div
+            id="news-image-editor"
+            class="news-image-editor"
+          >
+            <h3>写真レイアウト</h3>
+
+            <p class="hint">
+              公開ページでの写真の大きさ・配置・切り抜き位置を、下のプレビューを見ながら調整できます。
+            </p>
+
+            <div
+              id="news-preview-stage"
+              class="news-preview-stage"
+            >
+              <div
+                id="news-preview-media"
+                class="news-preview-media"
+              >
+                <img
+                  id="news-preview-image"
+                  alt="ニュース写真のプレビュー"
+                >
+              </div>
+            </div>
+
+            <div class="news-layout-controls">
+              <div class="row">
+                <label class="label" for="news-layout-mode">
+                  配置
+                </label>
+
+                <select
+                  id="news-layout-mode"
+                  class="input"
+                >
+                  <option value="full">横幅いっぱい</option>
+                  <option value="left">左寄せ</option>
+                  <option value="center">中央</option>
+                  <option value="right">右寄せ</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <label class="label" for="news-image-width">
+                  写真の横幅
+                </label>
+
+                <div class="news-range-line">
+                  <input
+                    id="news-image-width"
+                    type="range"
+                    min="40"
+                    max="100"
+                    value="70"
+                  >
+                  <output id="news-image-width-value">70%</output>
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="news-image-height">
+                  写真の高さ
+                </label>
+
+                <div class="news-range-line">
+                  <input
+                    id="news-image-height"
+                    type="range"
+                    min="180"
+                    max="700"
+                    step="10"
+                    value="360"
+                  >
+                  <output id="news-image-height-value">360px</output>
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="news-object-x">
+                  写真内の左右位置
+                </label>
+
+                <div class="news-range-line">
+                  <input
+                    id="news-object-x"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="50"
+                  >
+                  <output id="news-object-x-value">50%</output>
+                </div>
+              </div>
+
+              <div class="row">
+                <label class="label" for="news-object-y">
+                  写真内の上下位置
+                </label>
+
+                <div class="news-range-line">
+                  <input
+                    id="news-object-y"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value="50"
+                  >
+                  <output id="news-object-y-value">50%</output>
+                </div>
+              </div>
+            </div>
           </div>
 
           <button
             id="news-add"
             class="button"
           >
-            追加
+            ニュースを追加
           </button>
 
         </form>
@@ -2709,6 +2928,24 @@ const ui = {
   meetingSave: $("meeting-save"),
   meetingStatus: $("meeting-status"),
   newsForm: $("news-form"),
+  newsTitle: $("news-title"),
+  newsBody: $("news-body"),
+  newsFile: $("news-file"),
+  newsFileSummary: $("news-file-summary"),
+  newsImageEditor: $("news-image-editor"),
+  newsPreviewStage: $("news-preview-stage"),
+  newsPreviewMedia: $("news-preview-media"),
+  newsPreviewImage: $("news-preview-image"),
+  newsLayoutMode: $("news-layout-mode"),
+  newsImageWidth: $("news-image-width"),
+  newsImageWidthValue: $("news-image-width-value"),
+  newsImageHeight: $("news-image-height"),
+  newsImageHeightValue: $("news-image-height-value"),
+  newsObjectX: $("news-object-x"),
+  newsObjectXValue: $("news-object-x-value"),
+  newsObjectY: $("news-object-y"),
+  newsObjectYValue: $("news-object-y-value"),
+  newsAdd: $("news-add"),
   newsStatus: $("news-status"),
   passwordForm: $("password-form"),
   newPassword: $("new-password"),
@@ -3018,6 +3255,32 @@ async function workerPost(path, body = {}, token = "") {
     });
   } catch (error) {
     console.error("Worker fetch failed:", error);
+    const detail = error?.message ? `（${error.message}）` : "";
+    throw new Error(`管理APIに接続できませんでした。${detail}`);
+  }
+
+  return {
+    response,
+    data: await readJson(response),
+  };
+}
+
+
+async function workerPostForm(path, formData, token = "") {
+  let response;
+
+  try {
+    response = await fetch(`${WORKER_URL}${path}`, {
+      method: "POST",
+      mode: "cors",
+      credentials: "omit",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+  } catch (error) {
+    console.error("Worker form fetch failed:", error);
     const detail = error?.message ? `（${error.message}）` : "";
     throw new Error(`管理APIに接続できませんでした。${detail}`);
   }
@@ -3360,7 +3623,7 @@ function isDummy() {
 
 function setReadOnly(readOnly) {
   [ui.meetingForm, ui.newsForm, ui.passwordForm, ui.requestForm].forEach(form => {
-    form.querySelectorAll("input,textarea,button").forEach(element => {
+    form.querySelectorAll("input,textarea,select,button").forEach(element => {
       element.disabled = readOnly;
     });
   });
@@ -4088,14 +4351,189 @@ ui.meetingForm.addEventListener(
   }
 );
 
-ui.newsForm.addEventListener("submit", event => {
+let newsPreviewObjectUrl = "";
+
+function isNewsImageFile(file) {
+  return !!file && ["image/jpeg", "image/png", "image/webp"].includes(file.type);
+}
+
+function clearNewsPreviewUrl() {
+  if (newsPreviewObjectUrl) {
+    URL.revokeObjectURL(newsPreviewObjectUrl);
+    newsPreviewObjectUrl = "";
+  }
+}
+
+function updateNewsImagePreview() {
+  const mode = ui.newsLayoutMode.value;
+  const width = mode === "full" ? 100 : Number(ui.newsImageWidth.value || 70);
+  const height = Number(ui.newsImageHeight.value || 360);
+  const x = Number(ui.newsObjectX.value || 50);
+  const y = Number(ui.newsObjectY.value || 50);
+
+  ui.newsImageWidth.disabled = mode === "full";
+  ui.newsImageWidthValue.textContent = `${width}%`;
+  ui.newsImageHeightValue.textContent = `${height}px`;
+  ui.newsObjectXValue.textContent = `${x}%`;
+  ui.newsObjectYValue.textContent = `${y}%`;
+
+  ui.newsPreviewMedia.style.width = `${width}%`;
+  ui.newsPreviewMedia.style.height = `${Math.min(height, 480)}px`;
+
+  if (mode === "left" || mode === "full") {
+    ui.newsPreviewMedia.style.marginLeft = "0";
+    ui.newsPreviewMedia.style.marginRight = "auto";
+  } else if (mode === "right") {
+    ui.newsPreviewMedia.style.marginLeft = "auto";
+    ui.newsPreviewMedia.style.marginRight = "0";
+  } else {
+    ui.newsPreviewMedia.style.marginLeft = "auto";
+    ui.newsPreviewMedia.style.marginRight = "auto";
+  }
+
+  ui.newsPreviewImage.style.objectPosition = `${x}% ${y}%`;
+}
+
+function resetNewsFormUi() {
+  clearNewsPreviewUrl();
+  ui.newsForm.reset();
+  ui.newsFileSummary.classList.remove("active");
+  ui.newsFileSummary.textContent = "";
+  ui.newsImageEditor.classList.remove("active");
+  ui.newsPreviewImage.removeAttribute("src");
+  ui.newsLayoutMode.value = "full";
+  ui.newsImageWidth.value = "70";
+  ui.newsImageHeight.value = "360";
+  ui.newsObjectX.value = "50";
+  ui.newsObjectY.value = "50";
+  updateNewsImagePreview();
+}
+
+ui.newsFile.addEventListener("change", () => {
+  hide(ui.newsStatus);
+  clearNewsPreviewUrl();
+
+  const file = ui.newsFile.files?.[0];
+
+  if (!file) {
+    ui.newsFileSummary.classList.remove("active");
+    ui.newsImageEditor.classList.remove("active");
+    return;
+  }
+
+  const mb = (file.size / 1024 / 1024).toFixed(1);
+  ui.newsFileSummary.textContent = `${file.name}（${mb}MB）`;
+  ui.newsFileSummary.classList.add("active");
+
+  if (isNewsImageFile(file)) {
+    newsPreviewObjectUrl = URL.createObjectURL(file);
+    ui.newsPreviewImage.src = newsPreviewObjectUrl;
+    ui.newsImageEditor.classList.add("active");
+    updateNewsImagePreview();
+  } else {
+    ui.newsImageEditor.classList.remove("active");
+    ui.newsFileSummary.textContent += "　PDFはレイアウト調整なしで記事に添付されます。";
+  }
+});
+
+[
+  ui.newsLayoutMode,
+  ui.newsImageWidth,
+  ui.newsImageHeight,
+  ui.newsObjectX,
+  ui.newsObjectY,
+].forEach(element => {
+  element.addEventListener("input", updateNewsImagePreview);
+  element.addEventListener("change", updateNewsImagePreview);
+});
+
+updateNewsImagePreview();
+
+ui.newsForm.addEventListener("submit", async event => {
   event.preventDefault();
 
-  if (!isDummy()) {
+  if (isDummy()) {
+    return;
+  }
+
+  hide(ui.newsStatus);
+
+  const token = sessionStorage.getItem("admin_access_token") || "";
+  const file = ui.newsFile.files?.[0];
+
+  if (!token) {
+    return show(
+      ui.newsStatus,
+      "ログイン期限が切れています。もう一度ログインしてください。"
+    );
+  }
+
+  if (!file) {
+    return show(
+      ui.newsStatus,
+      "写真またはPDFを選択してください。"
+    );
+  }
+
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+  ];
+
+  if (!allowed.includes(file.type)) {
+    return show(
+      ui.newsStatus,
+      "アップロードできるのは JPG・PNG・WebP の写真、またはPDFのみです。"
+    );
+  }
+
+  if (file.size > 15 * 1024 * 1024) {
+    return show(
+      ui.newsStatus,
+      "ファイルサイズは15MB以下にしてください。"
+    );
+  }
+
+  const formData = new FormData();
+  formData.append("title", ui.newsTitle.value.trim());
+  formData.append("body", ui.newsBody.value.trim());
+  formData.append("file", file, file.name);
+  formData.append("layoutMode", ui.newsLayoutMode.value);
+  formData.append("imageWidth", ui.newsImageWidth.value);
+  formData.append("imageHeight", ui.newsImageHeight.value);
+  formData.append("objectX", ui.newsObjectX.value);
+  formData.append("objectY", ui.newsObjectY.value);
+
+  ui.newsAdd.disabled = true;
+  show(ui.newsStatus, "ニュースを保存しています…");
+
+  try {
+    const { response, data } = await workerPostForm(
+      "/news-create",
+      formData,
+      token
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "ニュースを保存できませんでした。"
+      );
+    }
+
+    resetNewsFormUi();
     show(
       ui.newsStatus,
-      "画面は完成しています。実際のニュース保存先は次に接続します。"
+      "ニュースを追加しました。ニュース一覧とトップページの最新3件に反映されます。"
     );
+  } catch (error) {
+    show(
+      ui.newsStatus,
+      error.message || "ニュースを保存できませんでした。"
+    );
+  } finally {
+    ui.newsAdd.disabled = false;
   }
 });
 
