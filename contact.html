@@ -478,7 +478,21 @@
                 transform: none;
             }
         }
-    </style>
+    
+        .contact-status {
+            min-height: 1.5em;
+            margin-top: 22px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #315b35;
+        }
+
+        .contact-status.error {
+            color: #9a3333;
+        }
+
+</style>
 </head>
 
 <body>
@@ -520,19 +534,13 @@
         </p>
 
         <form
+            id="contact-form"
             class="contact-form"
-            action="https://formsubmit.co/taka.souda516@gmail.com"
-            method="POST"
         >
 
             <input
-                type="hidden"
-                name="_subject"
-                value="みんなのまち会議 お問い合わせ"
-            >
-
-            <input
                 type="text"
+                id="contact-honey"
                 name="_honey"
                 style="display:none"
                 tabindex="-1"
@@ -558,6 +566,7 @@
                     type="text"
                     id="name"
                     name="お名前"
+                    maxlength="100"
                     autocomplete="name"
                     required
                 >
@@ -689,6 +698,7 @@
                     type="text"
                     id="city"
                     name="市区町村"
+                    maxlength="100"
                     autocomplete="address-level2"
                     required
                 >
@@ -790,6 +800,7 @@
                     type="text"
                     id="occupation"
                     name="職業"
+                    maxlength="120"
                     autocomplete="organization-title"
                 >
 
@@ -813,6 +824,7 @@
                     class="form-textarea"
                     id="message"
                     name="内容"
+                    maxlength="4000"
                     required
                 ></textarea>
 
@@ -822,6 +834,7 @@
             <div class="form-actions">
 
                 <button
+                    id="contact-submit"
                     class="submit-button"
                     type="submit"
                 >
@@ -837,11 +850,124 @@
 
             </div>
 
+            <div
+                id="contact-status"
+                class="contact-status"
+                role="status"
+                aria-live="polite"
+            ></div>
+
         </form>
 
     </main>
 
     <script>
+
+        const WORKER_URL =
+            "https://machikaigi-admin-api.taka-souda516.workers.dev";
+
+        const contactForm =
+            document.getElementById("contact-form");
+
+        const contactSubmit =
+            document.getElementById("contact-submit");
+
+        const contactStatus =
+            document.getElementById("contact-status");
+
+        function showContactStatus(message, isError = false) {
+            contactStatus.textContent =
+                message;
+
+            contactStatus.classList.toggle(
+                "error",
+                isError
+            );
+        }
+
+        contactForm.addEventListener(
+            "submit",
+            async event => {
+                event.preventDefault();
+
+                contactSubmit.disabled =
+                    true;
+
+                showContactStatus(
+                    "送信しています…"
+                );
+
+                const payload = {
+                    name:
+                        document.getElementById("name").value.trim(),
+                    email:
+                        document.getElementById("email").value.trim(),
+                    prefecture:
+                        document.getElementById("prefecture").value,
+                    city:
+                        document.getElementById("city").value.trim(),
+                    gender:
+                        document.getElementById("gender").value,
+                    age:
+                        document.getElementById("age").value,
+                    occupation:
+                        document.getElementById("occupation").value.trim(),
+                    message:
+                        document.getElementById("message").value.trim(),
+                    honey:
+                        document.getElementById("contact-honey").value.trim(),
+                };
+
+                try {
+                    const response =
+                        await fetch(
+                            `${WORKER_URL}/contact-submit`,
+                            {
+                                method: "POST",
+                                mode: "cors",
+                                credentials: "omit",
+                                headers: {
+                                    "Content-Type":
+                                        "text/plain;charset=UTF-8",
+                                },
+                                body:
+                                    JSON.stringify(payload),
+                            }
+                        );
+
+                    let data = {};
+
+                    try {
+                        data =
+                            await response.json();
+                    } catch {}
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error ||
+                            "お問い合わせを送信できませんでした。"
+                        );
+                    }
+
+                    contactForm.reset();
+
+                    showContactStatus(
+                        "お問い合わせを送信しました。返信は入力したメールアドレスへお送りします。"
+                    );
+
+                } catch (error) {
+                    showContactStatus(
+                        error.message ||
+                        "お問い合わせを送信できませんでした。",
+                        true
+                    );
+
+                } finally {
+                    contactSubmit.disabled =
+                        false;
+                }
+            }
+        );
 
         const header =
             document.querySelector(".header");
