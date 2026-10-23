@@ -594,6 +594,35 @@ textarea:disabled{
   line-height:1.65;
 }
 
+.request-message-actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:8px;
+}
+
+.request-message-delete-note{
+  font-size:12px;
+  font-weight:800;
+  color:#9A4D00;
+}
+
+.request-message-delete-button{
+  border:1px solid #A0ACBC;
+  background:#fff;
+  color:#4D5968;
+  padding:5px 9px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.request-message-delete-button.approve{
+  border-color:#9D3131;
+  color:#9D3131;
+}
+
 .request-image{
   display:block;
   max-width:min(100%, 560px);
@@ -5614,7 +5643,28 @@ function appendRequestImage(container, type, id, fileName = "") {
   loadProtectedRequestImage(img, type, id);
 }
 
-function messageBubble(message) {
+function requestMessageActionButton(label, className = "") {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `request-message-delete-button ${className}`.trim();
+  button.textContent = label;
+  return button;
+}
+
+async function performRequestMessageAction(path, payload, reloadOwner) {
+  const { response, data } = await workerPost(
+    path,
+    payload,
+    sessionStorage.getItem("admin_access_token")
+  );
+  if (!response.ok) {
+    throw new Error(data.error || "メッセージを処理できませんでした。");
+  }
+  if (reloadOwner) await loadAllRequests();
+  else await loadMyRequests();
+}
+
+function messageBubble(message, owner = false) {
   const bubble = document.createElement("div");
   const role = message.senderRole === "developer" ? "developer" : "requester";
   bubble.className = `request-message ${role}`;
@@ -5634,6 +5684,90 @@ function messageBubble(message) {
 
   if (message.hasImage) {
     appendRequestImage(bubble, "message", message.id, message.imageName || "");
+  }
+
+  if (Number(message.id) > 0) {
+    const actions = document.createElement("div");
+    actions.className = "request-message-actions";
+
+    if (owner) {
+      if (message.deleteState === "pending") {
+        const note = document.createElement("span");
+        note.className = "request-message-delete-note";
+        note.textContent = `送信者から削除申請中${message.deleteRequestedAt ? `（${formatDate(message.deleteRequestedAt)}）` : ""}`;
+
+        const approve = requestMessageActionButton("削除を承認", "approve");
+        const reject = requestMessageActionButton("申請を却下");
+
+        approve.addEventListener("click", async () => {
+          if (!confirm("このメッセージを完全に削除しますか？\n添付画像も削除され、元に戻せません。")) return;
+          approve.disabled = reject.disabled = true;
+          try {
+            await performRequestMessageAction(
+              "/developer-request-message-delete-decision",
+              { messageId: message.id, decision: "approve" },
+              true
+            );
+          } catch (error) {
+            alert(error.message);
+            approve.disabled = reject.disabled = false;
+          }
+        });
+
+        reject.addEventListener("click", async () => {
+          if (!confirm("削除申請を却下して、送信者側にメッセージを再表示しますか？")) return;
+          approve.disabled = reject.disabled = true;
+          try {
+            await performRequestMessageAction(
+              "/developer-request-message-delete-decision",
+              { messageId: message.id, decision: "reject" },
+              true
+            );
+          } catch (error) {
+            alert(error.message);
+            approve.disabled = reject.disabled = false;
+          }
+        });
+
+        actions.append(note, approve, reject);
+      } else {
+        const remove = requestMessageActionButton("削除", "approve");
+        remove.addEventListener("click", async () => {
+          if (!confirm("このメッセージを削除しますか？\n添付画像も削除され、元に戻せません。")) return;
+          remove.disabled = true;
+          try {
+            await performRequestMessageAction(
+              "/developer-request-message-delete",
+              { messageId: message.id },
+              true
+            );
+          } catch (error) {
+            alert(error.message);
+            remove.disabled = false;
+          }
+        });
+        actions.append(remove);
+      }
+    } else if (role === "requester") {
+      const requestDelete = requestMessageActionButton("削除申請");
+      requestDelete.addEventListener("click", async () => {
+        if (!confirm("このメッセージの削除を申請しますか？\n申請後はあなたの画面では非表示になり、デベロッパーの承認後に完全削除されます。")) return;
+        requestDelete.disabled = true;
+        try {
+          await performRequestMessageAction(
+            "/developer-request-message-delete-request",
+            { messageId: message.id },
+            false
+          );
+        } catch (error) {
+          alert(error.message);
+          requestDelete.disabled = false;
+        }
+      });
+      actions.append(requestDelete);
+    }
+
+    if (actions.childNodes.length) bubble.append(actions);
   }
 
   return bubble;
@@ -5767,11 +5901,11 @@ function requestCard(item, owner) {
       body: item.response,
       createdAt: item.answeredAt,
       hasImage: false,
-    }));
+    }, owner));
   }
 
   (item.messages || []).forEach(message => {
-    thread.append(messageBubble(message));
+    thread.append(messageBubble(message, owner));
   });
 
   if (!item.response && !(item.messages || []).length) {
