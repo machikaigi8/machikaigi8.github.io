@@ -2567,16 +2567,8 @@ textarea:disabled{
         <div class="inquiry-toolbar">
           <p class="hint">
             contact.html から届いたお問い合わせを表示します。
-            返信メールを送信できるのは共同管理者のみです。
+            返信メールを送信できるのは共同管理者（デベロッパーを含む）のみです。
           </p>
-
-          <button
-            id="inquiries-refresh"
-            class="sub"
-            type="button"
-          >
-            更新
-          </button>
         </div>
 
         <div
@@ -3425,7 +3417,6 @@ const ui = {
   settingsAppVerify: $("settings-app-verify"),
   passwordToggle: $("password-toggle"),
   settingsPasswordArea: $("settings-password-area"),
-  inquiriesRefresh: $("inquiries-refresh"),
   inquiriesStatus: $("inquiries-status"),
   inquiriesList: $("inquiries-list"),
   requestForm: $("request-form"),
@@ -6118,7 +6109,7 @@ function inquiryCard(
       "inquiry-readonly-note";
 
     note.textContent =
-      "返信を送信できるのは共同管理者のみです。";
+      "返信を送信できるのは共同管理者（デベロッパーを含む）のみです。";
 
     card.append(
       note
@@ -6171,8 +6162,8 @@ async function loadInquiries() {
       inquiries.length
         ? (
             data.canReply
-              ? "共同管理者として返信できます。"
-              : "閲覧のみできます。返信は共同管理者のみ可能です。"
+              ? "共同管理者権限で返信できます。"
+              : "閲覧のみできます。返信は共同管理者（デベロッパーを含む）のみ可能です。"
           )
         : "お問い合わせはまだありません。";
 
@@ -6192,11 +6183,6 @@ async function loadInquiries() {
   }
 }
 
-ui.inquiriesRefresh
-  ?.addEventListener(
-    "click",
-    loadInquiries
-  );
 
 function formatDate(value) {
   if (!value) {
