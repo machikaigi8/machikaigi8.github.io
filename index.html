@@ -692,7 +692,119 @@
                 transform: none;
             }
         }
-    </style>
+    
+
+        .latest-news-section {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 40px 80px 40px;
+        }
+
+        .latest-news-inner {
+            width: 100%;
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .latest-news-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .latest-news-title {
+            margin: 0;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            font-size: 34px;
+            color: #145E20;
+        }
+
+        .latest-news-more {
+            color: #145E20;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .latest-news-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .latest-news-card {
+            min-width: 0;
+            border: 2px solid #145E20;
+            border-radius: 20px;
+            background: #FFFDF7;
+            overflow: hidden;
+            color: #000;
+            text-decoration: none;
+            transition: transform .18s ease, box-shadow .18s ease;
+        }
+
+        .latest-news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(0,0,0,.10);
+        }
+
+        .latest-news-thumb {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            display: block;
+            background: #EEF1F5;
+        }
+
+        .latest-news-pdf {
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #EEF1F5;
+            color: #145E20;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .latest-news-content {
+            padding: 16px 18px 18px;
+        }
+
+        .latest-news-date {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: #5B665D;
+        }
+
+        .latest-news-card-title {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.5;
+            font-weight: 700;
+        }
+
+        .latest-news-empty {
+            grid-column: 1 / -1;
+            padding: 24px;
+            border: 2px solid #D3D8D3;
+            border-radius: 16px;
+            text-align: center;
+            color: #5B665D;
+        }
+
+</style>
+<style>
+@media (max-width: 768px) {
+  .latest-news-section { padding: 0 16px 55px 16px; }
+  .latest-news-head { align-items: flex-end; }
+  .latest-news-title { font-size: 28px; }
+  .latest-news-list { grid-template-columns: 1fr; }
+  .latest-news-thumb, .latest-news-pdf { height: 210px; }
+}
+</style>
 </head>
 
 <body>
@@ -836,6 +948,19 @@
         </div>
     </section>
 
+    <section class="latest-news-section">
+        <div class="latest-news-inner">
+            <div class="latest-news-head">
+                <h2 class="latest-news-title">ニュース</h2>
+                <a class="latest-news-more" href="news.html">ニュース一覧 →</a>
+            </div>
+
+            <div id="latest-news-list" class="latest-news-list">
+                <div class="latest-news-empty">ニュースを読み込んでいます…</div>
+            </div>
+        </div>
+    </section>
+
     <script>
         const header =
             document.querySelector(".header");
@@ -870,6 +995,15 @@
 
         const MEETING_API_URL =
             "https://machikaigi-admin-api.taka-souda516.workers.dev/meeting-public";
+
+        const NEWS_API_URL =
+            "https://machikaigi-admin-api.taka-souda516.workers.dev/news-public";
+
+        const NEWS_FILE_BASE_URL =
+            "https://machikaigi-admin-api.taka-souda516.workers.dev/news-file/";
+
+        const latestNewsList =
+            document.getElementById("latest-news-list");
 
         let currentMeeting = null;
 
@@ -1153,6 +1287,106 @@
         }
 
 
+
+        function formatNewsDate(value) {
+            if (!value) return "";
+
+            const date = new Date(
+                value.endsWith("Z") || /[+-]\d\d:\d\d$/.test(value)
+                    ? value
+                    : `${value.replace(" ", "T")}Z`
+            );
+
+            if (Number.isNaN(date.getTime())) return value;
+
+            return new Intl.DateTimeFormat(
+                "ja-JP",
+                {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    timeZone: "Asia/Tokyo",
+                }
+            ).format(date);
+        }
+
+        function latestNewsCard(item) {
+            const link = document.createElement("a");
+            link.className = "latest-news-card";
+            link.href = `news.html?id=${encodeURIComponent(item.id)}`;
+
+            if (item.fileType === "image") {
+                const image = document.createElement("img");
+                image.className = "latest-news-thumb";
+                image.src = `${NEWS_FILE_BASE_URL}${encodeURIComponent(item.id)}`;
+                image.alt = "";
+                image.loading = "lazy";
+                image.style.objectPosition = `${item.layout?.x ?? 50}% ${item.layout?.y ?? 50}%`;
+                link.append(image);
+            } else {
+                const pdf = document.createElement("div");
+                pdf.className = "latest-news-pdf";
+                pdf.textContent = "PDF";
+                link.append(pdf);
+            }
+
+            const content = document.createElement("div");
+            content.className = "latest-news-content";
+
+            const date = document.createElement("p");
+            date.className = "latest-news-date";
+            date.textContent = formatNewsDate(item.createdAt);
+
+            const title = document.createElement("h3");
+            title.className = "latest-news-card-title";
+            title.textContent = item.title || "（タイトルなし）";
+
+            content.append(date, title);
+            link.append(content);
+
+            return link;
+        }
+
+        async function loadLatestNews() {
+            try {
+                const response = await fetch(
+                    `${NEWS_API_URL}?limit=3`,
+                    {
+                        method: "GET",
+                        mode: "cors",
+                        credentials: "omit",
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.error || "ニュースを取得できませんでした。");
+                }
+
+                latestNewsList.innerHTML = "";
+
+                if (!data.news?.length) {
+                    const empty = document.createElement("div");
+                    empty.className = "latest-news-empty";
+                    empty.textContent = "現在掲載中のニュースはありません。";
+                    latestNewsList.append(empty);
+                    return;
+                }
+
+                data.news.forEach(item => {
+                    latestNewsList.append(latestNewsCard(item));
+                });
+            } catch (error) {
+                console.error("Latest news load error:", error);
+                latestNewsList.innerHTML = "";
+                const empty = document.createElement("div");
+                empty.className = "latest-news-empty";
+                empty.textContent = "ニュースを読み込めませんでした。";
+                latestNewsList.append(empty);
+            }
+        }
+
         window.addEventListener(
             "scroll",
             updateLayout
@@ -1169,6 +1403,7 @@
         );
 
         loadMeetingSettings();
+        loadLatestNews();
         updateLayout();
     </script>
 
