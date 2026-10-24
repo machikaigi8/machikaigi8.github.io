@@ -2105,6 +2105,43 @@ textarea:disabled{
   }
 }
 
+
+.site-control-options{
+  display:grid;
+  gap:12px;
+  margin-top:20px;
+}
+
+.site-control-option{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:start;
+  gap:12px;
+  padding:16px;
+  border:1px solid #A0ACBC;
+  background:#fff;
+  cursor:pointer;
+}
+
+.site-control-option input{
+  width:20px;
+  height:20px;
+  margin-top:2px;
+}
+
+.site-control-option strong{
+  display:block;
+  color:var(--navy);
+  font-size:15px;
+}
+
+.site-control-option small{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
 </style>
 
 <script>
@@ -3597,7 +3634,7 @@ textarea:disabled{
       <div class="card">
 
         <p class="hint">
-          まち会議日時・ニュース・お問い合わせは更新履歴を一覧表示し、各履歴から変更内容の確認・再編集ができます。変更された項目はハイライト表示されます。団体概要はデベロッパーのみ編集でき、更新履歴には記録しません。
+          まち会議日時・ニュース・お問い合わせは更新履歴を一覧表示し、各履歴から変更内容の確認・再編集ができます。変更された項目はハイライト表示されます。団体概要と公開・検索設定はデベロッパーのみ編集でき、更新履歴には記録しません。
         </p>
 
 
@@ -3613,6 +3650,14 @@ textarea:disabled{
             data-hp-update-organization
           >
             団体概要
+          </button>
+          <button
+            id="hp-update-site-control"
+            type="button"
+            class="hp-update-filter hidden"
+            data-hp-update-site-control
+          >
+            公開・検索設定
           </button>
         </div>
 
@@ -3671,6 +3716,57 @@ textarea:disabled{
 
             <div
               id="organization-status"
+              class="status"
+            ></div>
+          </div>
+        </div>
+
+
+        <div
+          id="site-public-settings-panel"
+          class="organization-admin-panel"
+        >
+          <h3>公開・検索設定</h3>
+
+          <p class="hint">
+            この設定を変更できるのはデベロッパー本人だけです。公開をOFFにすると、公開HPの各ページは公開停止画面に切り替わります。検索をOFFにすると、公開HP全ページへ noindex / nofollow を適用します。
+          </p>
+
+          <div class="site-control-options">
+            <label class="site-control-option">
+              <input
+                id="site-public-allowed"
+                type="checkbox"
+              >
+              <span>
+                <strong>HPを公開する</strong>
+                <small>OFFにすると、公開HPの本文・ニュース・お問い合わせ送信などを停止します。</small>
+              </span>
+            </label>
+
+            <label class="site-control-option">
+              <input
+                id="site-search-allowed"
+                type="checkbox"
+              >
+              <span>
+                <strong>検索エンジンへの掲載を許可する</strong>
+                <small>OFFにすると、公開HP全ページを noindex / nofollow にします。反映は検索エンジンの次回巡回以降です。</small>
+              </span>
+            </label>
+          </div>
+
+          <div class="organization-save-actions">
+            <button
+              id="site-public-settings-save"
+              class="button"
+              type="button"
+            >
+              公開・検索設定を保存
+            </button>
+
+            <div
+              id="site-public-settings-status"
               class="status"
             ></div>
           </div>
@@ -4162,6 +4258,12 @@ const ui = {
   organizationStatus: $("organization-status"),
   hpUpdateFilterBar: $("hp-update-filter-bar"),
   hpUpdateOrganization: $("hp-update-organization"),
+  hpUpdateSiteControl: $("hp-update-site-control"),
+  sitePublicSettingsPanel: $("site-public-settings-panel"),
+  sitePublicAllowed: $("site-public-allowed"),
+  siteSearchAllowed: $("site-search-allowed"),
+  sitePublicSettingsSave: $("site-public-settings-save"),
+  sitePublicSettingsStatus: $("site-public-settings-status"),
   hpUpdateStatus: $("hp-update-status"),
   hpUpdateList: $("hp-update-list"),
   requestForm: $("request-form"),
@@ -4815,6 +4917,10 @@ function showView(name) {
       ui.organizationAdminPanel.classList.remove("active");
     }
 
+    if (ui.sitePublicSettingsPanel) {
+      ui.sitePublicSettingsPanel.classList.remove("active");
+    }
+
     if (ui.hpUpdateStatus) {
       ui.hpUpdateStatus.style.display = "";
     }
@@ -4984,6 +5090,7 @@ function showAdmin() {
   ui.developerHome.classList.toggle("hidden", !owner);
   ui.hpHome.classList.toggle("hidden", owner);
   ui.hpUpdateOrganization?.classList.toggle("hidden", !owner);
+  ui.hpUpdateSiteControl?.classList.toggle("hidden", !owner);
 
   setReadOnly(isDummy());
 
@@ -8945,7 +9052,177 @@ async function loadHpUpdateLogs() {
   }
 }
 
+
+async function loadSitePublicSettingsEditor() {
+  show(
+    ui.sitePublicSettingsStatus,
+    "公開・検索設定を読み込んでいます…"
+  );
+
+  try {
+    const {
+      response,
+      data,
+    } =
+      await workerPost(
+        "/site-public-settings-admin",
+        {},
+        sessionStorage.getItem(
+          "admin_access_token"
+        )
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "公開・検索設定を取得できませんでした。"
+      );
+    }
+
+    const settings =
+      data.settings ||
+      {};
+
+    ui.sitePublicAllowed.checked =
+      settings.publicAllowed !==
+      false;
+
+    ui.siteSearchAllowed.checked =
+      settings.searchAllowed !==
+      false;
+
+    hide(
+      ui.sitePublicSettingsStatus
+    );
+  } catch (error) {
+    show(
+      ui.sitePublicSettingsStatus,
+      error.message ||
+      "公開・検索設定を取得できませんでした。"
+    );
+  }
+}
+
+ui.sitePublicSettingsSave?.addEventListener(
+  "click",
+  async () => {
+    const owner =
+      (
+        sessionStorage.getItem(
+          "admin_sub"
+        ) || ""
+      ) === OWNER_SUB;
+
+    if (!owner) {
+      return;
+    }
+
+    ui.sitePublicSettingsSave.disabled =
+      true;
+
+    show(
+      ui.sitePublicSettingsStatus,
+      "公開・検索設定を保存しています…"
+    );
+
+    try {
+      const {
+        response,
+        data,
+      } =
+        await workerPost(
+          "/site-public-settings-save",
+          {
+            publicAllowed:
+              ui.sitePublicAllowed.checked,
+
+            searchAllowed:
+              ui.siteSearchAllowed.checked,
+          },
+          sessionStorage.getItem(
+            "admin_access_token"
+          )
+        );
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "公開・検索設定を保存できませんでした。"
+        );
+      }
+
+      const settings =
+        data.settings ||
+        {};
+
+      ui.sitePublicAllowed.checked =
+        settings.publicAllowed !==
+        false;
+
+      ui.siteSearchAllowed.checked =
+        settings.searchAllowed !==
+        false;
+
+      show(
+        ui.sitePublicSettingsStatus,
+        "保存しました。公開HPへ反映されます。"
+      );
+    } catch (error) {
+      show(
+        ui.sitePublicSettingsStatus,
+        error.message ||
+        "公開・検索設定を保存できませんでした。"
+      );
+    } finally {
+      ui.sitePublicSettingsSave.disabled =
+        false;
+    }
+  }
+);
+
 ui.hpUpdateFilterBar?.addEventListener("click", async event => {
+  const siteControlButton =
+    event.target.closest("[data-hp-update-site-control]");
+
+  if (siteControlButton) {
+    const owner =
+      (
+        sessionStorage.getItem(
+          "admin_sub"
+        ) || ""
+      ) === OWNER_SUB;
+
+    if (!owner) {
+      return;
+    }
+
+    ui.hpUpdateFilterBar
+      .querySelectorAll(".hp-update-filter")
+      .forEach(item => {
+        item.classList.toggle(
+          "active",
+          item === siteControlButton
+        );
+      });
+
+    ui.hpUpdateStatus.style.display =
+      "none";
+
+    ui.hpUpdateList.style.display =
+      "none";
+
+    ui.organizationAdminPanel.classList.remove(
+      "active"
+    );
+
+    ui.sitePublicSettingsPanel.classList.add(
+      "active"
+    );
+
+    await loadSitePublicSettingsEditor();
+    return;
+  }
+
   const organizationButton =
     event.target.closest("[data-hp-update-organization]");
 
@@ -8976,6 +9253,10 @@ ui.hpUpdateFilterBar?.addEventListener("click", async event => {
     ui.hpUpdateList.style.display =
       "none";
 
+    ui.sitePublicSettingsPanel.classList.remove(
+      "active"
+    );
+
     ui.organizationAdminPanel.classList.add(
       "active"
     );
@@ -9005,6 +9286,10 @@ ui.hpUpdateFilterBar?.addEventListener("click", async event => {
     });
 
   ui.organizationAdminPanel.classList.remove(
+    "active"
+  );
+
+  ui.sitePublicSettingsPanel.classList.remove(
     "active"
   );
 
