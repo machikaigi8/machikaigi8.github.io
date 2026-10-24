@@ -1965,6 +1965,15 @@ textarea:disabled{
 /* =========================
    団体概要編集
    ========================= */
+.organization-editor-toggle-wrap{
+  display:none;
+  margin:0 0 18px;
+}
+
+.organization-editor-toggle-wrap.active{
+  display:block;
+}
+
 .organization-admin-panel{
   display:none;
   margin:0 0 26px;
@@ -3602,6 +3611,19 @@ textarea:disabled{
 
 
         <div
+          id="organization-editor-toggle-wrap"
+          class="organization-editor-toggle-wrap"
+        >
+          <button
+            id="organization-editor-toggle"
+            class="sub"
+            type="button"
+          >
+            団体概要を編集
+          </button>
+        </div>
+
+        <div
           id="organization-admin-panel"
           class="organization-admin-panel"
         >
@@ -4145,6 +4167,8 @@ const ui = {
   personalConsentAgree: $("personal-consent-agree"),
   personalConsentDecline: $("personal-consent-decline"),
   personalConsentError: $("personal-consent-error"),
+  organizationEditorToggleWrap: $("organization-editor-toggle-wrap"),
+  organizationEditorToggle: $("organization-editor-toggle"),
   organizationAdminPanel: $("organization-admin-panel"),
   organizationRowsEditor: $("organization-rows-editor"),
   organizationMembersEditor: $("organization-members-editor"),
@@ -4803,9 +4827,6 @@ function showView(name) {
   if (name === "inquiries") loadInquiries();
   if (name === "hp-update") {
     loadHpUpdateLogs();
-    if (sub === OWNER_SUB) {
-      loadOrganizationEditor();
-    }
   }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -4955,11 +4976,22 @@ function showAdmin() {
   ui.developerHome.classList.toggle("hidden", !owner);
   ui.hpHome.classList.toggle("hidden", owner);
 
-  if (ui.organizationAdminPanel) {
-    ui.organizationAdminPanel.classList.toggle(
+  if (ui.organizationEditorToggleWrap) {
+    ui.organizationEditorToggleWrap.classList.toggle(
       "active",
       owner
     );
+  }
+
+  if (ui.organizationAdminPanel) {
+    ui.organizationAdminPanel.classList.remove(
+      "active"
+    );
+  }
+
+  if (ui.organizationEditorToggle) {
+    ui.organizationEditorToggle.textContent =
+      "団体概要を編集";
   }
 
   setReadOnly(isDummy());
@@ -7892,6 +7924,45 @@ async function loadOrganizationEditor() {
     );
   }
 }
+
+ui.organizationEditorToggle?.addEventListener(
+  "click",
+  async () => {
+    const owner =
+      (
+        sessionStorage.getItem(
+          "admin_sub"
+        ) || ""
+      ) === OWNER_SUB;
+
+    if (!owner) {
+      return;
+    }
+
+    const opening =
+      !ui.organizationAdminPanel.classList.contains(
+        "active"
+      );
+
+    if (opening) {
+      ui.organizationAdminPanel.classList.add(
+        "active"
+      );
+
+      ui.organizationEditorToggle.textContent =
+        "団体概要の編集を閉じる";
+
+      await loadOrganizationEditor();
+    } else {
+      ui.organizationAdminPanel.classList.remove(
+        "active"
+      );
+
+      ui.organizationEditorToggle.textContent =
+        "団体概要を編集";
+    }
+  }
+);
 
 ui.organizationAddRow?.addEventListener(
   "click",
