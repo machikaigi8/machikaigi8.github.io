@@ -1965,17 +1965,8 @@ textarea:disabled{
 /* =========================
    団体概要編集
    ========================= */
-.organization-editor-toggle-wrap{
-  display:none;
-  margin:0 0 18px;
-}
-
-.organization-editor-toggle-wrap.active{
-  display:block;
-}
-
 .organization-admin-panel{
-  display:none;
+  display:block;
   margin:0 0 26px;
   padding:20px;
   border:2px solid var(--navy);
@@ -2535,6 +2526,15 @@ textarea:disabled{
           data-view="inquiries"
         >
           <span>お問い合わせ一覧</span>
+          <span>›</span>
+        </button>
+
+        <button
+          id="organization-home"
+          class="menu hidden"
+          data-view="organization"
+        >
+          <span>団体概要</span>
           <span>›</span>
         </button>
 
@@ -3253,6 +3253,81 @@ textarea:disabled{
     </section>
 
     <section
+      id="view-organization"
+      class="view"
+    >
+      <div class="card">
+
+        <div
+          id="organization-admin-panel"
+          class="organization-admin-panel"
+        >
+          <h3>団体概要を編集</h3>
+
+          <p class="hint">
+            この編集欄はデベロッパー本人だけに表示されます。上段の概要表は行の追加・削除・表示切替ができます。運営メンバーは写真・氏名・役割・表示／非表示を編集できます。
+          </p>
+
+          <div class="organization-admin-section">
+            <div class="organization-admin-section-head">
+              <h4>団体概要の表</h4>
+              <button
+                id="organization-add-row"
+                class="sub"
+                type="button"
+              >
+                ＋ 表の行を追加
+              </button>
+            </div>
+
+            <div id="organization-rows-editor"></div>
+          </div>
+
+          <div class="organization-admin-section">
+            <div class="organization-admin-section-head">
+              <h4>運営メンバー</h4>
+              <button
+                id="organization-add-member"
+                class="sub"
+                type="button"
+              >
+                ＋ メンバー枠を追加
+              </button>
+            </div>
+
+            <p class="hint">
+              初期状態では3枠を用意しています。表示をONにした枠だけ公開ページへ表示されます。
+            </p>
+
+            <div id="organization-members-editor"></div>
+          </div>
+
+          <div class="organization-save-actions">
+            <button
+              id="organization-save"
+              class="button"
+              type="button"
+            >
+              団体概要を保存・公開へ反映
+            </button>
+
+            <div
+              id="organization-status"
+              class="status"
+            ></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bottom-nav">
+        <button class="sub" data-home>
+          ← 管理者トップへ戻る
+        </button>
+      </div>
+    </section>
+
+    <section
       id="view-developer-request"
       class="view"
     >
@@ -3609,79 +3684,6 @@ textarea:disabled{
           更新対象ごとに一覧表示します。項目をクリックすると、その対象に対する更新履歴が時系列で表示され、各履歴をクリックすると変更内容と当時の内容を確認できます。変更された項目はハイライト表示されます。すべての管理者が履歴を閲覧でき、共同管理者（デベロッパーを含む）は全員の履歴を、その他の管理者は自分が行った更新履歴を編集して現在のサイトへ再反映できます。
         </p>
 
-
-        <div
-          id="organization-editor-toggle-wrap"
-          class="organization-editor-toggle-wrap"
-        >
-          <button
-            id="organization-editor-toggle"
-            class="sub"
-            type="button"
-          >
-            団体概要を編集
-          </button>
-        </div>
-
-        <div
-          id="organization-admin-panel"
-          class="organization-admin-panel"
-        >
-          <h3>団体概要を編集</h3>
-
-          <p class="hint">
-            この編集欄はデベロッパー本人だけに表示されます。上段の概要表は行の追加・削除・表示切替ができます。運営メンバーは写真・氏名・役割・表示／非表示を編集できます。
-          </p>
-
-          <div class="organization-admin-section">
-            <div class="organization-admin-section-head">
-              <h4>団体概要の表</h4>
-              <button
-                id="organization-add-row"
-                class="sub"
-                type="button"
-              >
-                ＋ 表の行を追加
-              </button>
-            </div>
-
-            <div id="organization-rows-editor"></div>
-          </div>
-
-          <div class="organization-admin-section">
-            <div class="organization-admin-section-head">
-              <h4>運営メンバー</h4>
-              <button
-                id="organization-add-member"
-                class="sub"
-                type="button"
-              >
-                ＋ メンバー枠を追加
-              </button>
-            </div>
-
-            <p class="hint">
-              初期状態では3枠を用意しています。表示をONにした枠だけ公開ページへ表示されます。
-            </p>
-
-            <div id="organization-members-editor"></div>
-          </div>
-
-          <div class="organization-save-actions">
-            <button
-              id="organization-save"
-              class="button"
-              type="button"
-            >
-              団体概要を保存・公開へ反映
-            </button>
-
-            <div
-              id="organization-status"
-              class="status"
-            ></div>
-          </div>
-        </div>
 
         <div id="hp-update-filter-bar" class="hp-update-filter-bar">
           <button type="button" class="hp-update-filter active" data-hp-update-filter="all">すべて</button>
@@ -4103,6 +4105,7 @@ const ui = {
   admin: $("admin"),
   developerHome: $("developer-home"),
   hpHome: $("hp-home"),
+  organizationHome: $("organization-home"),
   meetingForm: $("meeting-form"),
   meetingMonth: $("meeting-month"),
   meetingDay: $("meeting-day"),
@@ -4167,8 +4170,6 @@ const ui = {
   personalConsentAgree: $("personal-consent-agree"),
   personalConsentDecline: $("personal-consent-decline"),
   personalConsentError: $("personal-consent-error"),
-  organizationEditorToggleWrap: $("organization-editor-toggle-wrap"),
-  organizationEditorToggle: $("organization-editor-toggle"),
   organizationAdminPanel: $("organization-admin-panel"),
   organizationRowsEditor: $("organization-rows-editor"),
   organizationMembersEditor: $("organization-members-editor"),
@@ -4795,7 +4796,7 @@ function showView(name) {
   if (name === "password") name = "login-settings";
 
   const sub = sessionStorage.getItem("admin_sub") || "";
-  if (["developer", "developer-responses", "admin-users", "create-admin"].includes(name) && sub !== OWNER_SUB) {
+  if (["developer", "developer-responses", "admin-users", "create-admin", "organization"].includes(name) && sub !== OWNER_SUB) {
     name = "home";
   }
 
@@ -4806,6 +4807,7 @@ function showView(name) {
     password: "ログイン設定",
     "login-settings": "ログイン設定",
     inquiries: "お問い合わせ一覧",
+    organization: "団体概要",
     "developer-request": "デベロッパーへの要望",
     developer: "デベロッパーメニュー",
     "developer-responses": "デベロッパーへの要望の回答",
@@ -4825,6 +4827,7 @@ function showView(name) {
   if (name === "login-settings") loadLoginSettings();
   if (name === "meeting") loadMeetingSettings();
   if (name === "inquiries") loadInquiries();
+  if (name === "organization") loadOrganizationEditor();
   if (name === "hp-update") {
     loadHpUpdateLogs();
   }
@@ -4975,24 +4978,7 @@ function showAdmin() {
   const owner = (sessionStorage.getItem("admin_sub") || "") === OWNER_SUB;
   ui.developerHome.classList.toggle("hidden", !owner);
   ui.hpHome.classList.toggle("hidden", owner);
-
-  if (ui.organizationEditorToggleWrap) {
-    ui.organizationEditorToggleWrap.classList.toggle(
-      "active",
-      owner
-    );
-  }
-
-  if (ui.organizationAdminPanel) {
-    ui.organizationAdminPanel.classList.remove(
-      "active"
-    );
-  }
-
-  if (ui.organizationEditorToggle) {
-    ui.organizationEditorToggle.textContent =
-      "団体概要を編集";
-  }
+  ui.organizationHome?.classList.toggle("hidden", !owner);
 
   setReadOnly(isDummy());
 
@@ -7924,45 +7910,6 @@ async function loadOrganizationEditor() {
     );
   }
 }
-
-ui.organizationEditorToggle?.addEventListener(
-  "click",
-  async () => {
-    const owner =
-      (
-        sessionStorage.getItem(
-          "admin_sub"
-        ) || ""
-      ) === OWNER_SUB;
-
-    if (!owner) {
-      return;
-    }
-
-    const opening =
-      !ui.organizationAdminPanel.classList.contains(
-        "active"
-      );
-
-    if (opening) {
-      ui.organizationAdminPanel.classList.add(
-        "active"
-      );
-
-      ui.organizationEditorToggle.textContent =
-        "団体概要の編集を閉じる";
-
-      await loadOrganizationEditor();
-    } else {
-      ui.organizationAdminPanel.classList.remove(
-        "active"
-      );
-
-      ui.organizationEditorToggle.textContent =
-        "団体概要を編集";
-    }
-  }
-);
 
 ui.organizationAddRow?.addEventListener(
   "click",
