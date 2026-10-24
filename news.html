@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
 <title>ニュース｜みんなのまち会議</title>
 <style>
 *{box-sizing:border-box}
@@ -97,6 +96,183 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   .top-space,.header,.subtitle-line,.title,.nav-menu,.subtitle{animation:none;opacity:1;transform:none}
 }
 </style>
+
+    <style id="site-public-control-style">
+        html.site-access-checking body {
+            visibility: hidden !important;
+        }
+
+        html.site-access-closed body {
+            visibility: visible !important;
+        }
+
+        .site-closed-screen {
+            min-height: 100vh;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            background: #FFFDF7;
+            color: #173F20;
+            font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+        }
+
+        .site-closed-card {
+            width: min(620px, 100%);
+            padding: 40px 30px;
+            box-sizing: border-box;
+            border-top: 6px solid rgba(255,220,100,.95);
+            background: #fff;
+            text-align: center;
+            box-shadow: 0 10px 34px rgba(0,0,0,.08);
+        }
+
+        .site-closed-card h1 {
+            margin: 0 0 18px;
+            font-size: 28px;
+        }
+
+        .site-closed-card p {
+            margin: 0;
+            color: #5E655F;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+    </style>
+
+    <script>
+        (() => {
+            const SITE_SETTINGS_URL =
+                "https://machikaigi-admin-api.taka-souda516.workers.dev/site-public-settings";
+
+            const root =
+                document.documentElement;
+
+            root.classList.add(
+                "site-access-checking"
+            );
+
+            function setRobots(allowed) {
+                let meta =
+                    document.querySelector(
+                        'meta[name="robots"]'
+                    );
+
+                if (!meta) {
+                    meta =
+                        document.createElement(
+                            "meta"
+                        );
+
+                    meta.name =
+                        "robots";
+
+                    document.head.appendChild(
+                        meta
+                    );
+                }
+
+                meta.content =
+                    allowed
+                        ? "index, follow"
+                        : "noindex, nofollow";
+            }
+
+            function revealSite() {
+                root.classList.remove(
+                    "site-access-checking",
+                    "site-access-closed"
+                );
+            }
+
+            function showClosedSite() {
+                setRobots(false);
+
+                const render = () => {
+                    document.body.innerHTML = `
+                        <main class="site-closed-screen">
+                            <section class="site-closed-card">
+                                <h1>現在、このホームページは公開していません</h1>
+                                <p>
+                                    みんなのまち会議のホームページは現在公開停止中です。
+                                </p>
+                            </section>
+                        </main>
+                    `;
+
+                    root.classList.remove(
+                        "site-access-checking"
+                    );
+
+                    root.classList.add(
+                        "site-access-closed"
+                    );
+                };
+
+                if (
+                    document.readyState ===
+                    "loading"
+                ) {
+                    document.addEventListener(
+                        "DOMContentLoaded",
+                        render,
+                        {
+                            once: true,
+                        }
+                    );
+                } else {
+                    render();
+                }
+            }
+
+            fetch(
+                SITE_SETTINGS_URL,
+                {
+                    method: "GET",
+                    mode: "cors",
+                    credentials: "omit",
+                    cache: "no-store",
+                }
+            )
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(
+                            "site settings unavailable"
+                        );
+                    }
+
+                    return response.json();
+                })
+                .then(data => {
+                    const publicAllowed =
+                        data.publicAllowed !==
+                        false;
+
+                    const searchAllowed =
+                        publicAllowed &&
+                        data.searchAllowed !==
+                        false;
+
+                    setRobots(
+                        searchAllowed
+                    );
+
+                    if (!publicAllowed) {
+                        showClosedSite();
+                        return;
+                    }
+
+                    revealSite();
+                })
+                .catch(() => {
+                    // 設定APIに一時的な障害がある場合は、公開状態を維持する。
+                    setRobots(true);
+                    revealSite();
+                });
+        })();
+    </script>
+
 </head>
 <body>
 <div class="top-space"></div>
