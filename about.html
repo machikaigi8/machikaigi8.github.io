@@ -154,30 +154,19 @@
         }
 
         .about-layout {
-            display:grid;
-            grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
-            gap:54px;
-            align-items:start;
+            margin-top:0;
         }
 
-        .about-main-column {
-            min-width:0;
-        }
-
-        .about-copy {
-            margin-top:34px;
-            font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
-            font-size:17px;
-            line-height:2.05;
-        }
-
-        .about-copy p {
-            margin:0 0 28px;
+        .about-layout::after {
+            content:"";
+            display:block;
+            clear:both;
         }
 
         .about-photo {
-            width:100%;
-            margin:0;
+            float:right;
+            width:min(42%,460px);
+            margin:0 0 26px 48px;
         }
 
         .about-photo-frame {
@@ -205,26 +194,25 @@
             font-size:16px;
         }
 
+        .about-copy {
+            margin-top:34px;
+            font-family:"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;
+            font-size:17px;
+            line-height:2.05;
+        }
+
+        .about-copy p {
+            margin:0 0 28px;
+        }
+
         @media(max-width:820px){
-            .about-layout {
-                grid-template-columns:1fr;
-                gap:28px;
-            }
-
-            .about-main-column {
-                display:contents;
-            }
-
-            .page-heading {
-                grid-row:1;
-            }
-
             .about-photo {
-                grid-row:2;
+                float:none;
+                width:100%;
+                margin:28px 0 28px;
             }
 
             .about-copy {
-                grid-row:3;
                 margin-top:0;
                 font-size:16px;
                 line-height:1.95;
@@ -257,19 +245,6 @@
 
         <div class="about-layout">
 
-            <div class="about-main-column">
-
-                <h2 class="page-heading">みんなのまち会議とは</h2>
-
-                <div class="about-copy">
-                    <p>八王子市東部地区では、地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなっています。また、地域には多くの大学があり、学生も数多く暮らしていますが、地域住民と学生が自然につながる機会はほとんどありません。</p>
-                    <p>地域のお祭りやイベントは、人と人が出会う大切な機会ですが、その場限りの交流で終わってしまうことも少なくありません。私たちは、地域をより豊かにしていくためには、一度きりではなく、継続して集まり、地域のことを語り合い、一緒に考えられる場が必要だと考えています。</p>
-                    <p>「みんなのまち会議」は、市民と学生がともに企画・運営する対話の場です。年齢や立場に関係なく、一人ひとりが対等な立場で自由に意見を交わし、お互いの考えや経験から学び合うことを大切にしています。</p>
-                    <p>私たちは、世代を超えた交流を通じて、人と人とのつながりを育み、地域の課題や未来について一緒に考える場をつくります。そして、「参加して終わり」ではなく、新しい出会いやつながりが生まれ、それが地域の力となって広がっていくことを目指しています。</p>
-                </div>
-
-            </div>
-
             <figure class="about-photo">
                 <div class="about-photo-frame">
                     <img
@@ -282,6 +257,15 @@
                     </div>
                 </div>
             </figure>
+
+            <h2 class="page-heading">みんなのまち会議とは</h2>
+
+            <div class="about-copy">
+                <p>八王子市東部地区では、地域コミュニティの希薄化や高齢化が進み、住民同士が顔を合わせたり、地域について語り合ったりする機会が少なくなっています。また、地域には多くの大学があり、学生も数多く暮らしていますが、地域住民と学生が自然につながる機会はほとんどありません。</p>
+                <p>地域のお祭りやイベントは、人と人が出会う大切な機会ですが、その場限りの交流で終わってしまうことも少なくありません。私たちは、地域をより豊かにしていくためには、一度きりではなく、継続して集まり、地域のことを語り合い、一緒に考えられる場が必要だと考えています。</p>
+                <p>「みんなのまち会議」は、市民と学生がともに企画・運営する対話の場です。年齢や立場に関係なく、一人ひとりが対等な立場で自由に意見を交わし、お互いの考えや経験から学び合うことを大切にしています。</p>
+                <p>私たちは、世代を超えた交流を通じて、人と人とのつながりを育み、地域の課題や未来について一緒に考える場をつくります。そして、「参加して終わり」ではなく、新しい出会いやつながりが生まれ、それが地域の力となって広がっていくことを目指しています。</p>
+            </div>
 
         </div>
 
