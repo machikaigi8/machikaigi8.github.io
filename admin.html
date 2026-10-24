@@ -1662,9 +1662,210 @@ textarea:disabled{
   cursor:pointer;
 }
 
+/* HP更新 v44: 更新対象ごとの折りたたみ一覧 */
+.hp-update-group{
+  border:1px solid #A0ACBC;
+  background:#fff;
+}
+
+.hp-update-group-button{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:12px;
+  padding:15px 16px;
+  border:0;
+  background:#fff;
+  color:var(--text);
+  text-align:left;
+  cursor:pointer;
+}
+
+.hp-update-group-button:hover,
+.hp-update-group-button:focus-visible{
+  background:#F5F7FA;
+}
+
+.hp-update-group-main{
+  min-width:0;
+}
+
+.hp-update-group-title{
+  font-weight:800;
+  color:var(--navy);
+  overflow-wrap:anywhere;
+}
+
+.hp-update-group-meta{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+.hp-update-group-count{
+  white-space:nowrap;
+  color:var(--navy);
+  font-size:13px;
+  font-weight:800;
+}
+
+.hp-update-chevron{
+  display:inline-block;
+  margin-left:7px;
+  transition:transform .16s ease;
+}
+
+.hp-update-group.open .hp-update-chevron{
+  transform:rotate(90deg);
+}
+
+.hp-update-group-body{
+  display:none;
+  border-top:1px solid #D9DEE5;
+  background:#FAFBFC;
+  padding:10px 12px 14px;
+}
+
+.hp-update-group.open .hp-update-group-body{
+  display:block;
+}
+
+.hp-update-history-list{
+  display:grid;
+  gap:8px;
+}
+
+.hp-update-history-item{
+  border:1px solid #D3D9E1;
+  background:#fff;
+}
+
+.hp-update-history-button{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(135px,auto) 1fr auto;
+  align-items:center;
+  gap:12px;
+  padding:11px 12px;
+  border:0;
+  background:#fff;
+  color:var(--text);
+  text-align:left;
+  cursor:pointer;
+}
+
+.hp-update-history-button:hover,
+.hp-update-history-button:focus-visible{
+  background:#F2F5F8;
+}
+
+.hp-update-history-date{
+  color:var(--navy);
+  font-size:13px;
+  font-weight:800;
+}
+
+.hp-update-history-summary{
+  min-width:0;
+}
+
+.hp-update-history-summary strong{
+  display:block;
+  font-size:14px;
+  overflow-wrap:anywhere;
+}
+
+.hp-update-history-summary span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+
+.hp-update-history-change-count{
+  white-space:nowrap;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+
+.hp-update-history-detail{
+  display:none;
+  padding:13px;
+  border-top:1px solid #E0E4EA;
+  background:#fff;
+}
+
+.hp-update-history-item.open .hp-update-history-detail{
+  display:block;
+}
+
+.hp-update-change-list{
+  display:grid;
+  gap:8px;
+  margin-bottom:14px;
+}
+
+.hp-update-change-row{
+  display:grid;
+  grid-template-columns:140px 1fr;
+  gap:10px;
+  padding:9px 10px;
+  border-left:3px solid #8090A5;
+  background:#F7F8FA;
+}
+
+.hp-update-change-label{
+  color:var(--navy);
+  font-weight:800;
+  font-size:13px;
+}
+
+.hp-update-change-values{
+  min-width:0;
+  line-height:1.65;
+  overflow-wrap:anywhere;
+}
+
+.hp-update-change-values pre{
+  margin:3px 0 0;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font:inherit;
+}
+
+.hp-update-change-before{
+  color:#6B7280;
+}
+
+.hp-update-change-after{
+  color:var(--text);
+  font-weight:700;
+}
+
+.hp-update-no-change{
+  margin:0 0 14px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.hp-update-snapshot-title{
+  margin:14px 0 7px;
+  color:var(--navy);
+  font-size:14px;
+}
+
 @media(max-width:700px){
   .hp-update-grid{grid-template-columns:1fr;}
   .hp-update-grid .full{grid-column:auto;}
+  .hp-update-group-button{grid-template-columns:auto 1fr;}
+  .hp-update-group-count{grid-column:1 / -1;padding-left:0;}
+  .hp-update-history-button{grid-template-columns:1fr;}
+  .hp-update-history-change-count{justify-self:start;}
+  .hp-update-change-row{grid-template-columns:1fr;}
 }
 
 </style>
@@ -3116,7 +3317,7 @@ textarea:disabled{
       <div class="card">
 
         <p class="hint">
-          まち会議日時・ニュース・お問い合わせの更新履歴を表示します。すべての管理者が履歴を閲覧できます。共同管理者（デベロッパーを含む）は全員の履歴を、その他の管理者は自分が行った更新履歴を編集して現在のサイトへ再反映できます。
+          更新対象ごとに一覧表示します。項目をクリックすると、その対象に対する更新履歴が時系列で表示され、各履歴をクリックすると変更内容と当時の内容を確認できます。すべての管理者が履歴を閲覧でき、共同管理者（デベロッパーを含む）は全員の履歴を、その他の管理者は自分が行った更新履歴を編集して現在のサイトへ再反映できます。
         </p>
 
         <div id="hp-update-filter-bar" class="hp-update-filter-bar">
@@ -6892,106 +7093,452 @@ function buildHpUpdateEditor(log, container) {
   };
 }
 
-function renderHpUpdateLogs() {
-  if (!ui.hpUpdateList) return;
-  ui.hpUpdateList.innerHTML = "";
+function hpUpdateResourceKey(log) {
+  return `${log.resourceType || "unknown"}:${log.resourceId || ""}`;
+}
 
-  const logs = hpUpdateLogs.filter(log =>
-    hpUpdateFilter === "all" || log.resourceType === hpUpdateFilter
-  );
+function hpUpdateResourceTitle(log) {
+  const s = log.snapshot || {};
 
-  ui.hpUpdateStatus.textContent = logs.length
-    ? `${logs.length}件を表示しています。`
-    : "該当する更新履歴はありません。";
+  if (log.resourceType === "meeting") {
+    return "次回まち会議";
+  }
 
-  for (const log of logs) {
-    const card = document.createElement("article");
-    card.className = "hp-update-card";
+  if (log.resourceType === "news") {
+    return s.title || `ニュース #${log.resourceId || "—"}`;
+  }
 
-    const head = document.createElement("div");
-    head.className = "hp-update-head";
+  if (log.resourceType === "inquiry") {
+    const name = s.name || "お問い合わせ";
+    const email = s.email || "";
+    return email
+      ? `${name} / ${email}`
+      : name;
+  }
 
-    const left = document.createElement("div");
-    const type = document.createElement("span");
-    type.className = "hp-update-type";
-    type.textContent = hpUpdateTypeLabel(log.resourceType);
+  return `${hpUpdateTypeLabel(log.resourceType)} #${log.resourceId || "—"}`;
+}
 
-    const summary = document.createElement("div");
-    summary.className = "hp-update-summary";
-    summary.textContent = log.summary || `${hpUpdateTypeLabel(log.resourceType)}を${hpUpdateActionLabel(log.action)}`;
+function hpComparableValue(value) {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "boolean") return value ? "表示" : "非表示";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
 
-    const meta = document.createElement("div");
-    meta.className = "hp-update-meta";
-    meta.textContent = `${log.actorName || "—"}${log.actorUsername ? `（${log.actorUsername}）` : ""} / ${formatDate(log.createdAt)} / ${hpUpdateActionLabel(log.action)} / 履歴 #${log.id}`;
+function hpShortValue(value, max = 260) {
+  const text = hpComparableValue(value);
+  if (text.length <= max) return text;
+  return text.slice(0, max) + "…";
+}
 
-    left.append(type, summary, meta);
-    head.append(left);
-    card.append(head);
+function hpUpdateChanges(log, olderLog) {
+  const current = log.snapshot || {};
+  const previous = olderLog?.snapshot || null;
+  const changes = [];
 
-    const preview = document.createElement("div");
-    preview.className = "hp-update-preview";
-    preview.textContent = hpUpdatePreview(log);
-    card.append(preview);
+  const push = (label, before, after) => {
+    if (hpComparableValue(before) === hpComparableValue(after)) return;
+    changes.push({
+      label,
+      before: hpComparableValue(before),
+      after: hpComparableValue(after),
+    });
+  };
 
-    if (log.canEdit) {
-      const actions = document.createElement("div");
-      actions.className = "hp-update-actions";
-      const editButton = document.createElement("button");
-      editButton.type = "button";
-      editButton.className = "sub";
-      editButton.textContent = "この履歴を編集して再反映";
-      actions.append(editButton);
-      card.append(actions);
+  if (!previous) {
+    return [{
+      label: "状態",
+      before: "",
+      after: "この対象で記録されている最初の状態です。",
+    }];
+  }
 
-      const editor = document.createElement("div");
-      editor.className = "hp-update-editor";
-      const getSnapshot = buildHpUpdateEditor(log, editor);
+  if (log.resourceType === "meeting") {
+    push("表示状態", previous.visible !== false, current.visible !== false);
+    push("日時", previous.dateTime, current.dateTime);
+    push("場所", previous.place, current.place);
+    push("住所", previous.address, current.address);
+    push("備考1", previous.note1, current.note1);
+    push("料金", previous.price, current.price);
+    return changes;
+  }
 
-      const applyButton = document.createElement("button");
-      applyButton.type = "button";
-      applyButton.className = "button";
-      applyButton.textContent = "編集内容を現在のサイトへ反映";
+  if (log.resourceType === "news") {
+    push("表示状態", previous.visible !== false, current.visible !== false);
+    push("タイトル", previous.title, current.title);
+    push("本文", previous.body, current.body);
+    push("添付ファイル", previous.fileName, current.fileName);
+    return changes;
+  }
 
-      const status = document.createElement("div");
-      status.className = "status";
-      editor.append(applyButton, status);
-      card.append(editor);
+  if (log.resourceType === "inquiry") {
+    push("表示状態", previous.archived ? "アーカイブ" : "表示", current.archived ? "アーカイブ" : "表示");
+    push("氏名", previous.name, current.name);
+    push("メール", previous.email, current.email);
+    push("都道府県", previous.prefecture, current.prefecture);
+    push("市区町村", previous.city, current.city);
+    push("性別", previous.gender, current.gender);
+    push("年代", previous.age, current.age);
+    push("職業", previous.occupation, current.occupation);
+    push("お問い合わせ本文", previous.message, current.message);
 
-      editButton.addEventListener("click", () => {
-        editor.classList.toggle("active");
-        editButton.textContent = editor.classList.contains("active")
-          ? "編集を閉じる"
-          : "この履歴を編集して再反映";
-      });
+    const previousReplies = new Map(
+      (Array.isArray(previous.replies) ? previous.replies : [])
+        .map(reply => [Number(reply.id), reply])
+    );
+    const currentReplies = new Map(
+      (Array.isArray(current.replies) ? current.replies : [])
+        .map(reply => [Number(reply.id), reply])
+    );
 
-      applyButton.addEventListener("click", async () => {
-        const confirmed = window.confirm(
-          "この履歴の編集内容を現在のサイトへ反映します。現在の内容が上書きされる場合があります。よろしいですか？"
-        );
-        if (!confirmed) return;
+    for (const [replyId, reply] of currentReplies) {
+      const old = previousReplies.get(replyId);
+      const prefix = reply.direction === "inbound"
+        ? `受信返信 #${replyId}`
+        : `送信返信 #${replyId}`;
 
-        applyButton.disabled = true;
-        show(status, "反映しています…");
-        try {
-          const { response, data } = await workerPost(
-            "/site-update-log-apply",
-            { logId: log.id, snapshot: getSnapshot() },
-            sessionStorage.getItem("admin_access_token")
-          );
-          if (!response.ok) {
-            throw new Error(data.error || "更新履歴を反映できませんでした。");
-          }
-          show(status, "現在のサイトへ反映しました。");
-          await loadHpUpdateLogs();
-        } catch (error) {
-          show(status, error.message || "更新履歴を反映できませんでした。");
-        } finally {
-          applyButton.disabled = false;
-        }
-      });
+      if (!old) {
+        changes.push({
+          label: prefix,
+          before: "",
+          after: `${reply.responderName || "—"}：${reply.body || ""}`,
+        });
+        continue;
+      }
+
+      push(`${prefix} 表示状態`, old.visible !== false, reply.visible !== false);
+      push(`${prefix} 件名`, old.subject, reply.subject);
+      push(`${prefix} 本文`, old.body, reply.body);
     }
 
-    ui.hpUpdateList.append(card);
+    for (const [replyId, old] of previousReplies) {
+      if (!currentReplies.has(replyId)) {
+        changes.push({
+          label: `${old.direction === "inbound" ? "受信返信" : "送信返信"} #${replyId}`,
+          before: old.body || "",
+          after: "履歴上から削除",
+        });
+      }
+    }
+
+    return changes;
+  }
+
+  push("内容", previous, current);
+  return changes;
+}
+
+function hpUpdateChangeList(changes) {
+  const wrap = document.createElement("div");
+  wrap.className = "hp-update-change-list";
+
+  for (const change of changes) {
+    const row = document.createElement("div");
+    row.className = "hp-update-change-row";
+
+    const label = document.createElement("div");
+    label.className = "hp-update-change-label";
+    label.textContent = change.label;
+
+    const values = document.createElement("div");
+    values.className = "hp-update-change-values";
+
+    if (change.before) {
+      const before = document.createElement("div");
+      before.className = "hp-update-change-before";
+      before.textContent = `変更前：${hpShortValue(change.before)}`;
+      values.append(before);
+    }
+
+    const after = document.createElement("div");
+    after.className = "hp-update-change-after";
+    after.textContent = `変更後：${hpShortValue(change.after)}`;
+    values.append(after);
+
+    row.append(label, values);
+    wrap.append(row);
+  }
+
+  return wrap;
+}
+
+function buildHpUpdateHistoryItem(log, olderLog) {
+  const item = document.createElement("div");
+  item.className = "hp-update-history-item";
+
+  const changes = hpUpdateChanges(log, olderLog);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "hp-update-history-button";
+  button.setAttribute("aria-expanded", "false");
+
+  const date = document.createElement("div");
+  date.className = "hp-update-history-date";
+  date.textContent = formatDate(log.createdAt);
+
+  const summary = document.createElement("div");
+  summary.className = "hp-update-history-summary";
+
+  const summaryTitle = document.createElement("strong");
+  summaryTitle.textContent =
+    log.summary ||
+    `${hpUpdateTypeLabel(log.resourceType)}を${hpUpdateActionLabel(log.action)}`;
+
+  const meta = document.createElement("span");
+  meta.textContent =
+    `${log.actorName || "—"}${log.actorUsername ? `（${log.actorUsername}）` : ""} / ${hpUpdateActionLabel(log.action)} / 履歴 #${log.id}`;
+
+  summary.append(summaryTitle, meta);
+
+  const count = document.createElement("div");
+  count.className = "hp-update-history-change-count";
+  count.textContent = `${changes.length}項目 ＞`;
+
+  button.append(date, summary, count);
+
+  const detail = document.createElement("div");
+  detail.className = "hp-update-history-detail";
+
+  const changeTitle = document.createElement("h4");
+  changeTitle.className = "hp-update-snapshot-title";
+  changeTitle.textContent = "変更内容";
+  detail.append(changeTitle);
+
+  if (changes.length) {
+    detail.append(hpUpdateChangeList(changes));
+  } else {
+    const noChange = document.createElement("p");
+    noChange.className = "hp-update-no-change";
+    noChange.textContent = "内容上の差分はありません。操作履歴として記録されています。";
+    detail.append(noChange);
+  }
+
+  const snapshotTitle = document.createElement("h4");
+  snapshotTitle.className = "hp-update-snapshot-title";
+  snapshotTitle.textContent = "この時点の内容";
+
+  const preview = document.createElement("div");
+  preview.className = "hp-update-preview";
+  preview.textContent = hpUpdatePreview(log);
+
+  detail.append(snapshotTitle, preview);
+
+  if (log.canEdit) {
+    const actions = document.createElement("div");
+    actions.className = "hp-update-actions";
+
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "sub";
+    editButton.textContent = "この履歴を編集して再反映";
+
+    actions.append(editButton);
+    detail.append(actions);
+
+    const editor = document.createElement("div");
+    editor.className = "hp-update-editor";
+    const getSnapshot = buildHpUpdateEditor(log, editor);
+
+    const applyButton = document.createElement("button");
+    applyButton.type = "button";
+    applyButton.className = "button";
+    applyButton.textContent = "編集内容を現在のサイトへ反映";
+
+    const status = document.createElement("div");
+    status.className = "status";
+
+    editor.append(applyButton, status);
+    detail.append(editor);
+
+    editButton.addEventListener("click", event => {
+      event.stopPropagation();
+      editor.classList.toggle("active");
+      editButton.textContent = editor.classList.contains("active")
+        ? "編集を閉じる"
+        : "この履歴を編集して再反映";
+    });
+
+    applyButton.addEventListener("click", async event => {
+      event.stopPropagation();
+
+      const confirmed = window.confirm(
+        "この履歴の編集内容を現在のサイトへ反映します。現在の内容が上書きされる場合があります。よろしいですか？"
+      );
+      if (!confirmed) return;
+
+      applyButton.disabled = true;
+      show(status, "反映しています…");
+
+      try {
+        const { response, data } = await workerPost(
+          "/site-update-log-apply",
+          {
+            logId: log.id,
+            snapshot: getSnapshot(),
+          },
+          sessionStorage.getItem("admin_access_token")
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "更新履歴を反映できませんでした。"
+          );
+        }
+
+        show(
+          status,
+          "現在のサイトへ反映しました。"
+        );
+
+        await loadHpUpdateLogs();
+      } catch (error) {
+        show(
+          status,
+          error.message ||
+          "更新履歴を反映できませんでした。"
+        );
+      } finally {
+        applyButton.disabled = false;
+      }
+    });
+  }
+
+  button.addEventListener("click", () => {
+    const open = item.classList.toggle("open");
+    button.setAttribute("aria-expanded", open ? "true" : "false");
+    count.textContent = `${changes.length}項目 ${open ? "▼" : "＞"}`;
+  });
+
+  item.append(button, detail);
+  return item;
+}
+
+function renderHpUpdateLogs() {
+  if (!ui.hpUpdateList) return;
+
+  ui.hpUpdateList.innerHTML = "";
+
+  const filteredLogs = hpUpdateLogs.filter(
+    log =>
+      hpUpdateFilter === "all" ||
+      log.resourceType === hpUpdateFilter
+  );
+
+  const grouped = new Map();
+
+  for (const log of filteredLogs) {
+    const key = hpUpdateResourceKey(log);
+
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
+    }
+
+    grouped.get(key).push(log);
+  }
+
+  const groups = Array.from(grouped.values())
+    .map(logs =>
+      logs.sort(
+        (a, b) =>
+          Number(b.id || 0) -
+          Number(a.id || 0)
+      )
+    )
+    .sort(
+      (a, b) =>
+        Number(b[0]?.id || 0) -
+        Number(a[0]?.id || 0)
+    );
+
+  ui.hpUpdateStatus.textContent =
+    groups.length
+      ? `${groups.length}件の更新対象 / 更新履歴 ${filteredLogs.length}件`
+      : "該当する更新履歴はありません。";
+
+  for (const groupLogs of groups) {
+    const latest = groupLogs[0];
+
+    const group = document.createElement("article");
+    group.className = "hp-update-group";
+
+    const groupButton = document.createElement("button");
+    groupButton.type = "button";
+    groupButton.className = "hp-update-group-button";
+    groupButton.setAttribute("aria-expanded", "false");
+
+    const type = document.createElement("span");
+    type.className = "hp-update-type";
+    type.textContent =
+      hpUpdateTypeLabel(latest.resourceType);
+
+    const main = document.createElement("div");
+    main.className = "hp-update-group-main";
+
+    const title = document.createElement("div");
+    title.className = "hp-update-group-title";
+    title.textContent =
+      hpUpdateResourceTitle(latest);
+
+    const meta = document.createElement("div");
+    meta.className = "hp-update-group-meta";
+    meta.textContent =
+      `最終更新：${formatDate(latest.createdAt)} / ${latest.actorName || "—"} / ${hpUpdateActionLabel(latest.action)}`;
+
+    main.append(title, meta);
+
+    const groupCount = document.createElement("div");
+    groupCount.className = "hp-update-group-count";
+    groupCount.innerHTML =
+      `履歴 ${groupLogs.length}件<span class="hp-update-chevron">›</span>`;
+
+    groupButton.append(
+      type,
+      main,
+      groupCount
+    );
+
+    const body = document.createElement("div");
+    body.className = "hp-update-group-body";
+
+    const historyList = document.createElement("div");
+    historyList.className = "hp-update-history-list";
+
+    groupLogs.forEach((log, index) => {
+      const olderLog =
+        groupLogs[index + 1] || null;
+
+      historyList.append(
+        buildHpUpdateHistoryItem(
+          log,
+          olderLog
+        )
+      );
+    });
+
+    body.append(historyList);
+
+    groupButton.addEventListener(
+      "click",
+      () => {
+        const open =
+          group.classList.toggle("open");
+
+        groupButton.setAttribute(
+          "aria-expanded",
+          open ? "true" : "false"
+        );
+      }
+    );
+
+    group.append(
+      groupButton,
+      body
+    );
+
+    ui.hpUpdateList.append(group);
   }
 }
 
