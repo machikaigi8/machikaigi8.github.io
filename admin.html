@@ -1524,6 +1524,149 @@ textarea:disabled{
       font-size: 13px;
     }
 
+
+
+.hp-update-filter-bar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:0 0 18px;
+}
+
+.hp-update-filter{
+  border:1px solid #A0ACBC;
+  background:#fff;
+  color:var(--navy);
+  padding:8px 14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.hp-update-filter.active{
+  background:var(--navy);
+  color:#fff;
+  border-color:var(--navy);
+}
+
+.hp-update-list{
+  display:grid;
+  gap:16px;
+}
+
+.hp-update-card{
+  border:1px solid #A0ACBC;
+  background:#fff;
+  padding:17px;
+}
+
+.hp-update-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.hp-update-type{
+  display:inline-flex;
+  padding:4px 9px;
+  border:1px solid #8292A8;
+  background:#F2F5F8;
+  color:var(--navy);
+  font-size:12px;
+  font-weight:800;
+}
+
+.hp-update-meta{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.7;
+}
+
+.hp-update-summary{
+  margin:12px 0 0;
+  font-weight:700;
+  color:var(--text);
+}
+
+.hp-update-preview{
+  margin-top:14px;
+  padding:13px;
+  border-left:4px solid #8B98AA;
+  background:#F7F8FA;
+  white-space:pre-wrap;
+  line-height:1.7;
+}
+
+.hp-update-editor{
+  display:none;
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid #D9DEE5;
+}
+
+.hp-update-editor.active{
+  display:block;
+}
+
+.hp-update-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.hp-update-grid .full{
+  grid-column:1 / -1;
+}
+
+.hp-update-toggle{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 0;
+  font-weight:700;
+  color:var(--navy);
+}
+
+.hp-update-thread{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
+
+.hp-update-message{
+  padding:12px;
+  border:1px solid #D7DCE4;
+  background:#FAFBFC;
+}
+
+.hp-update-message .textarea{
+  min-height:90px;
+}
+
+.hp-update-actions,
+.inquiry-archive-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+
+.inquiry-archive-button{
+  border:1px solid #8A5A22;
+  background:#fff;
+  color:#7A4B16;
+  padding:8px 12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+@media(max-width:700px){
+  .hp-update-grid{grid-template-columns:1fr;}
+  .hp-update-grid .full{grid-column:auto;}
+}
+
 </style>
 
 <script>
@@ -2973,8 +3116,18 @@ textarea:disabled{
       <div class="card">
 
         <p class="hint">
-          HP更新機能は次に接続します。
+          まち会議日時・ニュース・お問い合わせの更新履歴を表示します。すべての管理者が履歴を閲覧できます。共同管理者（デベロッパーを含む）は全員の履歴を、その他の管理者は自分が行った更新履歴を編集して現在のサイトへ再反映できます。
         </p>
+
+        <div id="hp-update-filter-bar" class="hp-update-filter-bar">
+          <button type="button" class="hp-update-filter active" data-hp-update-filter="all">すべて</button>
+          <button type="button" class="hp-update-filter" data-hp-update-filter="meeting">まち会議日時</button>
+          <button type="button" class="hp-update-filter" data-hp-update-filter="news">ニュース</button>
+          <button type="button" class="hp-update-filter" data-hp-update-filter="inquiry">お問い合わせ</button>
+        </div>
+
+        <div id="hp-update-status" class="hint">読み込み中...</div>
+        <div id="hp-update-list" class="hp-update-list"></div>
 
       </div>
 
@@ -3446,6 +3599,9 @@ const ui = {
   settingsPasswordArea: $("settings-password-area"),
   inquiriesStatus: $("inquiries-status"),
   inquiriesList: $("inquiries-list"),
+  hpUpdateFilterBar: $("hp-update-filter-bar"),
+  hpUpdateStatus: $("hp-update-status"),
+  hpUpdateList: $("hp-update-list"),
   requestForm: $("request-form"),
   requestSubject: $("request-subject"),
   requestBody: $("request-body"),
@@ -3543,6 +3699,8 @@ let adminEditApprovalMethod = "";
 let pendingAdminSensitiveAction = null;
 let inactivityTimer = null;
 let lastActivityWrite = 0;
+let hpUpdateLogs = [];
+let hpUpdateFilter = "all";
 
 function clearInactivityTimer() {
   if (inactivityTimer) {
@@ -4086,6 +4244,7 @@ function showView(name) {
   if (name === "login-settings") loadLoginSettings();
   if (name === "meeting") loadMeetingSettings();
   if (name === "inquiries") loadInquiries();
+  if (name === "hp-update") loadHpUpdateLogs();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -5943,7 +6102,8 @@ function inquiryReplyItem(reply) {
 function inquiryCard(
   item,
   canReply,
-  mailConfig = {}
+  mailConfig = {},
+  canArchive = true
 ) {
   const card =
     document.createElement(
@@ -6371,6 +6531,43 @@ function inquiryCard(
     );
   }
 
+  if (canArchive && !isDummy()) {
+    const actions = document.createElement("div");
+    actions.className = "inquiry-archive-actions";
+
+    const archiveButton = document.createElement("button");
+    archiveButton.type = "button";
+    archiveButton.className = "inquiry-archive-button";
+    archiveButton.textContent = "アーカイブ";
+
+    archiveButton.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        "このお問い合わせをアーカイブしますか？\nお問い合わせ一覧からは非表示になりますが、HP更新の履歴には内容とやり取りが残ります。"
+      );
+      if (!confirmed) return;
+
+      archiveButton.disabled = true;
+      try {
+        const { response, data } = await workerPost(
+          "/contact-inquiry-archive",
+          { id: item.id },
+          sessionStorage.getItem("admin_access_token")
+        );
+        if (!response.ok) {
+          throw new Error(data.error || "お問い合わせをアーカイブできませんでした。");
+        }
+        await loadInquiries();
+      } catch (error) {
+        window.alert(error.message || "お問い合わせをアーカイブできませんでした。");
+      } finally {
+        archiveButton.disabled = false;
+      }
+    });
+
+    actions.append(archiveButton);
+    card.append(actions);
+  }
+
   return card;
 }
 
@@ -6439,7 +6636,8 @@ async function loadInquiries() {
                 data.mailSenderEmail || "",
               inboundEnabled:
                 data.inboundEnabled === true,
-            }
+            },
+            data.canArchive === true
           )
         )
     );
@@ -6450,6 +6648,387 @@ async function loadInquiries() {
   }
 }
 
+
+
+function hpUpdateTypeLabel(type) {
+  return {
+    meeting: "まち会議日時",
+    news: "ニュース",
+    inquiry: "お問い合わせ",
+  }[type] || type || "更新";
+}
+
+function hpUpdateActionLabel(action) {
+  return {
+    initial_snapshot: "導入時状態",
+    update: "更新",
+    create: "追加",
+    archive: "アーカイブ",
+    reply_sent: "返信送信",
+    reply_received: "メール返信受信",
+    reapply: "履歴から再反映",
+  }[action] || action || "更新";
+}
+
+function hpUpdatePreview(log) {
+  const s = log.snapshot || {};
+  if (log.resourceType === "meeting") {
+    return [
+      s.visible === false ? "【非表示】" : "【表示中】",
+      s.dateTime || "日時未設定",
+      s.place || "",
+      s.note1 || "",
+      Number.isFinite(Number(s.price)) ? `料金：${Number(s.price)}円（学生無料）` : "",
+    ].filter(Boolean).join("\n");
+  }
+
+  if (log.resourceType === "news") {
+    return [
+      s.visible === false ? "【非表示】" : "【表示中】",
+      s.title || "（タイトルなし）",
+      s.body || "",
+      s.fileName ? `添付：${s.fileName}` : "",
+    ].filter(Boolean).join("\n");
+  }
+
+  if (log.resourceType === "inquiry") {
+    const replies = Array.isArray(s.replies) ? s.replies : [];
+    const thread = replies.map(reply => {
+      const who = reply.direction === "inbound"
+        ? (reply.responderName || "お問い合わせ送信者")
+        : (reply.responderName || "管理者");
+      return `${reply.visible === false ? "【非表示】" : ""}${who}：${reply.body || ""}`;
+    });
+    return [
+      s.archived ? "【アーカイブ】" : "【お問い合わせ一覧に表示】",
+      `${s.name || ""} <${s.email || ""}>`,
+      s.message || "",
+      ...thread,
+    ].filter(Boolean).join("\n\n");
+  }
+
+  return JSON.stringify(s, null, 2);
+}
+
+function hpField(labelText, value = "", options = {}) {
+  const wrap = document.createElement("div");
+  if (options.full) wrap.className = "full";
+
+  const label = document.createElement("label");
+  label.className = "label";
+  label.textContent = labelText;
+
+  const input = options.textarea
+    ? document.createElement("textarea")
+    : document.createElement("input");
+  input.className = options.textarea ? "textarea" : "input";
+  if (!options.textarea) input.type = options.type || "text";
+  input.value = value ?? "";
+  if (options.maxLength) input.maxLength = options.maxLength;
+  if (options.textarea) input.rows = options.rows || 4;
+
+  wrap.append(label, input);
+  return { wrap, input };
+}
+
+function hpToggle(labelText, checked) {
+  const label = document.createElement("label");
+  label.className = "hp-update-toggle";
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.checked = !!checked;
+  const text = document.createElement("span");
+  text.textContent = labelText;
+  label.append(input, text);
+  return { wrap: label, input };
+}
+
+function buildHpUpdateEditor(log, container) {
+  const original = typeof structuredClone === "function"
+    ? structuredClone(log.snapshot || {})
+    : JSON.parse(JSON.stringify(log.snapshot || {}));
+  const grid = document.createElement("div");
+  grid.className = "hp-update-grid";
+  const refs = {};
+
+  if (log.resourceType === "meeting") {
+    const display = hpToggle("公開ページに表示する", original.visible !== false);
+    display.wrap.classList.add("full");
+    grid.append(display.wrap);
+    refs.visible = display.input;
+
+    for (const [key, label, opts] of [
+      ["dateTime", "日時（YYYY-MM-DDTHH:MM）", {maxLength:16}],
+      ["place", "場所", {maxLength:200}],
+      ["address", "住所（地図ピン用）", {maxLength:300}],
+      ["note1", "備考1", {maxLength:200}],
+      ["price", "料金", {type:"number"}],
+    ]) {
+      const field = hpField(label, original[key] ?? "", opts);
+      refs[key] = field.input;
+      grid.append(field.wrap);
+    }
+  } else if (log.resourceType === "news") {
+    const display = hpToggle("ニュース一覧・トップページに表示する", original.visible !== false);
+    display.wrap.classList.add("full");
+    grid.append(display.wrap);
+    refs.visible = display.input;
+
+    const title = hpField("タイトル", original.title || "", {full:true, maxLength:150});
+    title.wrap.classList.add("full");
+    refs.title = title.input;
+    grid.append(title.wrap);
+
+    const body = hpField("本文", original.body || "", {textarea:true, rows:8, maxLength:20000});
+    body.wrap.classList.add("full");
+    refs.body = body.input;
+    grid.append(body.wrap);
+
+    const fileNote = document.createElement("p");
+    fileNote.className = "hint full";
+    fileNote.textContent = `添付ファイル：${original.fileName || "なし"}（履歴画面ではファイル自体は変更せず、タイトル・本文・表示状態を再反映します）`;
+    grid.append(fileNote);
+  } else if (log.resourceType === "inquiry") {
+    const display = hpToggle("お問い合わせ一覧に表示する", !original.archived);
+    display.wrap.classList.add("full");
+    grid.append(display.wrap);
+    refs.display = display.input;
+
+    for (const [key, label, opts] of [
+      ["name", "氏名", {maxLength:100}],
+      ["email", "メールアドレス", {maxLength:254}],
+      ["prefecture", "都道府県", {maxLength:20}],
+      ["city", "市区町村", {maxLength:100}],
+      ["gender", "性別", {maxLength:30}],
+      ["age", "年代", {maxLength:30}],
+      ["occupation", "職業", {maxLength:120}],
+    ]) {
+      const field = hpField(label, original[key] || "", opts);
+      refs[key] = field.input;
+      grid.append(field.wrap);
+    }
+
+    const message = hpField("お問い合わせ本文", original.message || "", {textarea:true, rows:6, maxLength:4000});
+    message.wrap.classList.add("full");
+    refs.message = message.input;
+    grid.append(message.wrap);
+
+    const thread = document.createElement("div");
+    thread.className = "hp-update-thread full";
+    refs.replies = [];
+
+    (original.replies || []).forEach(reply => {
+      const box = document.createElement("div");
+      box.className = "hp-update-message";
+
+      const meta = document.createElement("div");
+      meta.className = "hint";
+      meta.textContent = `${reply.direction === "inbound" ? "相手からの返信" : "管理者からの返信"} / ${reply.responderName || "—"} / ${formatDate(reply.sentAt || reply.createdAt)}`;
+
+      const visible = hpToggle("このメッセージを表示する", reply.visible !== false);
+      const subject = hpField("件名", reply.subject || "", {maxLength:200});
+      const body = hpField("本文", reply.body || "", {textarea:true, rows:4, maxLength:8000});
+
+      box.append(meta, visible.wrap, subject.wrap, body.wrap);
+      thread.append(box);
+      refs.replies.push({
+        id: reply.id,
+        base: reply,
+        visible: visible.input,
+        subject: subject.input,
+        body: body.input,
+      });
+    });
+
+    grid.append(thread);
+  }
+
+  container.append(grid);
+
+  return () => {
+    if (log.resourceType === "meeting") {
+      return {
+        ...original,
+        visible: refs.visible.checked,
+        dateTime: refs.dateTime.value.trim(),
+        place: refs.place.value.trim(),
+        address: refs.address.value.trim(),
+        note1: refs.note1.value.trim(),
+        price: Number(refs.price.value),
+      };
+    }
+
+    if (log.resourceType === "news") {
+      return {
+        ...original,
+        visible: refs.visible.checked,
+        title: refs.title.value.trim(),
+        body: refs.body.value.trim(),
+      };
+    }
+
+    if (log.resourceType === "inquiry") {
+      return {
+        ...original,
+        archived: !refs.display.checked,
+        name: refs.name.value.trim(),
+        email: refs.email.value.trim(),
+        prefecture: refs.prefecture.value.trim(),
+        city: refs.city.value.trim(),
+        gender: refs.gender.value.trim(),
+        age: refs.age.value.trim(),
+        occupation: refs.occupation.value.trim(),
+        message: refs.message.value.trim(),
+        replies: refs.replies.map(item => ({
+          ...item.base,
+          visible: item.visible.checked,
+          subject: item.subject.value.trim(),
+          body: item.body.value.trim(),
+        })),
+      };
+    }
+
+    return original;
+  };
+}
+
+function renderHpUpdateLogs() {
+  if (!ui.hpUpdateList) return;
+  ui.hpUpdateList.innerHTML = "";
+
+  const logs = hpUpdateLogs.filter(log =>
+    hpUpdateFilter === "all" || log.resourceType === hpUpdateFilter
+  );
+
+  ui.hpUpdateStatus.textContent = logs.length
+    ? `${logs.length}件を表示しています。`
+    : "該当する更新履歴はありません。";
+
+  for (const log of logs) {
+    const card = document.createElement("article");
+    card.className = "hp-update-card";
+
+    const head = document.createElement("div");
+    head.className = "hp-update-head";
+
+    const left = document.createElement("div");
+    const type = document.createElement("span");
+    type.className = "hp-update-type";
+    type.textContent = hpUpdateTypeLabel(log.resourceType);
+
+    const summary = document.createElement("div");
+    summary.className = "hp-update-summary";
+    summary.textContent = log.summary || `${hpUpdateTypeLabel(log.resourceType)}を${hpUpdateActionLabel(log.action)}`;
+
+    const meta = document.createElement("div");
+    meta.className = "hp-update-meta";
+    meta.textContent = `${log.actorName || "—"}${log.actorUsername ? `（${log.actorUsername}）` : ""} / ${formatDate(log.createdAt)} / ${hpUpdateActionLabel(log.action)} / 履歴 #${log.id}`;
+
+    left.append(type, summary, meta);
+    head.append(left);
+    card.append(head);
+
+    const preview = document.createElement("div");
+    preview.className = "hp-update-preview";
+    preview.textContent = hpUpdatePreview(log);
+    card.append(preview);
+
+    if (log.canEdit) {
+      const actions = document.createElement("div");
+      actions.className = "hp-update-actions";
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.className = "sub";
+      editButton.textContent = "この履歴を編集して再反映";
+      actions.append(editButton);
+      card.append(actions);
+
+      const editor = document.createElement("div");
+      editor.className = "hp-update-editor";
+      const getSnapshot = buildHpUpdateEditor(log, editor);
+
+      const applyButton = document.createElement("button");
+      applyButton.type = "button";
+      applyButton.className = "button";
+      applyButton.textContent = "編集内容を現在のサイトへ反映";
+
+      const status = document.createElement("div");
+      status.className = "status";
+      editor.append(applyButton, status);
+      card.append(editor);
+
+      editButton.addEventListener("click", () => {
+        editor.classList.toggle("active");
+        editButton.textContent = editor.classList.contains("active")
+          ? "編集を閉じる"
+          : "この履歴を編集して再反映";
+      });
+
+      applyButton.addEventListener("click", async () => {
+        const confirmed = window.confirm(
+          "この履歴の編集内容を現在のサイトへ反映します。現在の内容が上書きされる場合があります。よろしいですか？"
+        );
+        if (!confirmed) return;
+
+        applyButton.disabled = true;
+        show(status, "反映しています…");
+        try {
+          const { response, data } = await workerPost(
+            "/site-update-log-apply",
+            { logId: log.id, snapshot: getSnapshot() },
+            sessionStorage.getItem("admin_access_token")
+          );
+          if (!response.ok) {
+            throw new Error(data.error || "更新履歴を反映できませんでした。");
+          }
+          show(status, "現在のサイトへ反映しました。");
+          await loadHpUpdateLogs();
+        } catch (error) {
+          show(status, error.message || "更新履歴を反映できませんでした。");
+        } finally {
+          applyButton.disabled = false;
+        }
+      });
+    }
+
+    ui.hpUpdateList.append(card);
+  }
+}
+
+async function loadHpUpdateLogs() {
+  if (!ui.hpUpdateStatus || !ui.hpUpdateList) return;
+
+  ui.hpUpdateStatus.textContent = "読み込み中...";
+  ui.hpUpdateList.innerHTML = "";
+
+  try {
+    const { response, data } = await workerPost(
+      "/site-update-logs",
+      {},
+      sessionStorage.getItem("admin_access_token")
+    );
+
+    if (!response.ok) {
+      throw new Error(data.error || "更新履歴を取得できませんでした。");
+    }
+
+    hpUpdateLogs = data.logs || [];
+    renderHpUpdateLogs();
+  } catch (error) {
+    ui.hpUpdateStatus.textContent = error.message || "更新履歴を取得できませんでした。";
+  }
+}
+
+ui.hpUpdateFilterBar?.addEventListener("click", event => {
+  const button = event.target.closest("[data-hp-update-filter]");
+  if (!button) return;
+
+  hpUpdateFilter = button.dataset.hpUpdateFilter || "all";
+  ui.hpUpdateFilterBar.querySelectorAll("[data-hp-update-filter]").forEach(item => {
+    item.classList.toggle("active", item === button);
+  });
+  renderHpUpdateLogs();
+});
 
 function formatDate(value) {
   if (!value) {
