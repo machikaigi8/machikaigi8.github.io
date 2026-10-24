@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>団体概要｜みんなのまち会議</title>
+    <style>
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            background-color: #FFFDF7;
+            color: #1F1F1F;
+            overflow-x: hidden;
+        }
+
+        @keyframes yellowSlideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        @keyframes headerContentFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .top-space,
+        .header,
+        .subtitle-line {
+            animation: yellowSlideIn .85s cubic-bezier(.22,1,.36,1) both;
+        }
+
+        .title,
+        .nav-menu,
+        .subtitle {
+            opacity: 0;
+            animation: headerContentFadeIn .5s ease-out .85s forwards;
+        }
+
+        .top-space {
+            height: 8px;
+            background-color: rgba(255,220,100,.80);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 18px 34px 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            background-color: rgba(255,220,100,.80);
+            z-index: 100;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 54px;
+            line-height: 1;
+            font-family: "HGP創英ﾌﾟﾚｾﾞﾝｽEB", sans-serif;
+            color: #001E00;
+            white-space: nowrap;
+        }
+
+        .title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            color: #000;
+            text-decoration: none;
+            font-size: 24px;
+            font-family: "Yu Mincho","Hiragino Mincho ProN",serif;
+            white-space: nowrap;
+            transition: opacity .2s;
+        }
+
+        .nav-menu a:hover { opacity: .55; }
+
+        .subtitle-line {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0 34px 8px;
+            background-color: rgba(255,220,100,.80);
+            position: relative;
+            z-index: 10;
+        }
+
+        .subtitle {
+            margin: 0;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #003700;
+            font-family: "Yu Mincho","Hiragino Mincho ProN",serif;
+        }
+
+        .page-main {
+            width: min(1120px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 58px 0 86px;
+        }
+
+        .page-heading {
+            margin: 0;
+            color: #145E20;
+            font-size: 44px;
+            font-family: "Yu Mincho","Hiragino Mincho ProN",serif;
+            letter-spacing: .03em;
+        }
+
+        .page-heading-en {
+            margin: 7px 0 0;
+            color: #7A8279;
+            font-family: "Yu Gothic","Meiryo",sans-serif;
+            font-size: 14px;
+            letter-spacing: .12em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 44px;
+            padding: 10px 18px;
+            border: 2px solid #145E20;
+            color: #145E20;
+            text-decoration: none;
+            font-family: "Yu Gothic","Meiryo",sans-serif;
+            font-weight: 700;
+        }
+
+        @media(max-width:900px){
+            .header { padding:16px 24px 12px; display:block; }
+            .title { font-size:32px; }
+            .nav-menu { margin-top:14px; gap:14px; flex-wrap:wrap; }
+            .nav-menu a { font-size:12px; }
+            .subtitle-line { padding:0 24px 8px; }
+            .subtitle { font-size:13px; }
+            .page-main { width:min(100% - 30px,1120px); padding-top:38px; }
+            .page-heading { font-size:34px; }
+        }
+
+        @media(prefers-reduced-motion:reduce){
+            .top-space,.header,.subtitle-line,.title,.nav-menu,.subtitle{
+                animation:none;
+                opacity:1;
+                transform:none;
+            }
+        }
+
+        .organization-table {
+            margin-top:46px;
+            border-top:1px solid #C9C8C0;
+        }
+
+        .organization-row {
+            display:grid;
+            grid-template-columns:30% minmax(0,1fr);
+            gap:48px;
+            padding:28px 22px;
+            border-bottom:1px solid #C9C8C0;
+        }
+
+        .organization-label {
+            color:#173F20;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+            font-size:18px;
+            font-weight:800;
+        }
+
+        .organization-value {
+            white-space:pre-wrap;
+            overflow-wrap:anywhere;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+            font-size:17px;
+            line-height:1.85;
+        }
+
+        .members-section {
+            margin-top:74px;
+            padding-top:36px;
+            border-top:1px solid #C9C8C0;
+        }
+
+        .members-title {
+            margin:0;
+            color:#145E20;
+            font-size:30px;
+            font-family:"Yu Mincho","Hiragino Mincho ProN",serif;
+        }
+
+        .members-grid {
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:34px 28px;
+            margin-top:32px;
+        }
+
+        .member-card {
+            text-align:center;
+        }
+
+        .member-photo {
+            width:min(100%,230px);
+            aspect-ratio:1 / 1;
+            margin:0 auto 16px;
+            background:#E9E7DE;
+            overflow:hidden;
+        }
+
+        .member-photo img {
+            width:100%;
+            height:100%;
+            display:block;
+            object-fit:cover;
+        }
+
+        .member-no-photo {
+            width:100%;
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#77766F;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+            font-size:14px;
+        }
+
+        .member-name {
+            margin:0;
+            color:#173F20;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+            font-size:19px;
+            font-weight:800;
+        }
+
+        .member-role {
+            margin:6px 0 0;
+            color:#686A65;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+            font-size:14px;
+        }
+
+        .organization-status {
+            padding:36px 0;
+            color:#666;
+            font-family:"Yu Gothic","Meiryo",sans-serif;
+        }
+
+        @media(max-width:820px){
+            .organization-row {
+                grid-template-columns:1fr;
+                gap:10px;
+                padding:22px 4px;
+            }
+
+            .members-grid {
+                grid-template-columns:repeat(2,minmax(0,1fr));
+            }
+        }
+
+        @media(max-width:520px){
+            .members-grid {
+                grid-template-columns:1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-space"></div>
+
+    <header class="header">
+        <h1 class="title">
+            <a href="index.html" aria-label="みんなのまち会議 トップページへ">みんなのまち会議</a>
+        </h1>
+
+        <nav class="nav-menu">
+            <a href="news.html">ニュース</a>
+            <a href="about.html">まち会議とは</a>
+            <a href="organization.html">団体概要</a>
+            <a href="contact.html">お問い合わせ</a>
+        </nav>
+    </header>
+
+    <div class="subtitle-line">
+        <p class="subtitle">若者と、はちおうじの街を考える会議</p>
+    </div>
+
+    <main class="page-main">
+        <h2 class="page-heading">団体概要</h2>
+        <p class="page-heading-en">ORGANIZATION PROFILE</p>
+
+        <div id="organization-root" class="organization-status">
+            団体概要を読み込んでいます…
+        </div>
+
+        <a class="back-link" href="index.html">← トップへ戻る</a>
+    </main>
+
+    <script>
+        const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
+        const root = document.getElementById("organization-root");
+
+        function addTextElement(tag, className, text) {
+            const element = document.createElement(tag);
+            element.className = className;
+            element.textContent = text || "";
+            return element;
+        }
+
+        async function loadOrganization() {
+            try {
+                const response = await fetch(`${WORKER_URL}/organization-public`, {
+                    method: "GET",
+                    mode: "cors",
+                    credentials: "omit",
+                });
+
+                const text = await response.text();
+                let data = {};
+
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch (_) {}
+
+                if (!response.ok) {
+                    throw new Error(data.error || "団体概要を取得できませんでした。");
+                }
+
+                const organization = data.organization || {};
+                const rows = Array.isArray(organization.rows) ? organization.rows : [];
+                const members = Array.isArray(organization.members) ? organization.members : [];
+
+                root.innerHTML = "";
+                root.className = "";
+
+                const table = document.createElement("section");
+                table.className = "organization-table";
+
+                rows.forEach(row => {
+                    const wrap = document.createElement("div");
+                    wrap.className = "organization-row";
+
+                    wrap.append(
+                        addTextElement("div", "organization-label", row.label),
+                        addTextElement("div", "organization-value", row.value)
+                    );
+
+                    table.append(wrap);
+                });
+
+                root.append(table);
+
+                if (members.length) {
+                    const section = document.createElement("section");
+                    section.className = "members-section";
+
+                    section.append(
+                        addTextElement("h3", "members-title", "運営メンバー")
+                    );
+
+                    const grid = document.createElement("div");
+                    grid.className = "members-grid";
+
+                    members.forEach(member => {
+                        const card = document.createElement("article");
+                        card.className = "member-card";
+
+                        const photo = document.createElement("div");
+                        photo.className = "member-photo";
+
+                        if (member.hasPhoto) {
+                            const img = document.createElement("img");
+                            img.src = `${WORKER_URL}/organization-member-photo/${encodeURIComponent(member.id)}`;
+                            img.alt = member.name ? `${member.name}の写真` : "運営メンバーの写真";
+                            img.loading = "lazy";
+                            img.addEventListener("error", () => {
+                                photo.innerHTML = "";
+                                photo.append(addTextElement("div", "member-no-photo", "NO IMAGE"));
+                            });
+                            photo.append(img);
+                        } else {
+                            photo.append(addTextElement("div", "member-no-photo", "NO IMAGE"));
+                        }
+
+                        card.append(
+                            photo,
+                            addTextElement("h4", "member-name", member.name || "氏名未設定"),
+                            addTextElement("p", "member-role", member.role || "")
+                        );
+
+                        grid.append(card);
+                    });
+
+                    section.append(grid);
+                    root.append(section);
+                }
+            } catch (error) {
+                root.className = "organization-status";
+                root.textContent = error.message || "団体概要を取得できませんでした。";
+            }
+        }
+
+        loadOrganization();
+    </script>
+</body>
+</html>
