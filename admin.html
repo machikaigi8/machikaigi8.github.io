@@ -10875,12 +10875,118 @@ async function loadUsers(closeEditor = true) {
       id.textContent =
         user.username || "—";
 
-      mode.textContent =
-        user.isOwner
-          ? "—"
-          : user.coAdmin
+      if (user.isOwner) {
+        mode.textContent =
+          "デベロッパー";
+      } else if (user.isDummy) {
+        mode.textContent =
+          "対象外";
+      } else {
+        const modeStatus =
+          document.createElement(
+            "span"
+          );
+
+        modeStatus.className =
+          "method-chip";
+
+        modeStatus.textContent =
+          user.coAdmin
             ? "ON"
             : "OFF";
+
+        const modeButton =
+          document.createElement(
+            "button"
+          );
+
+        modeButton.type =
+          "button";
+
+        modeButton.className =
+          "mini";
+
+        modeButton.style.marginLeft =
+          "8px";
+
+        modeButton.textContent =
+          user.coAdmin
+            ? "解除する"
+            : "共同管理者にする";
+
+        modeButton.addEventListener(
+          "click",
+          async () => {
+            const nextEnabled =
+              !user.coAdmin;
+
+            const actionLabel =
+              nextEnabled
+                ? "共同管理者に設定"
+                : "共同管理者を解除";
+
+            const label =
+              user.username ||
+              user.name ||
+              "このアカウント";
+
+            const confirmed =
+              window.confirm(
+                `「${label}」を${actionLabel}しますか？`
+              );
+
+            if (!confirmed) {
+              return;
+            }
+
+            modeButton.disabled =
+              true;
+
+            try {
+              const {
+                response,
+                data,
+              } =
+                await workerPost(
+                  "/set-co-admin",
+                  {
+                    userId:
+                      user.userId,
+
+                    enabled:
+                      nextEnabled,
+                  },
+                  sessionStorage.getItem(
+                    "admin_access_token"
+                  )
+                );
+
+              if (!response.ok) {
+                throw new Error(
+                  data.error ||
+                  "共同管理者モードを変更できませんでした。"
+                );
+              }
+
+              await loadUsers(
+                false
+              );
+            } catch (error) {
+              alert(
+                error.message
+              );
+
+              modeButton.disabled =
+                false;
+            }
+          }
+        );
+
+        mode.append(
+          modeStatus,
+          modeButton
+        );
+      }
 
       const consentChip =
         document.createElement(
