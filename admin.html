@@ -2809,7 +2809,7 @@ textarea:disabled{
 
           <div class="row">
             <label class="label" for="news-file">
-              ファイル
+              ファイル（任意）
             </label>
 
             <input
@@ -2817,11 +2817,10 @@ textarea:disabled{
               class="input"
               type="file"
               accept="image/jpeg,image/png,image/webp,application/pdf"
-              required
             >
 
             <p class="news-file-input-note">
-              JPG・PNG・WebPの写真、またはPDFを1つアップロードできます。最大15MBです。
+              添付は任意です。JPG・PNG・WebPの写真、またはPDFを1つアップロードできます。最大50MBです。
             </p>
 
             <div
@@ -6000,13 +5999,6 @@ ui.newsForm.addEventListener("submit", async event => {
     );
   }
 
-  if (!file) {
-    return show(
-      ui.newsStatus,
-      "写真またはPDFを選択してください。"
-    );
-  }
-
   const allowed = [
     "image/jpeg",
     "image/png",
@@ -6014,27 +6006,37 @@ ui.newsForm.addEventListener("submit", async event => {
     "application/pdf",
   ];
 
-  if (!allowed.includes(file.type)) {
-    return show(
-      ui.newsStatus,
-      "アップロードできるのは JPG・PNG・WebP の写真、またはPDFのみです。"
-    );
-  }
+  if (file) {
+    if (!allowed.includes(file.type)) {
+      return show(
+        ui.newsStatus,
+        "アップロードできるのは JPG・PNG・WebP の写真、またはPDFのみです。"
+      );
+    }
 
-  if (file.size > 15 * 1024 * 1024) {
-    return show(
-      ui.newsStatus,
-      "ファイルサイズは15MB以下にしてください。"
-    );
+    if (file.size > 50 * 1024 * 1024) {
+      return show(
+        ui.newsStatus,
+        "ファイルサイズは50MB以下にしてください。"
+      );
+    }
   }
 
   const formData = new FormData();
   formData.append("title", ui.newsTitle.value.trim());
   formData.append("body", ui.newsBody.value.trim());
-  formData.append("file", file, file.name);
 
-  if (isNewsImageFile(file)) {
-    formData.append("layoutJson", JSON.stringify(newsLayoutSnapshot()));
+  if (file) {
+    formData.append("file", file, file.name);
+
+    if (isNewsImageFile(file)) {
+      formData.append(
+        "layoutJson",
+        JSON.stringify(
+          newsLayoutSnapshot()
+        )
+      );
+    }
   }
 
   ui.newsAdd.disabled = true;
