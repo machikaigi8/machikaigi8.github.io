@@ -63,8 +63,99 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
 .article-layout-image{position:absolute;display:block;object-fit:contain}
 .article-media{overflow:hidden;background:#EEF1F5}
 .article-media img{width:100%;height:100%;display:block;object-fit:cover}
-.pdf-frame{width:100%;height:75vh;min-height:520px;border:1px solid #AAB5C4}
-.pdf-open{display:inline-block;margin-top:14px;padding:10px 16px;border:2px solid #145E20;color:#145E20;font-weight:700;text-decoration:none}
+.pdf-viewer-shell{
+  margin-top:10px;
+  border:1px solid #CAD1CC;
+  border-radius:18px;
+  overflow:hidden;
+  background:#EEF1EF;
+}
+.pdf-viewer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:15px 18px;
+  background:#fff;
+  border-bottom:1px solid #D7DDD8;
+}
+.pdf-viewer-title{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#173F20;
+  font-weight:700;
+}
+.pdf-viewer-icon{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:#EAF3EB;
+  color:#145E20;
+  font-size:13px;
+  letter-spacing:.04em;
+}
+.pdf-viewer-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pdf-viewer-meta{
+  flex:0 0 auto;
+  color:#6D776F;
+  font-size:13px;
+}
+.pdf-viewer-status{
+  padding:28px 18px;
+  color:#627066;
+  text-align:center;
+  background:#F8FAF8;
+}
+.pdf-pages{
+  max-height:78vh;
+  overflow:auto;
+  padding:26px 18px 34px;
+  background:#E7EAE8;
+  overscroll-behavior:contain;
+}
+.pdf-page-card{
+  width:fit-content;
+  max-width:100%;
+  margin:0 auto 24px;
+}
+.pdf-page-card:last-child{
+  margin-bottom:0;
+}
+.pdf-page-canvas-wrap{
+  max-width:100%;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:0 6px 22px rgba(0,0,0,.13);
+}
+.pdf-page-canvas{
+  display:block;
+  max-width:100%;
+  height:auto;
+  background:#fff;
+}
+.pdf-page-number{
+  margin-top:8px;
+  color:#667069;
+  font-size:12px;
+  text-align:center;
+}
+.pdf-viewer-error{
+  padding:28px 18px;
+  color:#8A2F2F;
+  text-align:center;
+  background:#FFF7F7;
+}
 .status{text-align:center;padding:30px;color:#627066}
 
 @media(max-width:768px){
@@ -87,7 +178,32 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   .news-arrow{font-size:20px}
   .article{padding:22px 16px}
   .article-title{font-size:29px}
-  .pdf-frame{min-height:420px}
+  .pdf-viewer-head{
+    align-items:flex-start;
+    padding:13px 14px;
+  }
+  .pdf-viewer-title{
+    gap:8px;
+  }
+  .pdf-viewer-icon{
+    width:34px;
+    height:34px;
+    font-size:12px;
+  }
+  .pdf-viewer-name{
+    font-size:14px;
+  }
+  .pdf-viewer-meta{
+    padding-top:3px;
+    font-size:12px;
+  }
+  .pdf-pages{
+    max-height:68vh;
+    padding:16px 10px 22px;
+  }
+  .pdf-page-card{
+    margin-bottom:16px;
+  }
 }
 
 @media(prefers-reduced-motion:reduce){
@@ -293,6 +409,8 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   <div id="news-root" class="status">ニュースを読み込んでいます…</div>
   <a id="back-link" class="back-link" href="index.html">← トップへ戻る</a>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <script>
 const WORKER_URL = "https://machikaigi-admin-api.taka-souda516.workers.dev";
 const NEWS_API_URL = `${WORKER_URL}/news-public`;
@@ -459,24 +577,233 @@ function renderLegacyImage(item, article) {
   article.append(media);
 }
 
-function renderPdf(item, article) {
+async function renderPdf(item, article) {
   const body = document.createElement("p");
   body.className = "article-body";
   body.textContent = item.body || "";
   article.append(body);
 
-  const frame = document.createElement("iframe");
-  frame.className = "pdf-frame";
-  frame.src = newsFileUrl(item.id);
-  frame.title = item.fileName || "ニュースPDF";
-  article.append(frame);
-  const open = document.createElement("a");
-  open.className = "pdf-open";
-  open.href = newsFileUrl(item.id);
-  open.target = "_blank";
-  open.rel = "noopener noreferrer";
-  open.textContent = "PDFを別画面で開く";
-  article.append(open);
+  const shell = document.createElement("section");
+  shell.className = "pdf-viewer-shell";
+
+  const head = document.createElement("div");
+  head.className = "pdf-viewer-head";
+
+  const titleWrap = document.createElement("div");
+  titleWrap.className = "pdf-viewer-title";
+
+  const icon = document.createElement("span");
+  icon.className = "pdf-viewer-icon";
+  icon.textContent = "PDF";
+
+  const name = document.createElement("span");
+  name.className = "pdf-viewer-name";
+  name.textContent = item.fileName || "添付PDF";
+
+  titleWrap.append(icon, name);
+
+  const meta = document.createElement("span");
+  meta.className = "pdf-viewer-meta";
+  meta.textContent = "読み込み中";
+
+  head.append(titleWrap, meta);
+
+  const status = document.createElement("div");
+  status.className = "pdf-viewer-status";
+  status.textContent = "PDFを読み込んでいます…";
+
+  const pages = document.createElement("div");
+  pages.className = "pdf-pages";
+  pages.hidden = true;
+
+  shell.append(head, status, pages);
+  article.append(shell);
+
+  try {
+    if (!window.pdfjsLib) {
+      throw new Error("PDFビューアを読み込めませんでした。");
+    }
+
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+    const loadingTask =
+      window.pdfjsLib.getDocument({
+        url: newsFileUrl(item.id),
+        httpHeaders: {
+          "X-Machikaigi-Pdf-Viewer": "1",
+        },
+        withCredentials: false,
+        disableRange: true,
+      });
+
+    const pdf =
+      await loadingTask.promise;
+
+    meta.textContent =
+      `${pdf.numPages}ページ`;
+
+    status.remove();
+    pages.hidden = false;
+
+    const pageTargetWidth =
+      Math.min(
+        900,
+        Math.max(
+          280,
+          window.innerWidth <= 768
+            ? window.innerWidth - 76
+            : window.innerWidth - 240
+        )
+      );
+
+    const pixelRatio =
+      Math.min(
+        window.devicePixelRatio || 1,
+        2
+      );
+
+    for (
+      let pageNumber = 1;
+      pageNumber <= pdf.numPages;
+      pageNumber += 1
+    ) {
+      const page =
+        await pdf.getPage(pageNumber);
+
+      const baseViewport =
+        page.getViewport({
+          scale: 1,
+        });
+
+      const cssScale =
+        pageTargetWidth /
+        baseViewport.width;
+
+      const cssViewport =
+        page.getViewport({
+          scale: cssScale,
+        });
+
+      const renderViewport =
+        page.getViewport({
+          scale:
+            cssScale *
+            pixelRatio,
+        });
+
+      const card =
+        document.createElement("div");
+
+      card.className =
+        "pdf-page-card";
+
+      const canvasWrap =
+        document.createElement("div");
+
+      canvasWrap.className =
+        "pdf-page-canvas-wrap";
+
+      const canvas =
+        document.createElement("canvas");
+
+      canvas.className =
+        "pdf-page-canvas";
+
+      canvas.width =
+        Math.ceil(
+          renderViewport.width
+        );
+
+      canvas.height =
+        Math.ceil(
+          renderViewport.height
+        );
+
+      canvas.style.width =
+        `${Math.ceil(
+          cssViewport.width
+        )}px`;
+
+      canvas.style.height =
+        `${Math.ceil(
+          cssViewport.height
+        )}px`;
+
+      const context =
+        canvas.getContext(
+          "2d",
+          {
+            alpha: false,
+          }
+        );
+
+      canvasWrap.append(canvas);
+
+      const pageLabel =
+        document.createElement("div");
+
+      pageLabel.className =
+        "pdf-page-number";
+
+      pageLabel.textContent =
+        `${pageNumber} / ${pdf.numPages}`;
+
+      card.append(
+        canvasWrap,
+        pageLabel
+      );
+
+      pages.append(card);
+
+      await page.render({
+        canvasContext:
+          context,
+        viewport:
+          renderViewport,
+        background:
+          "rgb(255,255,255)",
+      }).promise;
+    }
+  } catch (error) {
+    console.error(
+      "PDF render error",
+      error
+    );
+
+    pages.hidden = true;
+
+    if (status.isConnected) {
+      status.className =
+        "pdf-viewer-error";
+
+      status.textContent =
+        "PDFを表示できませんでした。ページを再読み込みしてお試しください。";
+    } else {
+      const errorBox =
+        document.createElement("div");
+
+      errorBox.className =
+        "pdf-viewer-error";
+
+      errorBox.textContent =
+        "PDFを表示できませんでした。ページを再読み込みしてお試しください。";
+
+      shell.append(
+        errorBox
+      );
+    }
+
+    meta.textContent =
+      "表示エラー";
+  }
+}
+
+function renderTextOnly(item, article) {
+  const body = document.createElement("p");
+  body.className = "article-body";
+  body.textContent = item.body || "";
+  article.append(body);
 }
 
 async function loadList() {
@@ -514,17 +841,19 @@ async function loadDetail(id) {
   title.textContent = item.title || "（タイトルなし）";
   article.append(date,title);
 
+  root.append(article);
+
   if (item.fileType === "image" && item.layout?.type === "wrap") {
     renderWrappedImageArticle(item, article);
   } else if (item.fileType === "image" && item.layout?.type === "manual") {
     renderManualImageArticle(item, article);
   } else if (item.fileType === "image") {
     renderLegacyImage(item, article);
+  } else if (item.fileType === "pdf") {
+    await renderPdf(item, article);
   } else {
-    renderPdf(item, article);
+    renderTextOnly(item, article);
   }
-
-  root.append(article);
 }
 
 (async()=>{
