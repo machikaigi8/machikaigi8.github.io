@@ -68,48 +68,53 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   border:1px solid #CAD1CC;
   border-radius:18px;
   overflow:hidden;
-  background:#EEF1EF;
+  background:#F2F4F2;
 }
 .pdf-viewer-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:16px;
-  padding:15px 18px;
+  gap:14px;
+  padding:12px 14px;
   background:#fff;
   border-bottom:1px solid #D7DDD8;
 }
-.pdf-viewer-title{
-  min-width:0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:#173F20;
-  font-weight:700;
-}
-.pdf-viewer-icon{
-  flex:0 0 auto;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:38px;
-  height:38px;
-  border-radius:10px;
-  background:#EAF3EB;
-  color:#145E20;
-  font-size:13px;
-  letter-spacing:.04em;
-}
-.pdf-viewer-name{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
 .pdf-viewer-meta{
-  flex:0 0 auto;
   color:#6D776F;
   font-size:13px;
+  white-space:nowrap;
+}
+.pdf-viewer-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.pdf-nav-button,
+.pdf-large-button,
+.pdf-close-button{
+  border:1px solid #145E20;
+  background:#fff;
+  color:#145E20;
+  font:inherit;
+  font-weight:700;
+  cursor:pointer;
+}
+.pdf-nav-button{
+  min-width:34px;
+  height:34px;
+  padding:0 9px;
+  border-radius:8px;
+}
+.pdf-nav-button:disabled{
+  opacity:.35;
+  cursor:default;
+}
+.pdf-large-button{
+  height:34px;
+  padding:0 13px;
+  border-radius:8px;
 }
 .pdf-viewer-status{
   padding:28px 18px;
@@ -117,44 +122,104 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   text-align:center;
   background:#F8FAF8;
 }
-.pdf-pages{
-  max-height:78vh;
-  overflow:auto;
-  padding:26px 18px 34px;
-  background:#E7EAE8;
-  overscroll-behavior:contain;
-}
-.pdf-page-card{
-  width:fit-content;
-  max-width:100%;
-  margin:0 auto 24px;
-}
-.pdf-page-card:last-child{
-  margin-bottom:0;
-}
-.pdf-page-canvas-wrap{
-  max-width:100%;
+.pdf-preview-stage{
+  height:min(56vh,560px);
+  min-height:360px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  box-sizing:border-box;
   overflow:hidden;
+  background:#E7EAE8;
+}
+.pdf-preview-canvas-wrap{
+  max-width:100%;
+  max-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background:#fff;
   box-shadow:0 6px 22px rgba(0,0,0,.13);
 }
-.pdf-page-canvas{
+.pdf-preview-canvas{
   display:block;
   max-width:100%;
+  max-height:100%;
+  width:auto;
   height:auto;
   background:#fff;
-}
-.pdf-page-number{
-  margin-top:8px;
-  color:#667069;
-  font-size:12px;
-  text-align:center;
 }
 .pdf-viewer-error{
   padding:28px 18px;
   color:#8A2F2F;
   text-align:center;
   background:#FFF7F7;
+}
+
+.pdf-fullscreen-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:none;
+  background:rgba(20,26,22,.94);
+}
+.pdf-fullscreen-overlay.active{
+  display:flex;
+  flex-direction:column;
+}
+.pdf-fullscreen-bar{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 16px;
+  background:#fff;
+  border-bottom:1px solid #D9DDD9;
+}
+.pdf-fullscreen-left,
+.pdf-fullscreen-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.pdf-fullscreen-page{
+  color:#4F5B52;
+  font-size:14px;
+  white-space:nowrap;
+}
+.pdf-close-button{
+  height:36px;
+  padding:0 14px;
+  border-radius:8px;
+}
+.pdf-fullscreen-stage{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  box-sizing:border-box;
+  overflow:auto;
+}
+.pdf-fullscreen-canvas-wrap{
+  max-width:100%;
+  max-height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  box-shadow:0 10px 34px rgba(0,0,0,.34);
+}
+.pdf-fullscreen-canvas{
+  display:block;
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  background:#fff;
 }
 .status{text-align:center;padding:30px;color:#627066}
 
@@ -179,30 +244,35 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   .article{padding:22px 16px}
   .article-title{font-size:29px}
   .pdf-viewer-head{
-    align-items:flex-start;
-    padding:13px 14px;
-  }
-  .pdf-viewer-title{
-    gap:8px;
-  }
-  .pdf-viewer-icon{
-    width:34px;
-    height:34px;
-    font-size:12px;
-  }
-  .pdf-viewer-name{
-    font-size:14px;
+    align-items:center;
+    padding:10px 10px;
   }
   .pdf-viewer-meta{
-    padding-top:3px;
     font-size:12px;
   }
-  .pdf-pages{
-    max-height:68vh;
-    padding:16px 10px 22px;
+  .pdf-viewer-actions{
+    gap:6px;
   }
-  .pdf-page-card{
-    margin-bottom:16px;
+  .pdf-nav-button{
+    min-width:32px;
+    height:32px;
+    padding:0 8px;
+  }
+  .pdf-large-button{
+    height:32px;
+    padding:0 10px;
+    font-size:12px;
+  }
+  .pdf-preview-stage{
+    height:48vh;
+    min-height:300px;
+    padding:10px;
+  }
+  .pdf-fullscreen-bar{
+    padding:10px;
+  }
+  .pdf-fullscreen-stage{
+    padding:8px;
   }
 }
 
@@ -589,35 +659,366 @@ async function renderPdf(item, article) {
   const head = document.createElement("div");
   head.className = "pdf-viewer-head";
 
-  const titleWrap = document.createElement("div");
-  titleWrap.className = "pdf-viewer-title";
-
-  const icon = document.createElement("span");
-  icon.className = "pdf-viewer-icon";
-  icon.textContent = "PDF";
-
-  const name = document.createElement("span");
-  name.className = "pdf-viewer-name";
-  name.textContent = item.fileName || "添付PDF";
-
-  titleWrap.append(icon, name);
-
   const meta = document.createElement("span");
   meta.className = "pdf-viewer-meta";
   meta.textContent = "読み込み中";
 
-  head.append(titleWrap, meta);
+  const actions = document.createElement("div");
+  actions.className = "pdf-viewer-actions";
+
+  const prevButton = document.createElement("button");
+  prevButton.type = "button";
+  prevButton.className = "pdf-nav-button";
+  prevButton.textContent = "‹";
+  prevButton.setAttribute("aria-label", "前のページ");
+
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.className = "pdf-nav-button";
+  nextButton.textContent = "›";
+  nextButton.setAttribute("aria-label", "次のページ");
+
+  const largeButton = document.createElement("button");
+  largeButton.type = "button";
+  largeButton.className = "pdf-large-button";
+  largeButton.textContent = "大画面で表示";
+
+  actions.append(prevButton, nextButton, largeButton);
+  head.append(meta, actions);
 
   const status = document.createElement("div");
   status.className = "pdf-viewer-status";
   status.textContent = "PDFを読み込んでいます…";
 
-  const pages = document.createElement("div");
-  pages.className = "pdf-pages";
-  pages.hidden = true;
+  const previewStage = document.createElement("div");
+  previewStage.className = "pdf-preview-stage";
+  previewStage.hidden = true;
 
-  shell.append(head, status, pages);
+  const previewWrap = document.createElement("div");
+  previewWrap.className = "pdf-preview-canvas-wrap";
+
+  const previewCanvas = document.createElement("canvas");
+  previewCanvas.className = "pdf-preview-canvas";
+
+  previewWrap.append(previewCanvas);
+  previewStage.append(previewWrap);
+
+  shell.append(head, status, previewStage);
   article.append(shell);
+
+  const overlay = document.createElement("div");
+  overlay.className = "pdf-fullscreen-overlay";
+  overlay.setAttribute("aria-hidden", "true");
+
+  const overlayBar = document.createElement("div");
+  overlayBar.className = "pdf-fullscreen-bar";
+
+  const overlayLeft = document.createElement("div");
+  overlayLeft.className = "pdf-fullscreen-left";
+
+  const overlayPrev = document.createElement("button");
+  overlayPrev.type = "button";
+  overlayPrev.className = "pdf-nav-button";
+  overlayPrev.textContent = "‹";
+  overlayPrev.setAttribute("aria-label", "前のページ");
+
+  const overlayNext = document.createElement("button");
+  overlayNext.type = "button";
+  overlayNext.className = "pdf-nav-button";
+  overlayNext.textContent = "›";
+  overlayNext.setAttribute("aria-label", "次のページ");
+
+  const overlayPage = document.createElement("span");
+  overlayPage.className = "pdf-fullscreen-page";
+
+  overlayLeft.append(overlayPrev, overlayNext, overlayPage);
+
+  const overlayRight = document.createElement("div");
+  overlayRight.className = "pdf-fullscreen-right";
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "pdf-close-button";
+  closeButton.textContent = "閉じる";
+
+  overlayRight.append(closeButton);
+  overlayBar.append(overlayLeft, overlayRight);
+
+  const overlayStage = document.createElement("div");
+  overlayStage.className = "pdf-fullscreen-stage";
+
+  const overlayWrap = document.createElement("div");
+  overlayWrap.className = "pdf-fullscreen-canvas-wrap";
+
+  const overlayCanvas = document.createElement("canvas");
+  overlayCanvas.className = "pdf-fullscreen-canvas";
+
+  overlayWrap.append(overlayCanvas);
+  overlayStage.append(overlayWrap);
+
+  overlay.append(overlayBar, overlayStage);
+  document.body.append(overlay);
+
+  let pdf = null;
+  let currentPage = 1;
+  let rendering = false;
+
+  function updateControls() {
+    const total = pdf ? pdf.numPages : 1;
+
+    meta.textContent =
+      pdf
+        ? `${currentPage} / ${total}`
+        : "読み込み中";
+
+    overlayPage.textContent =
+      pdf
+        ? `${currentPage} / ${total}`
+        : "";
+
+    const atFirst = currentPage <= 1;
+    const atLast = !pdf || currentPage >= total;
+
+    prevButton.disabled = atFirst;
+    overlayPrev.disabled = atFirst;
+    nextButton.disabled = atLast;
+    overlayNext.disabled = atLast;
+  }
+
+  async function renderPageToCanvas(pageNumber, canvas, stage, fullscreen = false) {
+    if (!pdf) return;
+
+    const page =
+      await pdf.getPage(pageNumber);
+
+    const baseViewport =
+      page.getViewport({ scale: 1 });
+
+    const stageWidth =
+      Math.max(
+        220,
+        stage.clientWidth - (fullscreen ? 28 : 22)
+      );
+
+    const stageHeight =
+      Math.max(
+        220,
+        stage.clientHeight - (fullscreen ? 28 : 22)
+      );
+
+    const cssScale =
+      Math.min(
+        stageWidth / baseViewport.width,
+        stageHeight / baseViewport.height
+      );
+
+    const pixelRatio =
+      Math.min(
+        window.devicePixelRatio || 1,
+        2
+      );
+
+    const cssViewport =
+      page.getViewport({
+        scale: cssScale,
+      });
+
+    const renderViewport =
+      page.getViewport({
+        scale: cssScale * pixelRatio,
+      });
+
+    canvas.width =
+      Math.max(
+        1,
+        Math.ceil(renderViewport.width)
+      );
+
+    canvas.height =
+      Math.max(
+        1,
+        Math.ceil(renderViewport.height)
+      );
+
+    canvas.style.width =
+      `${Math.ceil(cssViewport.width)}px`;
+
+    canvas.style.height =
+      `${Math.ceil(cssViewport.height)}px`;
+
+    const context =
+      canvas.getContext(
+        "2d",
+        {
+          alpha: false,
+        }
+      );
+
+    await page.render({
+      canvasContext: context,
+      viewport: renderViewport,
+      background: "rgb(255,255,255)",
+    }).promise;
+  }
+
+  async function renderCurrentPage() {
+    if (!pdf || rendering) return;
+
+    rendering = true;
+
+    try {
+      updateControls();
+
+      await renderPageToCanvas(
+        currentPage,
+        previewCanvas,
+        previewStage,
+        false
+      );
+
+      if (overlay.classList.contains("active")) {
+        await renderPageToCanvas(
+          currentPage,
+          overlayCanvas,
+          overlayStage,
+          true
+        );
+      }
+    } finally {
+      rendering = false;
+    }
+  }
+
+  async function goToPage(nextPage) {
+    if (!pdf) return;
+
+    const clamped =
+      Math.max(
+        1,
+        Math.min(pdf.numPages, nextPage)
+      );
+
+    if (clamped === currentPage) {
+      return;
+    }
+
+    currentPage = clamped;
+    await renderCurrentPage();
+  }
+
+  prevButton.addEventListener(
+    "click",
+    () => goToPage(currentPage - 1)
+  );
+
+  nextButton.addEventListener(
+    "click",
+    () => goToPage(currentPage + 1)
+  );
+
+  overlayPrev.addEventListener(
+    "click",
+    () => goToPage(currentPage - 1)
+  );
+
+  overlayNext.addEventListener(
+    "click",
+    () => goToPage(currentPage + 1)
+  );
+
+  largeButton.addEventListener(
+    "click",
+    async () => {
+      overlay.classList.add("active");
+      overlay.setAttribute("aria-hidden", "false");
+      document.documentElement.style.overflow = "hidden";
+
+      await new Promise(resolve =>
+        requestAnimationFrame(resolve)
+      );
+
+      await renderPageToCanvas(
+        currentPage,
+        overlayCanvas,
+        overlayStage,
+        true
+      );
+    }
+  );
+
+  function closeOverlay() {
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
+    document.documentElement.style.overflow = "";
+  }
+
+  closeButton.addEventListener(
+    "click",
+    closeOverlay
+  );
+
+  overlay.addEventListener(
+    "click",
+    event => {
+      if (event.target === overlay) {
+        closeOverlay();
+      }
+    }
+  );
+
+  window.addEventListener(
+    "keydown",
+    event => {
+      if (!overlay.classList.contains("active")) {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        closeOverlay();
+      }
+
+      if (event.key === "ArrowLeft") {
+        goToPage(currentPage - 1);
+      }
+
+      if (event.key === "ArrowRight") {
+        goToPage(currentPage + 1);
+      }
+    }
+  );
+
+  let resizeTimer = null;
+
+  window.addEventListener(
+    "resize",
+    () => {
+      clearTimeout(resizeTimer);
+
+      resizeTimer =
+        setTimeout(
+          async () => {
+            if (!pdf) return;
+
+            await renderPageToCanvas(
+              currentPage,
+              previewCanvas,
+              previewStage,
+              false
+            );
+
+            if (overlay.classList.contains("active")) {
+              await renderPageToCanvas(
+                currentPage,
+                overlayCanvas,
+                overlayStage,
+                true
+              );
+            }
+          },
+          120
+        );
+    }
+  );
 
   try {
     if (!window.pdfjsLib) {
@@ -637,165 +1038,34 @@ async function renderPdf(item, article) {
         disableRange: true,
       });
 
-    const pdf =
+    pdf =
       await loadingTask.promise;
 
-    meta.textContent =
-      `${pdf.numPages}ページ`;
-
     status.remove();
-    pages.hidden = false;
+    previewStage.hidden = false;
 
-    const pageTargetWidth =
-      Math.min(
-        900,
-        Math.max(
-          280,
-          window.innerWidth <= 768
-            ? window.innerWidth - 76
-            : window.innerWidth - 240
-        )
-      );
+    updateControls();
 
-    const pixelRatio =
-      Math.min(
-        window.devicePixelRatio || 1,
-        2
-      );
-
-    for (
-      let pageNumber = 1;
-      pageNumber <= pdf.numPages;
-      pageNumber += 1
-    ) {
-      const page =
-        await pdf.getPage(pageNumber);
-
-      const baseViewport =
-        page.getViewport({
-          scale: 1,
-        });
-
-      const cssScale =
-        pageTargetWidth /
-        baseViewport.width;
-
-      const cssViewport =
-        page.getViewport({
-          scale: cssScale,
-        });
-
-      const renderViewport =
-        page.getViewport({
-          scale:
-            cssScale *
-            pixelRatio,
-        });
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "pdf-page-card";
-
-      const canvasWrap =
-        document.createElement("div");
-
-      canvasWrap.className =
-        "pdf-page-canvas-wrap";
-
-      const canvas =
-        document.createElement("canvas");
-
-      canvas.className =
-        "pdf-page-canvas";
-
-      canvas.width =
-        Math.ceil(
-          renderViewport.width
-        );
-
-      canvas.height =
-        Math.ceil(
-          renderViewport.height
-        );
-
-      canvas.style.width =
-        `${Math.ceil(
-          cssViewport.width
-        )}px`;
-
-      canvas.style.height =
-        `${Math.ceil(
-          cssViewport.height
-        )}px`;
-
-      const context =
-        canvas.getContext(
-          "2d",
-          {
-            alpha: false,
-          }
-        );
-
-      canvasWrap.append(canvas);
-
-      const pageLabel =
-        document.createElement("div");
-
-      pageLabel.className =
-        "pdf-page-number";
-
-      pageLabel.textContent =
-        `${pageNumber} / ${pdf.numPages}`;
-
-      card.append(
-        canvasWrap,
-        pageLabel
-      );
-
-      pages.append(card);
-
-      await page.render({
-        canvasContext:
-          context,
-        viewport:
-          renderViewport,
-        background:
-          "rgb(255,255,255)",
-      }).promise;
-    }
-  } catch (error) {
-    console.error(
-      "PDF render error",
-      error
+    await new Promise(resolve =>
+      requestAnimationFrame(resolve)
     );
 
-    pages.hidden = true;
+    await renderCurrentPage();
+  } catch (error) {
+    console.error("PDF render error", error);
+
+    previewStage.hidden = true;
 
     if (status.isConnected) {
-      status.className =
-        "pdf-viewer-error";
-
+      status.className = "pdf-viewer-error";
       status.textContent =
         "PDFを表示できませんでした。ページを再読み込みしてお試しください。";
-    } else {
-      const errorBox =
-        document.createElement("div");
-
-      errorBox.className =
-        "pdf-viewer-error";
-
-      errorBox.textContent =
-        "PDFを表示できませんでした。ページを再読み込みしてお試しください。";
-
-      shell.append(
-        errorBox
-      );
     }
 
-    meta.textContent =
-      "表示エラー";
+    meta.textContent = "表示エラー";
+    largeButton.disabled = true;
+    prevButton.disabled = true;
+    nextButton.disabled = true;
   }
 }
 
