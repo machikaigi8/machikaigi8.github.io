@@ -64,7 +64,9 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
 .article-media{overflow:hidden;background:#EEF1F5}
 .article-media img{width:100%;height:100%;display:block;object-fit:cover}
 .pdf-viewer-shell{
-  margin-top:10px;
+  width:fit-content;
+  max-width:100%;
+  margin:10px auto 0;
   border:1px solid #CAD1CC;
   border-radius:18px;
   overflow:hidden;
@@ -123,12 +125,14 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
   background:#F8FAF8;
 }
 .pdf-preview-stage{
-  height:min(56vh,560px);
-  min-height:360px;
+  width:fit-content;
+  max-width:100%;
+  height:min(48vh,480px);
+  min-height:300px;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:18px;
+  padding:12px;
   box-sizing:border-box;
   overflow:hidden;
   background:#E7EAE8;
@@ -263,10 +267,14 @@ body{margin:0;background:#FFFDF7;color:#111;font-family:"Yu Gothic","Hiragino Ka
     padding:0 10px;
     font-size:12px;
   }
+  .pdf-viewer-shell{
+    width:min(100%,420px);
+  }
   .pdf-preview-stage{
-    height:48vh;
-    min-height:300px;
-    padding:10px;
+    width:100%;
+    height:44vh;
+    min-height:280px;
+    padding:8px;
   }
   .pdf-fullscreen-bar{
     padding:10px;
